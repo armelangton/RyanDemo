@@ -1,0 +1,78 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Fire Protection Field Assistant API",
+    "version": "0.1.0",
+    "description": "Public recall lookup endpoints for a field assistant proof of concept."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000"
+    }
+  ],
+  "paths": {
+    "/api/recalls": {
+      "get": {
+        "operationId": "searchCpscRecalls",
+        "summary": "Search public CPSC recall data",
+        "description": "Searches public CPSC recall records by product, manufacturer, model number, keyword, hazard, remedy, or description.",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "description": "Search term such as a product, manufacturer, model number, keyword, hazard, remedy, or description.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Recall search results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "results": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": { "type": "string" },
+                          "title": { "type": "string" },
+                          "recallDate": { "type": "string" },
+                          "manufacturer": { "type": "string" },
+                          "productDescription": { "type": "string" },
+                          "hazard": { "type": "string" },
+                          "remedy": { "type": "string" },
+                          "recallNumber": { "type": "string" },
+                          "url": { "type": "string" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Unable to retrieve recall data"
+          }
+        }
+      }
+    },
+    "/api/health": {
+      "get": {
+        "operationId": "healthCheck",
+        "summary": "Check API health",
+        "responses": {
+          "200": {
+            "description": "Health status"
+          }
+        }
+      }
+    }
+  }
+}
