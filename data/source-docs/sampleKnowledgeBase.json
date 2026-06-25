@@ -1,0 +1,124 @@
+{
+  "serviceLenses": [
+    {
+      "id": "itm",
+      "label": "Inspection, Testing & Maintenance",
+      "focus": [
+        "inspection timing",
+        "testing cadence",
+        "maintenance needs",
+        "service history",
+        "deficiencies",
+        "documentation",
+        "upcoming service needs"
+      ]
+    },
+    {
+      "id": "customer_training",
+      "label": "Customer Training",
+      "focus": [
+        "plain-language education",
+        "materials to bring",
+        "likely attendee questions",
+        "customer confidence",
+        "follow-up reminders"
+      ]
+    },
+    {
+      "id": "sprinklers",
+      "label": "Fire Sprinklers",
+      "focus": [
+        "sprinkler awareness",
+        "valves",
+        "waterflow",
+        "system behavior",
+        "inspection/testing reminders",
+        "documentation"
+      ]
+    },
+    {
+      "id": "alarms",
+      "label": "Fire Alarm & Detection",
+      "focus": [
+        "alarm testing",
+        "panel awareness",
+        "detection devices",
+        "documentation",
+        "customer communication"
+      ]
+    },
+    {
+      "id": "extinguishers",
+      "label": "Fire Extinguishers",
+      "focus": [
+        "readiness",
+        "inspection tags",
+        "placement",
+        "training",
+        "replacement/remedy verification"
+      ]
+    },
+    {
+      "id": "hydrants",
+      "label": "Fire Hydrants",
+      "focus": [
+        "inspection",
+        "flow testing",
+        "public safety",
+        "municipal coordination",
+        "documentation"
+      ]
+    },
+    {
+      "id": "special_hazards",
+      "label": "Special Hazards",
+      "focus": [
+        "higher-risk equipment",
+        "manufacturer guidance",
+        "qualified review",
+        "specialized inspection/testing"
+      ]
+    },
+    {
+      "id": "emergency_service",
+      "label": "Emergency Service",
+      "focus": [
+        "urgency",
+        "triage",
+        "immediate verification",
+        "notification",
+        "photos/notes",
+        "follow-up"
+      ]
+    },
+    {
+      "id": "clean_foam",
+      "label": "Clean Foam Testing",
+      "focus": [
+        "foam testing awareness",
+        "environmental/public health sensitivity",
+        "documentation",
+        "qualified review"
+      ]
+    },
+    {
+      "id": "documentation_deficiency",
+      "label": "Documentation / Deficiency Follow-Up",
+      "focus": [
+        "inspection notes",
+        "photos",
+        "reports",
+        "deficiency verification",
+        "customer communication",
+        "quote/follow-up"
+      ]
+    }
+  ],
+  "responsibleAiLabels": [
+    "Known from source",
+    "Provided by user",
+    "AI interpretation",
+    "Needs verification",
+    "Human review required"
+  ]
+}

@@ -12,10 +12,20 @@ export type RecallResult = {
 };
 
 export type AiGuidance = {
-  plainEnglishSummary: string;
-  whyItMatters: string;
-  internalFollowUp: string[];
-  serviceTeamChecklist: string[];
-  customerCommunicationDraft: string;
-  riskReviewNote: string;
+  sourceContextUsed: string[];
+  knownSourceFacts: string[];
+  providedDemoProfileContext: string[];
+  aiInterpretation: string[];
+  readinessScore: number;
+  readinessScoreReason: string;
+  keyAttentionFlags: string[];
+  internalFieldBrief: string;
+  audienceSpecificTalkingPoints: string[];
+  equipmentProductChecklist: string[];
+  trainingOrEventPrepNotes: string[];
+  relatedServiceConsiderations: string[];
+  recommendedNextBestActions: string[];
+  followUpNoteDraft: string;
+  missingInformationToVerify: string[];
+  officialSourceReminder: string;
 };

@@ -1,24 +1,249 @@
 "use client";
 
 import { FormEvent, useMemo, useState } from "react";
+import knowledgeBase from "../data/source-docs/sampleKnowledgeBase.json";
 import type { AiGuidance, RecallResult } from "./types";
 
 type EngagementType =
   | "Inspection"
   | "Customer Training"
-  | "Fire Department / Convention Event"
-  | "Customer Meeting";
+  | "Fire Department / Recruit Training"
+  | "Municipality / Public Safety Event"
+  | "Customer Meeting"
+  | "Continuing Education Prep";
+
+type Audience =
+  | "Facility Manager"
+  | "Fire Department"
+  | "Municipality"
+  | "Building Owner"
+  | "Internal Inspector"
+  | "Instructor / Trainer";
+
+type BriefAction =
+  | "inspection_prep"
+  | "training_prep"
+  | "event_prep"
+  | "customer_talking_points"
+  | "follow_up_notes";
+
+type ServiceLens = {
+  id: string;
+  label: string;
+  focus: string[];
+};
+
+type SiteProfile = {
+  label: string;
+  type: string;
+  primaryAudience: string;
+  systems: string[];
+  reminder: string;
+  trainingNeed: string;
+  documentationNeed: string;
+  relatedServiceLenses: string[];
+  relatedService: string;
+};
 
 const engagementTypes: EngagementType[] = [
   "Inspection",
   "Customer Training",
-  "Fire Department / Convention Event",
+  "Fire Department / Recruit Training",
+  "Municipality / Public Safety Event",
   "Customer Meeting",
+  "Continuing Education Prep",
+];
+
+const audiences: Audience[] = [
+  "Facility Manager",
+  "Fire Department",
+  "Municipality",
+  "Building Owner",
+  "Internal Inspector",
+  "Instructor / Trainer",
+];
+
+const serviceLenses = knowledgeBase.serviceLenses as ServiceLens[];
+
+const sampleSiteDetails: Record<string, SiteProfile> = {
+  "No sample site selected": {
+    label: "No sample site selected",
+    type: "No demo profile selected",
+    primaryAudience: "Not selected",
+    systems: [],
+    reminder: "No reminder selected",
+    trainingNeed: "No training need selected",
+    documentationNeed: "No documentation need selected",
+    relatedServiceLenses: [],
+    relatedService: "Documentation review",
+  },
+  "Municipal Facilities Account": {
+    label: "Municipal Facilities Account",
+    type: "Municipality",
+    primaryAudience: "Municipality / facilities leadership",
+    systems: [
+      "Fire extinguishers",
+      "Fire alarm and detection",
+      "Emergency lighting",
+      "Sprinkler system",
+      "Hydrants near public buildings",
+    ],
+    reminder: "Annual inspection cycle due in 28 days",
+    trainingNeed:
+      "Facilities team refresher on monthly visual checks, documentation, and when to contact service support",
+    documentationNeed:
+      "Inspection reports, emergency lighting test documentation, extinguisher inspection status, alarm testing records, open deficiency notes",
+    relatedServiceLenses: [
+      "Inspection, Testing & Maintenance",
+      "Documentation / Deficiency Follow-Up",
+      "Fire Extinguishers",
+      "Fire Alarm & Detection",
+      "Fire Hydrants",
+    ],
+    relatedService:
+      "Emergency lighting inspection and documentation review; extinguisher inspection and training; alarm testing review; hydrant inspection / flow testing conversation; recurring service reminder review",
+  },
+  "Fire Department Recruit Session": {
+    label: "Fire Department Recruit Session",
+    type: "Fire Department / recruit training",
+    primaryAudience: "Fire Department",
+    systems: [
+      "Sprinkler system demonstration",
+      "Fire pump overview",
+      "Hydrant flow discussion",
+      "Alarm response awareness",
+      "Valve/control assembly examples",
+    ],
+    reminder: "Recruit training session next month",
+    trainingNeed:
+      "Explain how fire protection systems behave during response and what crews should recognize, avoid, report, or escalate",
+    documentationNeed:
+      "Instructor outline, system diagram, photos of common components, likely recruit questions, official source reminders",
+    relatedServiceLenses: [
+      "Customer Training",
+      "Fire Sprinklers",
+      "Fire Hydrants",
+      "Fire Alarm & Detection",
+    ],
+    relatedService:
+      "Hydrant inspection / flow testing conversation; sprinkler system education; alarm response awareness; additional customer training opportunities",
+  },
+  "Healthcare Facility ITM Review": {
+    label: "Healthcare Facility ITM Review",
+    type: "Healthcare facility",
+    primaryAudience: "Facility Manager / Building Owner",
+    systems: [
+      "Fire alarm and detection",
+      "Sprinkler system",
+      "Emergency lighting",
+      "Fire extinguishers",
+      "Special hazard areas where applicable",
+    ],
+    reminder: "Semiannual service review and documentation check",
+    trainingNeed:
+      "Facilities team refresher on inspection records, deficiencies, and escalation steps",
+    documentationNeed:
+      "Inspection reports, service history, open deficiency list, emergency lighting and alarm test records, manufacturer documentation for any affected product",
+    relatedServiceLenses: [
+      "Inspection, Testing & Maintenance",
+      "Fire Alarm & Detection",
+      "Fire Sprinklers",
+      "Documentation / Deficiency Follow-Up",
+    ],
+    relatedService:
+      "Documentation review; emergency lighting inspection; alarm testing review; preventive maintenance; deficiency follow-up",
+  },
+  "Industrial Special Hazards Review": {
+    label: "Industrial Special Hazards Review",
+    type: "Industrial / special hazards",
+    primaryAudience: "Facility Manager / Internal Inspector",
+    systems: [
+      "Special hazard suppression system",
+      "Fire extinguishers",
+      "Fire alarm and detection",
+      "Emergency response equipment",
+      "Possible foam-related equipment depending on site",
+    ],
+    reminder: "Special hazards system review due this quarter",
+    trainingNeed:
+      "Internal prep around system-specific documentation, qualified review, and customer communication",
+    documentationNeed:
+      "Manufacturer manuals, inspection/testing records, service history, deficiency photos/notes, exact product/model details",
+    relatedServiceLenses: [
+      "Special Hazards",
+      "Clean Foam Testing",
+      "Emergency Service",
+      "Documentation / Deficiency Follow-Up",
+    ],
+    relatedService:
+      "Special hazard system review; clean foam testing discussion if applicable; documentation review; emergency service readiness; preventive maintenance",
+  },
+  "Education Campus Facilities Training": {
+    label: "Education Campus Facilities Training",
+    type: "Education / campus facilities",
+    primaryAudience: "Facility Manager / Instructor or Trainer",
+    systems: [
+      "Fire extinguishers",
+      "Alarm panels",
+      "Sprinkler systems",
+      "Emergency lighting",
+      "Exit signs",
+    ],
+    reminder: "Facilities refresher before semester start",
+    trainingNeed:
+      "Prepare facilities team for visual checks, documentation, and escalation steps",
+    documentationNeed:
+      "Training outline, equipment checklist, service calendar, monthly visual check guidance, follow-up note template",
+    relatedServiceLenses: [
+      "Customer Training",
+      "Fire Extinguishers",
+      "Fire Alarm & Detection",
+      "Fire Sprinklers",
+      "Inspection, Testing & Maintenance",
+    ],
+    relatedService:
+      "Extinguisher training; emergency lighting inspection; alarm testing review; sprinkler inspection; recurring reminders",
+  },
+  "Distribution Warehouse Inspection Prep": {
+    label: "Distribution Warehouse Inspection Prep",
+    type: "Commercial / distribution warehouse",
+    primaryAudience: "Facility Manager / Building Owner",
+    systems: [
+      "Fire extinguishers",
+      "Sprinkler system",
+      "Fire alarm and detection",
+      "Emergency lighting",
+      "Possible special hazard areas",
+    ],
+    reminder: "Annual inspection and extinguisher training review",
+    trainingNeed:
+      "Warehouse team refresher on extinguisher use, evacuation basics, and when to report issues",
+    documentationNeed:
+      "Extinguisher inspection records, alarm testing records, sprinkler inspection notes, emergency lighting test documentation, open deficiencies",
+    relatedServiceLenses: [
+      "Inspection, Testing & Maintenance",
+      "Customer Training",
+      "Fire Extinguishers",
+      "Fire Sprinklers",
+      "Fire Alarm & Detection",
+    ],
+    relatedService:
+      "Extinguisher training; emergency lighting inspection; alarm testing review; sprinkler inspection; preventive maintenance",
+  },
+};
+
+const sampleSites = Object.keys(sampleSiteDetails);
+
+const briefActions: Array<{ label: string; value: BriefAction }> = [
+  { label: "Generate Inspection Prep", value: "inspection_prep" },
+  { label: "Generate Training Prep", value: "training_prep" },
+  { label: "Generate Event Prep", value: "event_prep" },
+  { label: "Generate Customer Talking Points", value: "customer_talking_points" },
+  { label: "Generate Follow-Up Notes", value: "follow_up_notes" },
 ];
 
 const quickSearches = [
   "fire extinguisher",
-  "smoke alarm",
   "sprinkler",
   "alarm panel",
   "hydrant",
@@ -67,7 +292,7 @@ const prepByEngagement: Record<
     followUp: "Document attendance and send unresolved product questions for internal review.",
     notes: "This is instructor prep, not a certification or LMS workflow.",
   },
-  "Fire Department / Convention Event": {
+  "Fire Department / Recruit Training": {
     materials: ["Demo talking points", "Business cards", "Approved service literature"],
     checklist: [
       "Review common public safety questions",
@@ -80,7 +305,22 @@ const prepByEngagement: Record<
     ],
     topics: ["Public safety education", "System readiness", "Preventive maintenance"],
     followUp: "Capture questions that need a technical or service-leadership response.",
-    notes: "Keep messaging educational, practical, and approved for public settings.",
+    notes: "Focus on response awareness, scene safety, and what firefighters should recognize or report.",
+  },
+  "Municipality / Public Safety Event": {
+    materials: ["Public safety talking points", "Inspection schedule notes", "Approved service literature"],
+    checklist: [
+      "Review public safety priorities",
+      "Prepare documentation and inspection timing notes",
+      "Identify questions that need qualified technical follow-up",
+    ],
+    questions: [
+      "How should facilities prioritize documentation?",
+      "What safety issues should be escalated after an event?",
+    ],
+    topics: ["Inspection timing", "Risk prioritization", "Community or facility impact"],
+    followUp: "Document public safety questions and route them to the right internal owner.",
+    notes: "Keep guidance educational and avoid final code or compliance determinations.",
   },
   "Customer Meeting": {
     materials: ["Account notes", "Open service items", "Relevant recall summaries"],
@@ -96,6 +336,21 @@ const prepByEngagement: Record<
     topics: ["Risk reduction", "Maintenance planning", "Customer confidence"],
     followUp: "Send action items to the account or service owner before customer outreach.",
     notes: "Use AI output as preparation only; customer messaging still needs approval.",
+  },
+  "Continuing Education Prep": {
+    materials: ["Lesson outline", "Discussion prompts", "Relevant standards/manuals to verify"],
+    checklist: [
+      "Confirm learning objective",
+      "Prepare practical examples",
+      "Flag standards, manuals, or manufacturer documents to verify",
+    ],
+    questions: [
+      "What should attendees know how to recognize?",
+      "Which details require official documentation?",
+    ],
+    topics: ["Teaching points", "Practical examples", "Follow-up reminders"],
+    followUp: "Capture questions that should become future continuing education topics.",
+    notes: "Use this as instructor preparation, not as the final training authority.",
   },
 };
 
@@ -149,37 +404,79 @@ const BriefBlock = ({
   </div>
 );
 
-const FieldBrief = ({
+const ReadinessPacket = ({
   guidance,
   selectedRecall,
   engagementType,
+  audience,
+  sampleSite,
+  serviceLens,
+  summarySource,
+  briefAction,
 }: {
   guidance: AiGuidance | null;
   selectedRecall: RecallResult | null;
   engagementType: EngagementType;
+  audience: Audience;
+  sampleSite: string;
+  serviceLens: ServiceLens;
+  summarySource: string;
+  briefAction: BriefAction;
 }) => {
   if (!guidance || !selectedRecall) return null;
 
   return (
     <section className="rounded-2xl border border-brand-gray200 bg-white p-5 shadow-panel sm:p-6">
       <div className="border-b border-brand-gray200 pb-4">
-        <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-brand-green">
-          Field Brief
-        </p>
-        <h2 className="mt-2 text-2xl font-extrabold text-brand-charcoal">
-          {engagementType} preparation
+        <div className="flex flex-wrap gap-2">
+          <span className="rounded-full bg-brand-green px-3 py-1 text-xs font-extrabold uppercase tracking-[0.1em] text-white">
+            AI-Generated
+          </span>
+          <span className="rounded-full border border-brand-red px-3 py-1 text-xs font-extrabold uppercase tracking-[0.1em] text-brand-red">
+            Human Review Required
+          </span>
+          <span className="rounded-full border border-brand-warning px-3 py-1 text-xs font-extrabold uppercase tracking-[0.1em] text-brand-warning">
+            Source Verification Needed
+          </span>
+          <span className="rounded-full border border-brand-gray200 bg-brand-gray100 px-3 py-1 text-xs font-extrabold uppercase tracking-[0.1em] text-brand-gray700">
+            {summarySource === "openai" ? "Generated with OpenAI" : "Demo Fallback Response"}
+          </span>
+        </div>
+        <h2 className="mt-3 text-2xl font-extrabold text-brand-charcoal">
+          AI Engagement Readiness Packet
         </h2>
         <p className="mt-2 text-sm leading-6 text-brand-gray700">
-          Based on selected public CPSC recall: {selectedRecall.title}
+          {engagementType} | {audience} |{" "}
+          {briefActions.find((action) => action.value === briefAction)?.label}.
+          Site context: {sampleSite}. Service lens: {serviceLens.label}.
+          Recall source: {selectedRecall.title}
         </p>
       </div>
 
       <div className="mt-5 grid gap-4 md:grid-cols-2">
-        <BriefBlock title="Quick Summary">{guidance.plainEnglishSummary}</BriefBlock>
-        <BriefBlock title="What Matters">{guidance.whyItMatters}</BriefBlock>
-        <BriefBlock title="Safety or Recall Items to Check">
+        <div className="rounded-xl border border-brand-gray200 bg-brand-gray100 p-4 md:col-span-2">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h3 className="text-sm font-extrabold uppercase tracking-[0.08em] text-brand-charcoal">
+                Readiness Score
+              </h3>
+              <p className="mt-2 text-sm leading-6 text-brand-gray700">
+                Readiness reflects preparation completeness, not code compliance
+                or safety approval.
+              </p>
+            </div>
+            <div className="text-4xl font-black text-brand-green">
+              {Math.round(guidance.readinessScore)}%
+            </div>
+          </div>
+          <p className="mt-3 text-sm leading-6 text-brand-gray700">
+            {guidance.readinessScoreReason}
+          </p>
+        </div>
+
+        <BriefBlock title="Key Attention Flags">
           <ul className="space-y-2">
-            {guidance.serviceTeamChecklist.map((item) => (
+            {guidance.keyAttentionFlags.map((item) => (
               <li key={item} className="flex gap-2">
                 <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-red" />
                 <span>{item}</span>
@@ -187,9 +484,9 @@ const FieldBrief = ({
             ))}
           </ul>
         </BriefBlock>
-        <BriefBlock title="Recommended Follow-Up">
+        <BriefBlock title="Recommended Next Best Actions">
           <ul className="space-y-2">
-            {guidance.internalFollowUp.map((item) => (
+            {guidance.recommendedNextBestActions.map((item) => (
               <li key={item} className="flex gap-2">
                 <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-green" />
                 <span>{item}</span>
@@ -197,21 +494,107 @@ const FieldBrief = ({
             ))}
           </ul>
         </BriefBlock>
-        <BriefBlock title="Customer Talking Points">
-          <div className="whitespace-pre-line">{guidance.customerCommunicationDraft}</div>
+        <BriefBlock title="Missing Information to Verify">
+          <ul className="space-y-2">
+            {guidance.missingInformationToVerify.map((item) => (
+              <li key={item} className="flex gap-2">
+                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-red" />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </BriefBlock>
+        <BriefBlock title="Internal Field Brief">
+          {guidance.internalFieldBrief}
+        </BriefBlock>
+        <BriefBlock title="Audience-Specific Talking Points">
+          <ul className="space-y-2">
+            {guidance.audienceSpecificTalkingPoints.map((item) => (
+              <li key={item} className="flex gap-2">
+                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-green" />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </BriefBlock>
+        <BriefBlock title="Equipment / Product Checklist">
+          <ul className="space-y-2">
+            {guidance.equipmentProductChecklist.map((item) => (
+              <li key={item} className="flex gap-2">
+                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-red" />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </BriefBlock>
+        <BriefBlock title="Training or Event Prep Notes">
+          <ul className="space-y-2">
+            {guidance.trainingOrEventPrepNotes.map((item) => (
+              <li key={item} className="flex gap-2">
+                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-green" />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
         </BriefBlock>
         <BriefBlock title="Related Service Considerations">
-          Fire extinguisher training, emergency lighting inspections, alarm
-          system testing, sprinkler inspections, hydrant inspection / flow
-          testing, special hazard system review, preventive maintenance,
-          customer training, and safety-related replacement or modernization
-          discussion when appropriate.
+          <ul className="space-y-2">
+            {guidance.relatedServiceConsiderations.map((item) => (
+              <li key={item} className="flex gap-2">
+                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-green" />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </BriefBlock>
+        <BriefBlock title="Source Context Used">
+          <ul className="space-y-2">
+            {guidance.sourceContextUsed.map((item) => (
+              <li key={item} className="flex gap-2">
+                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-green" />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </BriefBlock>
+        <BriefBlock title="Follow-Up Note Draft">
+          <div className="whitespace-pre-line">{guidance.followUpNoteDraft}</div>
+        </BriefBlock>
+        <BriefBlock title="Known from Source">
+          <ul className="space-y-2">
+            {guidance.knownSourceFacts.map((item) => (
+              <li key={item} className="flex gap-2">
+                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-green" />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </BriefBlock>
+        <BriefBlock title="Provided by User/Demo Profile">
+          <ul className="space-y-2">
+            {guidance.providedDemoProfileContext.map((item) => (
+              <li key={item} className="flex gap-2">
+                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-green" />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </BriefBlock>
+        <BriefBlock title="AI Interpretation">
+          <ul className="space-y-2">
+            {guidance.aiInterpretation.map((item) => (
+              <li key={item} className="flex gap-2">
+                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-warning" />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
         </BriefBlock>
       </div>
 
       <div className="mt-5 rounded-xl border-l-4 border-brand-warning bg-[#fff8e8] p-4 text-sm leading-6 text-brand-gray700">
         <strong className="text-brand-charcoal">Official Source Reminder:</strong>{" "}
-        {guidance.riskReviewNote}
+        {guidance.officialSourceReminder}
       </div>
     </section>
   );
@@ -220,6 +603,10 @@ const FieldBrief = ({
 export default function Home() {
   const [engagementType, setEngagementType] =
     useState<EngagementType>("Inspection");
+  const [audience, setAudience] = useState<Audience>("Internal Inspector");
+  const [selectedSampleSite, setSelectedSampleSite] = useState(sampleSites[0]);
+  const [selectedServiceLensId, setSelectedServiceLensId] = useState(serviceLenses[0].id);
+  const [briefAction, setBriefAction] = useState<BriefAction>("inspection_prep");
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<RecallResult[]>([]);
   const [hasSearched, setHasSearched] = useState(false);
@@ -227,10 +614,24 @@ export default function Home() {
   const [searchError, setSearchError] = useState("");
   const [selectedRecall, setSelectedRecall] = useState<RecallResult | null>(null);
   const [guidance, setGuidance] = useState<AiGuidance | null>(null);
+  const [summarySource, setSummarySource] = useState("");
   const [summarizingId, setSummarizingId] = useState("");
   const [summaryError, setSummaryError] = useState("");
 
   const prep = prepByEngagement[engagementType];
+  const selectedSiteDetails = sampleSiteDetails[selectedSampleSite];
+  const selectedServiceLens =
+    serviceLenses.find((lens) => lens.id === selectedServiceLensId) ?? serviceLenses[0];
+  const sourceContextUsed = [
+    selectedRecall
+      ? `CPSC recall result: ${selectedRecall.title}`
+      : "CPSC recall result: selected after a recall card is used",
+    `Sample site profile: ${selectedSiteDetails.label}`,
+    `Ryan Service Lens: ${selectedServiceLens.label}`,
+    `Engagement type: ${engagementType}`,
+    `Audience: ${audience}`,
+    "Demo source notes: service environment brief, source hierarchy, documentation/deficiency follow-up logic, and training/event prep frameworks",
+  ];
 
   const resultCountLabel = useMemo(() => {
     if (!hasSearched || searching) return "";
@@ -247,6 +648,7 @@ export default function Home() {
     setSearchError("");
     setSummaryError("");
     setGuidance(null);
+    setSummarySource("");
     setSelectedRecall(null);
 
     try {
@@ -268,23 +670,57 @@ export default function Home() {
     }
   };
 
-  const generateSummary = async (recall: RecallResult) => {
+  const generateSummary = async (recall: RecallResult, action = briefAction) => {
     setSelectedRecall(recall);
     setGuidance(null);
+    setSummarySource("");
     setSummaryError("");
     setSummarizingId(recall.id);
+    setBriefAction(action);
 
     try {
       const response = await fetch("/api/summarize", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ recall, engagementType }),
+        body: JSON.stringify({
+          recall,
+          engagementType,
+          audience,
+          sampleSite: selectedSampleSite,
+          siteProfile: selectedSiteDetails,
+          serviceLens: selectedServiceLens,
+          equipmentSystems: selectedSiteDetails.systems,
+          upcomingReminder: selectedSiteDetails.reminder,
+          trainingNeed: selectedSiteDetails.trainingNeed,
+          documentationNeed: selectedSiteDetails.documentationNeed,
+          relatedServiceConsideration: selectedSiteDetails.relatedService,
+          sourceContext: {
+            sourceContextUsed,
+            responsibleAiLabels: knowledgeBase.responsibleAiLabels,
+            sourceHierarchy: [
+              "Official CPSC recall notices",
+              "Manufacturer instructions and product documentation",
+              "Applicable codes and NFPA standards",
+              "Company procedures and qualified internal review",
+              "Verified user-provided site/customer information",
+              "AI interpretation or preparation guidance",
+            ],
+            demoSourceNotes: [
+              "Protect: identify immediate safety or customer impact.",
+              "Prevent: identify inspection, maintenance, training, testing, or documentation steps that reduce risk.",
+              "Preserve: support system reliability, customer confidence, facility continuity, and follow-up planning.",
+              "Related service considerations must be framed as safety, education, maintenance, documentation, prevention, modernization, customer confidence, or risk reduction.",
+            ],
+          },
+          briefAction: action,
+        }),
       });
       const payload = await response.json();
       if (!response.ok) {
         throw new Error(payload.error || "Unable to generate field brief right now.");
       }
       setGuidance(payload.guidance);
+      setSummarySource(typeof payload.source === "string" ? payload.source : "");
     } catch (error) {
       setSummaryError(
         error instanceof Error
@@ -310,7 +746,7 @@ export default function Home() {
           <div className="flex flex-col gap-4 border-b border-brand-gray200 pb-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-2xl font-black uppercase tracking-[0.03em] text-brand-green">
-                RYAN FIREPROTECTION, INC.
+                RYAN FIRE PROTECTION, INC.
               </p>
               <p className="mt-1 text-sm font-semibold text-brand-gray700">
                 Internal Field Assistant Concept
@@ -330,20 +766,25 @@ export default function Home() {
                 What do I need to know before I walk in?
               </h1>
               <p className="mt-4 max-w-3xl text-base leading-7 text-brand-gray700">
-                Prepare for inspections, training, customer meetings, and public
-                safety events with public recall lookup and AI-assisted field
-                guidance.
+                Use public recall data, sample site context, and AI-assisted
+                reasoning to prepare for inspections, training, customer
+                meetings, and public safety events before the conversation
+                starts.
               </p>
             </div>
             <div className="rounded-2xl border border-brand-gray200 bg-brand-gray100 p-4">
               <p className="font-extrabold text-brand-charcoal">
-                Product Safety Lookup is live.
+                Suggested demo path
               </p>
-              <p className="mt-2 text-sm leading-6 text-brand-gray700">
-                CPSC recall search works without a CPSC account or API key.
-                Field briefs use OpenAI when configured, with a local fallback
-                for demos.
-              </p>
+              <ol className="mt-3 space-y-2 text-sm leading-6 text-brand-gray700">
+                <li>1. Choose an engagement, audience, site profile, and service lens.</li>
+                <li>2. Search <strong>smoke alarm</strong> or another equipment term.</li>
+                <li>3. Generate an AI Engagement Readiness Packet from a recall card.</li>
+              </ol>
+              <div className="mt-4 rounded-xl border-l-4 border-brand-green bg-white p-3 text-sm leading-6 text-brand-gray700">
+                CPSC search works without an API key. AI uses OpenAI when
+                configured, with a structured demo fallback otherwise.
+              </div>
             </div>
           </section>
         </div>
@@ -374,6 +815,89 @@ export default function Home() {
                 {type}
               </button>
             ))}
+          </div>
+          <div className="mt-4 grid gap-3 md:grid-cols-3">
+            <label className="text-sm font-bold text-brand-charcoal">
+              Audience
+              <select
+                value={audience}
+                onChange={(event) => {
+                  setAudience(event.target.value as Audience);
+                  setGuidance(null);
+                }}
+                className="mt-2 min-h-12 w-full rounded-xl border border-brand-gray200 bg-white px-3 text-brand-charcoal"
+              >
+                {audiences.map((item) => (
+                  <option key={item}>{item}</option>
+                ))}
+              </select>
+            </label>
+            <label className="text-sm font-bold text-brand-charcoal">
+              Sample Site Profile
+              <select
+                value={selectedSampleSite}
+                onChange={(event) => {
+                  setSelectedSampleSite(event.target.value);
+                  setGuidance(null);
+                }}
+                className="mt-2 min-h-12 w-full rounded-xl border border-brand-gray200 bg-white px-3 text-brand-charcoal"
+              >
+                {sampleSites.map((item) => (
+                  <option key={item}>{item}</option>
+                ))}
+              </select>
+            </label>
+            <label className="text-sm font-bold text-brand-charcoal">
+              Ryan Service Lens
+              <select
+                value={selectedServiceLensId}
+                onChange={(event) => {
+                  setSelectedServiceLensId(event.target.value);
+                  setGuidance(null);
+                }}
+                className="mt-2 min-h-12 w-full rounded-xl border border-brand-gray200 bg-white px-3 text-brand-charcoal"
+              >
+                {serviceLenses.map((lens) => (
+                  <option key={lens.id} value={lens.id}>
+                    {lens.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+          <div className="mt-4 grid gap-3 md:grid-cols-3">
+            <BriefBlock title="Known systems">
+              {selectedSiteDetails.systems.length
+                ? selectedSiteDetails.systems.join(", ")
+                : "Select a sample site to add equipment context."}
+            </BriefBlock>
+            <BriefBlock title="Upcoming reminder">
+              {selectedSiteDetails.reminder}
+            </BriefBlock>
+            <BriefBlock title="Training / education need">
+              {selectedSiteDetails.trainingNeed}
+            </BriefBlock>
+          </div>
+          <div className="mt-4 grid gap-3 md:grid-cols-2">
+            <BriefBlock title="Ryan Service Lens Focus">
+              {selectedServiceLens.focus.join(", ")}
+            </BriefBlock>
+            <BriefBlock title="Documentation / deficiency context">
+              {selectedSiteDetails.documentationNeed}
+            </BriefBlock>
+          </div>
+          <div className="mt-4 rounded-xl border border-brand-gray200 bg-brand-gray100 p-4">
+            <h3 className="text-sm font-extrabold uppercase tracking-[0.08em] text-brand-charcoal">
+              Source Context Used
+            </h3>
+            <div className="mt-3 grid gap-2 text-sm leading-6 text-brand-gray700 md:grid-cols-2">
+              {sourceContextUsed.map((item) => (
+                <div key={item} className="flex gap-2">
+                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-green" />
+                  <span>{item}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
 
@@ -408,6 +932,13 @@ export default function Home() {
           </form>
 
           <div className="mt-4 flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => void searchRecalls("smoke alarm")}
+              className="rounded-full bg-brand-green px-4 py-2 text-sm font-extrabold text-white transition hover:bg-brand-greenDark"
+            >
+              Try demo search: smoke alarm
+            </button>
             {quickSearches.map((term) => (
               <button
                 key={term}
@@ -455,7 +986,7 @@ export default function Home() {
             {!searching && hasSearched && !searchError && results.length === 0 ? (
               <div className="rounded-2xl border border-brand-gray200 bg-white p-6 shadow-panel">
                 <p className="text-lg font-extrabold text-brand-charcoal">
-                  No matching CPSC results for “{query}”.
+                  No matching CPSC results for &quot;{query}&quot;.
                 </p>
                 <p className="mt-2 text-sm leading-6 text-brand-gray700">
                   This means the public CPSC API did not return matches for this
@@ -495,16 +1026,6 @@ export default function Home() {
                         {recall.manufacturer} | {formatDate(recall.recallDate)}
                       </p>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => void generateSummary(recall)}
-                      disabled={Boolean(summarizingId)}
-                      className="rounded-xl border border-brand-green bg-white px-4 py-3 text-sm font-extrabold text-brand-green transition hover:bg-brand-green hover:text-white disabled:cursor-not-allowed disabled:border-brand-gray200 disabled:text-brand-gray500"
-                    >
-                      {summarizingId === recall.id
-                        ? "Generating brief..."
-                        : "Generate Field Brief"}
-                    </button>
                   </div>
 
                   <div className="mt-4 grid gap-3 text-sm leading-6 md:grid-cols-2">
@@ -534,6 +1055,22 @@ export default function Home() {
                       Official CPSC source
                     </a>
                   ) : null}
+                  <div className="mt-4 grid gap-2 border-t border-brand-gray200 pt-4 sm:grid-cols-2">
+                    {briefActions.map((action) => (
+                      <button
+                        key={action.value}
+                        type="button"
+                        onClick={() => void generateSummary(recall, action.value)}
+                        disabled={Boolean(summarizingId)}
+                        className="rounded-xl border border-brand-green bg-white px-3 py-2 text-left text-sm font-extrabold text-brand-green transition hover:bg-brand-green hover:text-white disabled:cursor-not-allowed disabled:border-brand-gray200 disabled:text-brand-gray500"
+                      >
+                        {summarizingId === recall.id &&
+                        briefAction === action.value
+                          ? "Generating..."
+                          : action.label}
+                      </button>
+                    ))}
+                  </div>
                 </article>
               ))}
           </div>
@@ -556,10 +1093,15 @@ export default function Home() {
               </div>
             ) : null}
 
-            <FieldBrief
+            <ReadinessPacket
               guidance={guidance}
               selectedRecall={selectedRecall}
               engagementType={engagementType}
+              audience={audience}
+              sampleSite={selectedSampleSite}
+              serviceLens={selectedServiceLens}
+              summarySource={summarySource}
+              briefAction={briefAction}
             />
           </div>
         </section>
@@ -629,7 +1171,7 @@ export default function Home() {
 
       <footer className="mt-2 bg-brand-green px-5 py-5 text-center text-xs leading-6 text-white">
         Concept prototype created for demonstration purposes. Not affiliated
-        with or endorsed by Ryan Fireprotection, Inc.
+        with or endorsed by Ryan Fire Protection, Inc.
       </footer>
     </main>
   );
