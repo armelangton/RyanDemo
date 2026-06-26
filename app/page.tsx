@@ -40,6 +40,18 @@ type ServiceLens = {
 };
 
 type SiteProfile = {
+  id: string;
+  name: string;
+  profileType: string;
+  locationType: string;
+  shortSummary: string;
+  knownSystems: string[];
+  upcomingReminder: string;
+  trainingEducationNeed: string;
+  documentationDeficiencyContext: string;
+  relatedServiceConsiderations: string[];
+  serviceHistoryNotes: string;
+  recommendedPrepFocus: string;
   label: string;
   type: string;
   primaryAudience: string;
@@ -74,66 +86,108 @@ const audiences: Audience[] = [
 const serviceLenses = knowledgeBase.serviceLenses as ServiceLens[];
 
 const sampleSiteDetails: Record<string, SiteProfile> = {
-  "No sample site selected": {
-    label: "No sample site selected",
-    type: "No demo profile selected",
-    primaryAudience: "Not selected",
-    systems: [],
-    installedEquipment: [],
-    reminder: "No reminder selected",
-    trainingNeed: "No training need selected",
-    documentationNeed: "No documentation need selected",
-    relatedServiceLenses: [],
-    relatedService: "Documentation review",
-  },
   "Municipal Facilities Account": {
+    id: "municipal-facilities",
+    name: "Municipal Facilities Account",
+    profileType: "Sample profile",
+    locationType: "Municipal public buildings",
+    shortSummary:
+      "Multiple public buildings with extinguishers, smoke alarms/detection devices, emergency lighting, sprinklers, hydrants, and upcoming annual inspection needs.",
     label: "Municipal Facilities Account",
     type: "Municipality",
     primaryAudience: "Municipality / facilities leadership",
+    knownSystems: [
+      "Fire extinguishers",
+      "Fire alarm and detection",
+      "Emergency lighting / exit signs",
+      "Sprinkler system",
+      "Hydrants near public buildings",
+    ],
     systems: [
       "Fire extinguishers",
       "Fire alarm and detection",
-      "Emergency lighting",
+      "Emergency lighting / exit signs",
       "Sprinkler system",
       "Hydrants near public buildings",
     ],
     installedEquipment: [
       {
         category: "fire extinguisher",
-        productName: "Commercial fire extinguishers",
+        productName: "ABC dry chemical fire extinguishers",
         manufacturer: "Kidde",
-        model: "Model/date range to verify",
-        locationContext: "Municipal facilities and public buildings",
+        model: "Demo model unknown",
+        locationContext: "Public corridors and mechanical areas",
         serviceStatus: "Annual inspection cycle due in 28 days",
-        documentationNote: "Verify extinguisher tags, model/date codes, and inspection status.",
-        trainingRelevance: "Facilities refresher on monthly visual checks and escalation.",
+        documentationNote:
+          "Verify extinguisher inspection status, tag dates, and prior training records",
+        trainingRelevance:
+          "Facilities team may need refresher on monthly visual checks and when to contact service support",
       },
       {
-        category: "emergency light",
-        productName: "Emergency lighting units",
-        manufacturer: "Manufacturer to verify",
-        model: "Model to verify",
-        locationContext: "Public building egress paths",
-        serviceStatus: "Documentation review due with annual inspection cycle",
-        documentationNote: "Confirm test records and open deficiency notes.",
-        trainingRelevance: "Explain visual checks and documentation expectations.",
+        category: "smoke alarm",
+        productName: "Smoke alarms / detection devices",
+        manufacturer: "First Alert",
+        model: "Demo model unknown",
+        locationContext: "Administrative areas and public spaces",
+        serviceStatus: "Alarm testing records should be reviewed",
+        documentationNote:
+          "Confirm exact model numbers, test history, and nuisance alarm notes",
+        trainingRelevance:
+          "Good topic for customer-friendly explanation of detection device maintenance and replacement timing",
+      },
+      {
+        category: "emergency lighting",
+        productName: "Emergency lighting and exit signs",
+        manufacturer: "Lithonia Lighting",
+        model: "Demo model unknown",
+        locationContext: "Hallways, exits, and stairwells",
+        serviceStatus: "Documentation review needed",
+        documentationNote:
+          "Confirm test records, battery backup condition, and deficiency status",
+        trainingRelevance:
+          "Explain monthly/annual testing expectations in plain language",
+      },
+      {
+        category: "sprinkler",
+        productName: "Wet sprinkler system",
+        manufacturer: "Victaulic",
+        model: "Demo model unknown",
+        locationContext: "Municipal office and storage areas",
+        serviceStatus: "Annual inspection due this quarter",
+        documentationNote:
+          "Verify inspection report, open deficiencies, and valve access notes",
+        trainingRelevance:
+          "Explain what the facility team should visually monitor between inspections",
       },
       {
         category: "hydrant",
-        productName: "Public building hydrants",
-        manufacturer: "Manufacturer to verify",
-        model: "Model to verify",
-        locationContext: "Hydrants near municipal public buildings",
-        serviceStatus: "Inspection / flow testing discussion recommended",
-        documentationNote: "Confirm hydrant inspection or flow testing history.",
-        trainingRelevance: "Useful for public safety and municipal planning conversations.",
+        productName: "Exterior hydrants near public buildings",
+        manufacturer: "Mueller",
+        model: "Demo model unknown",
+        locationContext: "Exterior public access areas",
+        serviceStatus: "Flow/testing history should be reviewed",
+        documentationNote: "Confirm last flow test and access/obstruction notes",
+        trainingRelevance: "Useful for municipality/public safety discussion",
       },
     ],
-    reminder: "Annual inspection cycle due in 28 days",
+    upcomingReminder: "Annual inspection cycle due in 28 days.",
+    reminder: "Annual inspection cycle due in 28 days.",
+    trainingEducationNeed:
+      "Facilities team refresher on monthly visual checks, documentation expectations, and when to contact service support.",
     trainingNeed:
-      "Facilities team refresher on monthly visual checks, documentation, and when to contact service support",
+      "Facilities team refresher on monthly visual checks, documentation expectations, and when to contact service support.",
+    documentationDeficiencyContext:
+      "Inspection reports, emergency lighting test documentation, extinguisher inspection status, alarm testing records, open deficiency notes.",
     documentationNeed:
-      "Inspection reports, emergency lighting test documentation, extinguisher inspection status, alarm testing records, open deficiency notes",
+      "Inspection reports, emergency lighting test documentation, extinguisher inspection status, alarm testing records, open deficiency notes.",
+    relatedServiceConsiderations: [
+      "Documentation review",
+      "Emergency lighting testing",
+      "Fire extinguisher training",
+      "Alarm testing records",
+      "Hydrant testing",
+      "Sprinkler inspection follow-up",
+    ],
     relatedServiceLenses: [
       "Inspection, Testing & Maintenance",
       "Documentation / Deficiency Follow-Up",
@@ -142,25 +196,42 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
       "Fire Hydrants",
     ],
     relatedService:
-      "Emergency lighting inspection and documentation review; extinguisher inspection and training; alarm testing review; hydrant inspection / flow testing conversation; recurring service reminder review",
+      "Documentation review; emergency lighting testing; fire extinguisher training; alarm testing records; hydrant testing; sprinkler inspection follow-up",
+    serviceHistoryNotes:
+      "Recent service notes mention recurring questions about extinguisher tag dates, emergency lighting documentation, and alarm testing records.",
+    recommendedPrepFocus:
+      "Prepare customer-friendly explanations, confirm equipment inventory, review prior deficiencies, and verify model numbers before discussing recall applicability.",
   },
-  "Fire Department Recruit Session": {
-    label: "Fire Department Recruit Session",
+  "Fire Department Recruit Training Site": {
+    id: "fire-department-recruit-training",
+    name: "Fire Department Recruit Training Site",
+    profileType: "Sample profile",
+    locationType: "Fire department training facility",
+    shortSummary:
+      "Recruit training context with sprinkler, fire pump, alarm/detection, hydrant, and extinguisher examples for response-awareness instruction.",
+    label: "Fire Department Recruit Training Site",
     type: "Fire Department / recruit training",
     primaryAudience: "Fire Department",
+    knownSystems: [
+      "Sprinkler system demonstration",
+      "Fire pump overview",
+      "Hydrant flow discussion",
+      "Alarm response awareness",
+      "Extinguisher examples",
+    ],
     systems: [
       "Sprinkler system demonstration",
       "Fire pump overview",
       "Hydrant flow discussion",
       "Alarm response awareness",
-      "Valve/control assembly examples",
+      "Extinguisher examples",
     ],
     installedEquipment: [
       {
         category: "sprinkler",
         productName: "Sprinkler demonstration components",
-        manufacturer: "Manufacturer to verify",
-        model: "Model to verify",
+        manufacturer: "Viking",
+        model: "Demo model unknown",
         locationContext: "Recruit training demonstration materials",
         serviceStatus: "Training session next month",
         documentationNote: "Confirm demo component source and instructor notes.",
@@ -169,8 +240,8 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
       {
         category: "fire pump",
         productName: "Fire pump overview equipment",
-        manufacturer: "Manufacturer to verify",
-        model: "Model to verify",
+        manufacturer: "Aurora",
+        model: "Demo model unknown",
         locationContext: "Recruit training discussion",
         serviceStatus: "Training prep",
         documentationNote: "Verify manufacturer manuals or approved diagrams before teaching.",
@@ -179,19 +250,50 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
       {
         category: "alarm panel",
         productName: "Fire alarm panel / detection examples",
-        manufacturer: "Manufacturer to verify",
-        model: "Model to verify",
+        manufacturer: "Honeywell",
+        model: "Demo model unknown",
         locationContext: "Alarm response awareness segment",
         serviceStatus: "Training prep",
         documentationNote: "Use approved photos or diagrams.",
         trainingRelevance: "Supports what crews should recognize, avoid, report, or escalate.",
       },
+      {
+        category: "hydrant",
+        productName: "Training hydrant / flow discussion example",
+        manufacturer: "Mueller",
+        model: "Demo model unknown",
+        locationContext: "Outdoor recruit training discussion",
+        serviceStatus: "Instructor prep",
+        documentationNote: "Verify flow-testing examples and public safety talking points.",
+        trainingRelevance: "Supports firefighter response awareness and reporting expectations.",
+      },
+      {
+        category: "fire extinguisher",
+        productName: "Training fire extinguishers",
+        manufacturer: "Amerex",
+        model: "Demo model unknown",
+        locationContext: "Hands-on training examples",
+        serviceStatus: "Check training materials before session",
+        documentationNote: "Confirm training units are appropriate for demonstration.",
+        trainingRelevance: "Supports practical recruit questions and safety reminders.",
+      },
     ],
+    upcomingReminder: "Recruit training session next month.",
     reminder: "Recruit training session next month",
+    trainingEducationNeed:
+      "Explain how fire protection systems behave during response and what crews should recognize, avoid, report, or escalate.",
     trainingNeed:
       "Explain how fire protection systems behave during response and what crews should recognize, avoid, report, or escalate",
+    documentationDeficiencyContext:
+      "Instructor outline, system diagram, photos of common components, likely recruit questions, official source reminders.",
     documentationNeed:
       "Instructor outline, system diagram, photos of common components, likely recruit questions, official source reminders",
+    relatedServiceConsiderations: [
+      "Hydrant inspection / flow testing conversation",
+      "Sprinkler system education",
+      "Alarm response awareness",
+      "Customer training follow-up",
+    ],
     relatedServiceLenses: [
       "Customer Training",
       "Fire Sprinklers",
@@ -200,11 +302,28 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
     ],
     relatedService:
       "Hydrant inspection / flow testing conversation; sprinkler system education; alarm response awareness; additional customer training opportunities",
+    serviceHistoryNotes:
+      "Instructor notes include recurring recruit questions about alarm panels, sprinkler activation, pump operation, and what responders should report after an incident.",
+    recommendedPrepFocus:
+      "Prepare response-awareness talking points, approved component photos, recruit questions, and reminders about source verification.",
   },
   "Healthcare Facility ITM Review": {
+    id: "healthcare-itm-review",
+    name: "Healthcare Facility ITM Review",
+    profileType: "Sample profile",
+    locationType: "Healthcare facility",
+    shortSummary:
+      "Healthcare facility review with alarm/detection, sprinklers, emergency lighting, extinguishers, and documentation-heavy inspection needs.",
     label: "Healthcare Facility ITM Review",
     type: "Healthcare facility",
     primaryAudience: "Facility Manager / Building Owner",
+    knownSystems: [
+      "Fire alarm and detection",
+      "Sprinkler system",
+      "Emergency lighting",
+      "Fire extinguishers",
+      "Special hazard areas where applicable",
+    ],
     systems: [
       "Fire alarm and detection",
       "Sprinkler system",
@@ -216,8 +335,8 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
       {
         category: "fire alarm",
         productName: "Fire alarm and detection system",
-        manufacturer: "Manufacturer to verify",
-        model: "Panel/model to verify",
+        manufacturer: "Siemens",
+        model: "Demo model unknown",
         locationContext: "Healthcare facility life-safety system",
         serviceStatus: "Semiannual service review and documentation check",
         documentationNote: "Review alarm test records and service history.",
@@ -226,8 +345,8 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
       {
         category: "sprinkler",
         productName: "Sprinkler system",
-        manufacturer: "Manufacturer to verify",
-        model: "Model/components to verify",
+        manufacturer: "Victaulic",
+        model: "Demo model unknown",
         locationContext: "Healthcare facility",
         serviceStatus: "Semiannual ITM review",
         documentationNote: "Review inspection notes and deficiency list.",
@@ -235,20 +354,42 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
       },
       {
         category: "emergency light",
-        productName: "Emergency lighting",
-        manufacturer: "Manufacturer to verify",
-        model: "Model to verify",
+        productName: "Emergency lighting / exit signs",
+        manufacturer: "Lithonia Lighting",
+        model: "Demo model unknown",
         locationContext: "Egress paths and patient/public areas",
         serviceStatus: "Documentation check",
         documentationNote: "Confirm emergency lighting test records.",
         trainingRelevance: "Useful for facilities team documentation refresher.",
       },
+      {
+        category: "fire extinguisher",
+        productName: "Healthcare facility fire extinguishers",
+        manufacturer: "Amerex",
+        model: "Demo model unknown",
+        locationContext: "Clinical support, mechanical, and public areas",
+        serviceStatus: "Inspection records should be reviewed",
+        documentationNote: "Confirm tag dates, placement list, and service history.",
+        trainingRelevance: "Supports staff awareness around inspection status and escalation.",
+      },
     ],
+    upcomingReminder: "Semiannual service review and documentation check.",
     reminder: "Semiannual service review and documentation check",
+    trainingEducationNeed:
+      "Facilities team refresher on inspection records, deficiencies, and escalation steps.",
     trainingNeed:
       "Facilities team refresher on inspection records, deficiencies, and escalation steps",
+    documentationDeficiencyContext:
+      "Inspection reports, service history, open deficiency list, emergency lighting and alarm test records, manufacturer documentation for any affected product.",
     documentationNeed:
       "Inspection reports, service history, open deficiency list, emergency lighting and alarm test records, manufacturer documentation for any affected product",
+    relatedServiceConsiderations: [
+      "Documentation review",
+      "Emergency lighting inspection",
+      "Alarm testing review",
+      "Preventive maintenance",
+      "Deficiency follow-up",
+    ],
     relatedServiceLenses: [
       "Inspection, Testing & Maintenance",
       "Fire Alarm & Detection",
@@ -257,24 +398,41 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
     ],
     relatedService:
       "Documentation review; emergency lighting inspection; alarm testing review; preventive maintenance; deficiency follow-up",
+    serviceHistoryNotes:
+      "Service history notes emphasize documentation completeness, deficiency follow-up, and clear escalation paths for facility leadership.",
+    recommendedPrepFocus:
+      "Review inspection/testing records, prepare deficiency follow-up questions, and verify exact equipment before discussing product safety findings.",
   },
-  "Industrial Special Hazards Review": {
-    label: "Industrial Special Hazards Review",
+  "Industrial Special Hazards Site": {
+    id: "industrial-special-hazards",
+    name: "Industrial Special Hazards Site",
+    profileType: "Sample profile",
+    locationType: "Industrial facility",
+    shortSummary:
+      "Industrial site with special hazard suppression, extinguishers, alarm/detection, emergency lighting, and higher need for manufacturer/manual verification.",
+    label: "Industrial Special Hazards Site",
     type: "Industrial / special hazards",
     primaryAudience: "Facility Manager / Internal Inspector",
+    knownSystems: [
+      "Special hazard suppression system",
+      "Fire extinguishers",
+      "Fire alarm and detection",
+      "Emergency lighting",
+      "Emergency response equipment",
+    ],
     systems: [
       "Special hazard suppression system",
       "Fire extinguishers",
       "Fire alarm and detection",
+      "Emergency lighting",
       "Emergency response equipment",
-      "Possible foam-related equipment depending on site",
     ],
     installedEquipment: [
       {
         category: "special hazard",
         productName: "Special hazard suppression system",
-        manufacturer: "Manufacturer to verify",
-        model: "System/model to verify",
+        manufacturer: "Ansul",
+        model: "Demo model unknown",
         locationContext: "Industrial special hazard area",
         serviceStatus: "System review due this quarter",
         documentationNote: "Verify manufacturer manuals, service records, and qualified review needs.",
@@ -283,19 +441,51 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
       {
         category: "fire extinguisher",
         productName: "Industrial fire extinguishers",
-        manufacturer: "Manufacturer to verify",
-        model: "Model/date range to verify",
+        manufacturer: "Amerex",
+        model: "Demo model unknown",
         locationContext: "Industrial production or hazard areas",
         serviceStatus: "Preventive maintenance review",
         documentationNote: "Confirm inspection tags, locations, and service history.",
         trainingRelevance: "Supports customer education around readiness and escalation.",
       },
+      {
+        category: "fire alarm",
+        productName: "Industrial alarm / detection system",
+        manufacturer: "Honeywell",
+        model: "Demo model unknown",
+        locationContext: "Industrial production and special hazard areas",
+        serviceStatus: "Testing records should be reviewed",
+        documentationNote: "Confirm panel model, detector types, and service history.",
+        trainingRelevance: "Supports customer communication about alarm response and reporting.",
+      },
+      {
+        category: "emergency lighting",
+        productName: "Emergency lighting and exit signs",
+        manufacturer: "Lithonia Lighting",
+        model: "Demo model unknown",
+        locationContext: "Production exits and egress routes",
+        serviceStatus: "Preventive maintenance review",
+        documentationNote: "Confirm battery test records and open deficiencies.",
+        trainingRelevance: "Supports risk-reduction discussion for egress readiness.",
+      },
     ],
+    upcomingReminder: "Special hazards system review due this quarter.",
     reminder: "Special hazards system review due this quarter",
+    trainingEducationNeed:
+      "Internal prep around system-specific documentation, qualified review, and customer communication.",
     trainingNeed:
       "Internal prep around system-specific documentation, qualified review, and customer communication",
+    documentationDeficiencyContext:
+      "Manufacturer manuals, inspection/testing records, service history, deficiency photos/notes, exact product/model details.",
     documentationNeed:
       "Manufacturer manuals, inspection/testing records, service history, deficiency photos/notes, exact product/model details",
+    relatedServiceConsiderations: [
+      "Special hazard system review",
+      "Clean foam testing discussion if applicable",
+      "Documentation review",
+      "Emergency service readiness",
+      "Preventive maintenance",
+    ],
     relatedServiceLenses: [
       "Special Hazards",
       "Clean Foam Testing",
@@ -304,11 +494,28 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
     ],
     relatedService:
       "Special hazard system review; clean foam testing discussion if applicable; documentation review; emergency service readiness; preventive maintenance",
+    serviceHistoryNotes:
+      "Service notes mention system-specific documentation questions and the need to route technical determinations through qualified internal review.",
+    recommendedPrepFocus:
+      "Prepare source hierarchy reminders, confirm manuals/service history, and flag exact model verification before any customer-facing discussion.",
   },
   "Education Campus Facilities Training": {
+    id: "education-campus-training",
+    name: "Education Campus Facilities Training",
+    profileType: "Sample profile",
+    locationType: "Education campus",
+    shortSummary:
+      "Campus facilities training context with extinguishers, alarm panels, sprinklers, emergency lighting, and exit signs before a semester readiness cycle.",
     label: "Education Campus Facilities Training",
     type: "Education / campus facilities",
     primaryAudience: "Facility Manager / Instructor or Trainer",
+    knownSystems: [
+      "Fire extinguishers",
+      "Alarm panels",
+      "Sprinkler systems",
+      "Emergency lighting",
+      "Exit signs",
+    ],
     systems: [
       "Fire extinguishers",
       "Alarm panels",
@@ -321,7 +528,7 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
         category: "fire extinguisher",
         productName: "Campus fire extinguishers",
         manufacturer: "Kidde",
-        model: "Model/date range to verify",
+        model: "Demo model unknown",
         locationContext: "Campus facilities and common areas",
         serviceStatus: "Facilities refresher before semester start",
         documentationNote: "Verify tags, placement, and service calendar.",
@@ -330,8 +537,8 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
       {
         category: "alarm panel",
         productName: "Alarm panels",
-        manufacturer: "Manufacturer to verify",
-        model: "Panel model to verify",
+        manufacturer: "Siemens",
+        model: "Demo model unknown",
         locationContext: "Campus buildings",
         serviceStatus: "Service calendar review",
         documentationNote: "Confirm alarm testing records and contacts.",
@@ -340,19 +547,41 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
       {
         category: "exit sign",
         productName: "Exit signs and emergency lighting",
-        manufacturer: "Manufacturer to verify",
-        model: "Model to verify",
+        manufacturer: "Lithonia Lighting",
+        model: "Demo model unknown",
         locationContext: "Egress routes",
         serviceStatus: "Pre-semester readiness review",
         documentationNote: "Confirm inspection and testing documentation.",
         trainingRelevance: "Supports visual check training.",
       },
+      {
+        category: "sprinkler",
+        productName: "Campus sprinkler systems",
+        manufacturer: "Viking",
+        model: "Demo model unknown",
+        locationContext: "Classroom and common-area buildings",
+        serviceStatus: "Service calendar review",
+        documentationNote: "Confirm inspection reports, valve access notes, and deficiencies.",
+        trainingRelevance: "Supports facilities discussion about visual checks and escalation.",
+      },
     ],
+    upcomingReminder: "Facilities refresher before semester start.",
     reminder: "Facilities refresher before semester start",
+    trainingEducationNeed:
+      "Prepare facilities team for visual checks, documentation, and escalation steps.",
     trainingNeed:
       "Prepare facilities team for visual checks, documentation, and escalation steps",
+    documentationDeficiencyContext:
+      "Training outline, equipment checklist, service calendar, monthly visual check guidance, follow-up note template.",
     documentationNeed:
       "Training outline, equipment checklist, service calendar, monthly visual check guidance, follow-up note template",
+    relatedServiceConsiderations: [
+      "Extinguisher training",
+      "Emergency lighting inspection",
+      "Alarm testing review",
+      "Sprinkler inspection",
+      "Recurring reminders",
+    ],
     relatedServiceLenses: [
       "Customer Training",
       "Fire Extinguishers",
@@ -362,11 +591,28 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
     ],
     relatedService:
       "Extinguisher training; emergency lighting inspection; alarm testing review; sprinkler inspection; recurring reminders",
+    serviceHistoryNotes:
+      "Campus team has recurring questions about pre-semester readiness, emergency lighting documentation, and who should receive follow-up reminders.",
+    recommendedPrepFocus:
+      "Prepare plain-language training points, equipment checklist, service calendar reminders, and model verification notes.",
   },
   "Distribution Warehouse Inspection Prep": {
+    id: "distribution-warehouse",
+    name: "Distribution Warehouse Inspection Prep",
+    profileType: "Sample profile",
+    locationType: "Distribution warehouse",
+    shortSummary:
+      "Warehouse inspection prep with extinguishers, sprinklers, alarm/detection, emergency lighting, and possible special hazard areas.",
     label: "Distribution Warehouse Inspection Prep",
     type: "Commercial / distribution warehouse",
     primaryAudience: "Facility Manager / Building Owner",
+    knownSystems: [
+      "Fire extinguishers",
+      "Sprinkler system",
+      "Fire alarm and detection",
+      "Emergency lighting",
+      "Possible special hazard areas",
+    ],
     systems: [
       "Fire extinguishers",
       "Sprinkler system",
@@ -379,7 +625,7 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
         category: "fire extinguisher",
         productName: "Warehouse fire extinguishers",
         manufacturer: "Kidde",
-        model: "Model/date range to verify",
+        model: "Demo model unknown",
         locationContext: "Warehouse floor and loading areas",
         serviceStatus: "Annual inspection and extinguisher training review",
         documentationNote: "Verify tags, location list, and training records.",
@@ -388,8 +634,8 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
       {
         category: "sprinkler",
         productName: "Warehouse sprinkler system",
-        manufacturer: "Manufacturer to verify",
-        model: "Components to verify",
+        manufacturer: "Victaulic",
+        model: "Demo model unknown",
         locationContext: "Warehouse storage areas",
         serviceStatus: "Annual inspection prep",
         documentationNote: "Review inspection notes and open deficiencies.",
@@ -398,19 +644,41 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
       {
         category: "emergency light",
         productName: "Emergency lighting",
-        manufacturer: "Manufacturer to verify",
-        model: "Model to verify",
+        manufacturer: "Lithonia Lighting",
+        model: "Demo model unknown",
         locationContext: "Warehouse egress paths",
         serviceStatus: "Annual inspection prep",
         documentationNote: "Confirm emergency lighting test documentation.",
         trainingRelevance: "Supports evacuation basics and maintenance awareness.",
       },
+      {
+        category: "fire alarm",
+        productName: "Warehouse fire alarm / detection system",
+        manufacturer: "Honeywell",
+        model: "Demo model unknown",
+        locationContext: "Warehouse, loading dock, and office areas",
+        serviceStatus: "Alarm testing records should be reviewed",
+        documentationNote: "Confirm panel model, test history, and open issues.",
+        trainingRelevance: "Supports customer discussion around reporting issues and evacuation basics.",
+      },
     ],
+    upcomingReminder: "Annual inspection and extinguisher training review.",
     reminder: "Annual inspection and extinguisher training review",
+    trainingEducationNeed:
+      "Warehouse team refresher on extinguisher use, evacuation basics, and when to report issues.",
     trainingNeed:
       "Warehouse team refresher on extinguisher use, evacuation basics, and when to report issues",
+    documentationDeficiencyContext:
+      "Extinguisher inspection records, alarm testing records, sprinkler inspection notes, emergency lighting test documentation, open deficiencies.",
     documentationNeed:
       "Extinguisher inspection records, alarm testing records, sprinkler inspection notes, emergency lighting test documentation, open deficiencies",
+    relatedServiceConsiderations: [
+      "Extinguisher training",
+      "Emergency lighting inspection",
+      "Alarm testing review",
+      "Sprinkler inspection",
+      "Preventive maintenance",
+    ],
     relatedServiceLenses: [
       "Inspection, Testing & Maintenance",
       "Customer Training",
@@ -420,6 +688,107 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
     ],
     relatedService:
       "Extinguisher training; emergency lighting inspection; alarm testing review; sprinkler inspection; preventive maintenance",
+    serviceHistoryNotes:
+      "Recent warehouse prep notes mention extinguisher placement questions, emergency lighting documentation, and open sprinkler inspection items.",
+    recommendedPrepFocus:
+      "Review inspection records, prepare equipment-specific verification list, and identify customer-friendly follow-up points.",
+  },
+  "Convention / Trade Show Demo Booth": {
+    id: "convention-demo-booth",
+    name: "Convention / Trade Show Demo Booth",
+    profileType: "Sample profile",
+    locationType: "Convention or trade show booth",
+    shortSummary:
+      "Event booth context with demonstration equipment, customer education materials, and common questions about inspections, training, and product safety.",
+    label: "Convention / Trade Show Demo Booth",
+    type: "Convention / trade show",
+    primaryAudience: "Building Owner / Facility Manager",
+    knownSystems: [
+      "Fire extinguishers",
+      "Smoke alarm / detection examples",
+      "Emergency lighting examples",
+      "Sprinkler component examples",
+      "Special hazard discussion materials",
+    ],
+    systems: [
+      "Fire extinguishers",
+      "Smoke alarm / detection examples",
+      "Emergency lighting examples",
+      "Sprinkler component examples",
+      "Special hazard discussion materials",
+    ],
+    installedEquipment: [
+      {
+        category: "fire extinguisher",
+        productName: "Portable extinguisher examples",
+        manufacturer: "Amerex",
+        model: "Demo model unknown",
+        locationContext: "Trade show demonstration materials",
+        serviceStatus: "Review booth materials before event",
+        documentationNote: "Confirm demonstration materials are approved and current.",
+        trainingRelevance: "Supports plain-language extinguisher readiness discussion.",
+      },
+      {
+        category: "smoke alarm",
+        productName: "Smoke alarm / detection examples",
+        manufacturer: "First Alert",
+        model: "Demo model unknown",
+        locationContext: "Product safety talking point examples",
+        serviceStatus: "Review product safety examples before event",
+        documentationNote: "Verify any recall examples against official CPSC notices.",
+        trainingRelevance: "Supports customer education and common detection questions.",
+      },
+      {
+        category: "emergency lighting",
+        productName: "Emergency lighting / exit sign examples",
+        manufacturer: "Lithonia Lighting",
+        model: "Demo model unknown",
+        locationContext: "Booth discussion examples",
+        serviceStatus: "Prepare documentation talking points",
+        documentationNote: "Confirm monthly/annual testing talking points.",
+        trainingRelevance: "Supports customer-friendly explanation of inspection expectations.",
+      },
+      {
+        category: "special hazard",
+        productName: "Special hazard system discussion materials",
+        manufacturer: "Ansul",
+        model: "Demo model unknown",
+        locationContext: "Higher-risk system conversation examples",
+        serviceStatus: "Route technical questions to qualified review",
+        documentationNote: "Confirm approved literature and source hierarchy reminders.",
+        trainingRelevance: "Supports responsible event conversation boundaries.",
+      },
+    ],
+    upcomingReminder: "Event booth prep review this week.",
+    reminder: "Event booth prep review this week.",
+    trainingEducationNeed:
+      "Prepare concise explanations, likely attendee questions, and safe follow-up routing for technical product questions.",
+    trainingNeed:
+      "Prepare concise explanations, likely attendee questions, and safe follow-up routing for technical product questions.",
+    documentationDeficiencyContext:
+      "Approved service literature, product safety talking points, attendee follow-up note template, and source verification reminders.",
+    documentationNeed:
+      "Approved service literature, product safety talking points, attendee follow-up note template, and source verification reminders.",
+    relatedServiceConsiderations: [
+      "Customer education",
+      "Inspection planning",
+      "Documentation review",
+      "Training follow-up",
+      "Modernization discussion when safety-related",
+    ],
+    relatedServiceLenses: [
+      "Customer Training",
+      "Fire Extinguishers",
+      "Fire Alarm & Detection",
+      "Special Hazards",
+      "Documentation / Deficiency Follow-Up",
+    ],
+    relatedService:
+      "Customer education; inspection planning; documentation review; training follow-up; modernization discussion when safety-related",
+    serviceHistoryNotes:
+      "Event notes should capture attendee questions, product safety concerns, and follow-up owners for internal routing.",
+    recommendedPrepFocus:
+      "Prepare short customer-friendly explanations, source verification reminders, and follow-up routing for technical questions.",
   },
 };
 
@@ -590,7 +959,12 @@ const formatDate = (date: string) => {
 
 const equipmentLabel = (item: InstalledEquipment) =>
   [item.manufacturer, item.productName, item.model]
-    .filter((part) => part && !part.toLowerCase().includes("to verify"))
+    .filter(
+      (part) =>
+        part &&
+        !part.toLowerCase().includes("to verify") &&
+        !part.toLowerCase().includes("demo model unknown"),
+    )
     .join(" ") || item.category;
 
 const searchTermsForEquipment = (equipment: InstalledEquipment[]) =>
@@ -600,7 +974,9 @@ const searchTermsForEquipment = (equipment: InstalledEquipment[]) =>
         const terms = [
           `${item.manufacturer} ${item.productName}`,
           `${item.manufacturer} ${item.category}`,
-          item.model && !item.model.toLowerCase().includes("to verify")
+          item.model &&
+          !item.model.toLowerCase().includes("to verify") &&
+          !item.model.toLowerCase().includes("demo model unknown")
             ? `${item.manufacturer} ${item.model}`
             : "",
           item.productName,
@@ -652,6 +1028,55 @@ const SectionTitle = ({
   </div>
 );
 
+const SectionBand = ({
+  title,
+  description,
+  icon,
+}: {
+  title: string;
+  description?: string;
+  icon: "building" | "tool" | "shield" | "clipboard" | "file" | "alert" | "check";
+}) => {
+  const paths = {
+    building: "M4 20h16M6 20V5a1 1 0 0 1 1-1h7a1 1 0 0 1 1 1v15M9 8h1M9 12h1M12 8h1M12 12h1M17 20v-7h2v7",
+    tool: "M14.7 6.3a4 4 0 0 0-5 5L4 17l3 3 5.7-5.7a4 4 0 0 0 5-5l-2.8 2.8-3-3 2.8-2.8Z",
+    shield: "M12 3 5 6v5c0 4.5 3 7.5 7 10 4-2.5 7-5.5 7-10V6l-7-3Z",
+    clipboard: "M9 4h6l1 2h2v14H6V6h2l1-2Zm0 6h6M9 14h6",
+    file: "M6 3h8l4 4v14H6V3Zm8 0v5h4M9 13h6M9 17h6",
+    alert: "M12 4 3 20h18L12 4Zm0 5v5m0 3h.01",
+    check: "M20 6 9 17l-5-5",
+  }[icon];
+
+  return (
+    <div className="mb-4 rounded-2xl border border-brand-gray200 bg-brand-gray100 px-4 py-3">
+      <div className="flex items-start gap-3">
+        <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-brand-gray200 bg-white text-brand-green">
+          <svg
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+            className="h-5 w-5"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d={paths} />
+          </svg>
+        </span>
+        <div>
+          <h2 className="text-base font-black text-brand-charcoal">{title}</h2>
+          {description ? (
+            <p className="mt-1 text-sm leading-6 text-brand-gray700">
+              {description}
+            </p>
+          ) : null}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const BriefBlock = ({
   title,
   children,
@@ -678,14 +1103,120 @@ const PacketSection = ({
 }) => (
   <details
     open={defaultOpen}
-    className="rounded-xl border border-brand-gray200 bg-brand-gray100 p-4"
+    className="group rounded-2xl border border-brand-gray200 bg-white p-4 shadow-sm"
   >
-    <summary className="cursor-pointer text-sm font-extrabold uppercase tracking-[0.08em] text-brand-charcoal">
-      {title}
+    <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-extrabold uppercase tracking-[0.08em] text-brand-charcoal">
+      <span>{title}</span>
+      <span className="rounded-full border border-brand-gray200 bg-brand-gray100 px-2 py-0.5 text-xs text-brand-gray700 group-open:hidden">
+        Open
+      </span>
+      <span className="hidden rounded-full border border-brand-gray200 bg-brand-gray100 px-2 py-0.5 text-xs text-brand-gray700 group-open:inline">
+        Close
+      </span>
     </summary>
-    <div className="mt-3 text-sm leading-6 text-brand-gray700">{children}</div>
+    <div className="mt-4 border-t border-brand-gray200 pt-4 text-[15px] leading-7 text-brand-gray700">
+      {children}
+    </div>
   </details>
 );
+
+const PacketBadge = ({
+  children,
+  tone = "neutral",
+}: {
+  children: React.ReactNode;
+  tone?: "green" | "amber" | "red" | "neutral";
+}) => {
+  const toneClass = {
+    green: "border-brand-green bg-green-50 text-brand-green",
+    amber: "border-brand-warning bg-[#fff8e8] text-brand-warning",
+    red: "border-brand-red bg-red-50 text-brand-red",
+    neutral: "border-brand-gray200 bg-brand-gray100 text-brand-gray700",
+  }[tone];
+
+  return (
+    <span className={`rounded-full border px-3 py-1 text-xs font-extrabold uppercase tracking-[0.08em] ${toneClass}`}>
+      {children}
+    </span>
+  );
+};
+
+const PacketSummaryTile = ({
+  label,
+  value,
+  detail,
+  tone = "neutral",
+}: {
+  label: string;
+  value: string;
+  detail: string;
+  tone?: "green" | "amber" | "red" | "neutral";
+}) => {
+  const toneClass = {
+    green: "border-brand-green bg-green-50",
+    amber: "border-brand-warning bg-[#fff8e8]",
+    red: "border-brand-red bg-red-50",
+    neutral: "border-brand-gray200 bg-brand-gray100",
+  }[tone];
+
+  return (
+    <div className={`rounded-2xl border p-4 ${toneClass}`}>
+      <p className="text-xs font-extrabold uppercase tracking-[0.12em] text-brand-gray700">
+        {label}
+      </p>
+      <p className="mt-2 text-2xl font-black leading-tight text-brand-charcoal">
+        {value}
+      </p>
+      <p className="mt-2 text-sm leading-6 text-brand-gray700">{detail}</p>
+    </div>
+  );
+};
+
+const PrioritySection = ({
+  title,
+  badges,
+  children,
+}: {
+  title: string;
+  badges?: React.ReactNode;
+  children: React.ReactNode;
+}) => (
+  <section className="rounded-2xl border border-brand-gray200 bg-white p-5 shadow-sm">
+    <div className="flex flex-col gap-3 border-b border-brand-gray200 pb-3 sm:flex-row sm:items-start sm:justify-between">
+      <h3 className="text-lg font-black leading-tight text-brand-charcoal">
+        {title}
+      </h3>
+      {badges ? <div className="flex flex-wrap gap-2">{badges}</div> : null}
+    </div>
+    <div className="mt-4 text-[15px] leading-7 text-brand-gray700">{children}</div>
+  </section>
+);
+
+const PacketList = ({
+  items,
+  tone = "green",
+}: {
+  items: string[];
+  tone?: "green" | "amber" | "red" | "neutral";
+}) => {
+  const dotClass = {
+    green: "bg-brand-green",
+    amber: "bg-brand-warning",
+    red: "bg-brand-red",
+    neutral: "bg-brand-gray500",
+  }[tone];
+
+  return (
+    <ul className="space-y-3">
+      {items.map((item) => (
+        <li key={item} className="flex gap-3">
+          <span className={`mt-2.5 h-2 w-2 shrink-0 rounded-full ${dotClass}`} />
+          <span>{item}</span>
+        </li>
+      ))}
+    </ul>
+  );
+};
 
 const StepLabel = ({ children }: { children: React.ReactNode }) => (
   <p className="mb-2 text-xs font-extrabold uppercase tracking-[0.14em] text-brand-green">
@@ -703,6 +1234,8 @@ const ReadinessPacket = ({
   summarySource,
   briefAction,
   automaticSafetyReview,
+  onRegenerate,
+  onStartNew,
 }: {
   guidance: AiGuidance | null;
   selectedRecall: RecallResult | null;
@@ -713,11 +1246,84 @@ const ReadinessPacket = ({
   summarySource: string;
   briefAction: BriefAction;
   automaticSafetyReview: AutomaticSafetyReview;
+  onRegenerate: () => void;
+  onStartNew: () => void;
 }) => {
   if (!guidance) return null;
 
+  const equipmentCount =
+    automaticSafetyReview.equipmentChecked.length ||
+    guidance.installedEquipmentReview.length;
+  const hasPossibleMatches = automaticSafetyReview.possibleMatches.length > 0;
+  const productSafetyStatus = hasPossibleMatches
+    ? "Possible matches"
+    : automaticSafetyReview.noObviousMatchTerms.length
+      ? "Needs verification"
+      : "No obvious matches";
+  const verificationNeeded =
+    guidance.missingInformationToVerify.slice(0, 3).join(", ") ||
+    "Model, date range, site details";
+  const missingInformation =
+    guidance.missingInformationToVerify.length > 0
+      ? guidance.missingInformationToVerify
+      : [
+          "Exact model numbers",
+          "Manufacturer documentation",
+          "Install and service dates",
+          "Recall applicability",
+          "Prior deficiencies",
+          "Internal review owner",
+        ];
+  const packetText = [
+    "AI Engagement Readiness Packet",
+    `Engagement: ${engagementType}`,
+    `Audience: ${audience}`,
+    `Site: ${sampleSite}`,
+    `Service Lens: ${serviceLens.label}`,
+    "",
+    "Key Attention Flags",
+    ...guidance.keyAttentionFlags.map((item) => `- ${item}`),
+    "",
+    "Missing Information to Verify",
+    ...missingInformation.map((item) => `- ${item}`),
+    "",
+    "Recommended Next Best Actions",
+    ...guidance.recommendedNextBestActions.map((item) => `- ${item}`),
+    "",
+    "Product Safety / Recall Review",
+    ...guidance.productSafetyRecallReview.map((item) => `- ${item}`),
+    "",
+    "Installed Equipment Review",
+    ...guidance.installedEquipmentReview.map((item) => `- ${item}`),
+    "",
+    "Follow-Up Note Draft",
+    guidance.followUpNoteDraft,
+    "",
+    "Official Source Reminder",
+    guidance.officialSourceReminder,
+  ].join("\n");
+  const copyText = (text: string) => {
+    if (typeof navigator === "undefined" || !navigator.clipboard) return;
+    void navigator.clipboard.writeText(text);
+  };
+  const hasFollowUpNote = guidance.followUpNoteDraft.trim().length > 0;
+  const navItems = [
+    ["Summary", "#packet-summary"],
+    ["Priority Review", "#packet-priority"],
+    ["Equipment", "#packet-equipment"],
+    ["Product Safety", "#packet-product-safety"],
+    ["Prep Notes", "#packet-prep"],
+    ["Follow-Up", "#packet-follow-up"],
+    ["Verification", "#packet-verification"],
+  ];
+
   return (
     <section className="rounded-2xl border border-brand-gray200 bg-white p-5 shadow-panel sm:p-6">
+      <SectionBand
+        icon="file"
+        title="Generated Packet"
+        description="A scan-ready internal readiness report built from engagement, site, equipment, prep, and product-safety context."
+      />
       <div className="border-b border-brand-gray200 pb-4">
         <div className="flex flex-wrap gap-2">
           <span className="rounded-full bg-brand-green px-3 py-1 text-xs font-extrabold uppercase tracking-[0.1em] text-white">
@@ -729,268 +1335,442 @@ const ReadinessPacket = ({
           <span className="rounded-full border border-brand-warning px-3 py-1 text-xs font-extrabold uppercase tracking-[0.1em] text-brand-warning">
             Source Verification Needed
           </span>
-          <span className="rounded-full border border-brand-gray200 bg-brand-gray100 px-3 py-1 text-xs font-extrabold uppercase tracking-[0.1em] text-brand-gray700">
-            {summarySource === "openai" ? "Generated with OpenAI" : "Demo Fallback Response"}
-          </span>
+          {summarySource === "openai" ? (
+            <span className="rounded-full border border-brand-gray200 bg-brand-gray100 px-3 py-1 text-xs font-extrabold uppercase tracking-[0.1em] text-brand-gray700">
+              Generated with OpenAI
+            </span>
+          ) : null}
         </div>
-        <h2 className="mt-3 text-2xl font-extrabold text-brand-charcoal">
-          AI Engagement Readiness Packet
-        </h2>
-        <p className="mt-2 text-sm leading-6 text-brand-gray700">
-          {engagementType} | {audience} |{" "}
-          {briefActions.find((action) => action.value === briefAction)?.label}.
-          Site context: {sampleSite}. Service lens: {serviceLens.label}.
-          Product safety context:{" "}
-          {selectedRecall
-            ? selectedRecall.title
-            : "No product safety recall selected"}
+        <div className="mt-3 flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+          <div>
+            <h2 className="text-2xl font-extrabold text-brand-charcoal">
+              AI Engagement Readiness Packet
+            </h2>
+            <p className="mt-2 text-sm leading-6 text-brand-gray700">
+              {engagementType} | {audience} |{" "}
+              {briefActions.find((action) => action.value === briefAction)?.label}.
+              Site context: {sampleSite}. Service lens: {serviceLens.label}.
+              Product safety context:{" "}
+              {selectedRecall
+                ? selectedRecall.title
+                : "No manual product safety recall selected"}
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={onRegenerate}
+              className="rounded-xl border border-brand-green bg-white px-3 py-2 text-sm font-extrabold text-brand-green transition hover:bg-green-50"
+            >
+              Regenerate Packet
+            </button>
+            <button
+              type="button"
+              onClick={() => copyText(packetText)}
+              className="rounded-xl border border-brand-gray200 bg-white px-3 py-2 text-sm font-extrabold text-brand-charcoal transition hover:bg-brand-gray100"
+            >
+              Copy Packet
+            </button>
+            <button
+              type="button"
+              onClick={() => window.print()}
+              className="rounded-xl border border-brand-gray200 bg-white px-3 py-2 text-sm font-extrabold text-brand-charcoal transition hover:bg-brand-gray100"
+            >
+              Print Packet
+            </button>
+            <button
+              type="button"
+              onClick={onStartNew}
+              className="rounded-xl border border-brand-gray200 bg-white px-3 py-2 text-sm font-extrabold text-brand-gray700 transition hover:bg-brand-gray100"
+            >
+              Start New Packet
+            </button>
+          </div>
+        </div>
+        <nav className="mt-4 flex gap-2 overflow-x-auto pb-1 text-xs font-extrabold uppercase tracking-[0.08em]">
+          {navItems.map(([label, href]) => (
+            <a
+              key={href}
+              href={href}
+              className="shrink-0 rounded-full border border-brand-gray200 bg-brand-gray100 px-3 py-2 text-brand-gray700 transition hover:border-brand-green hover:text-brand-green"
+            >
+              {label}
+            </a>
+          ))}
+        </nav>
+      </div>
+
+      <div id="packet-summary" className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+        <PacketSummaryTile
+          label="Readiness Score"
+          value={`${Math.round(guidance.readinessScore)}%`}
+          detail="Preparation completeness only, not safety approval."
+          tone="green"
+        />
+        <PacketSummaryTile
+          label="Equipment Reviewed"
+          value={`${equipmentCount} ${equipmentCount === 1 ? "system" : "systems"}`}
+          detail="Based on selected site equipment and service context."
+          tone="neutral"
+        />
+        <PacketSummaryTile
+          label="Product Safety Status"
+          value={productSafetyStatus}
+          detail="Auto-checked against public recall data; verify before action."
+          tone={hasPossibleMatches ? "amber" : "neutral"}
+        />
+        <PacketSummaryTile
+          label="Verification Needed"
+          value="Human review"
+          detail={verificationNeeded}
+          tone="amber"
+        />
+      </div>
+
+      <div className="mt-5 grid gap-4 lg:grid-cols-2">
+        <div className="rounded-2xl border border-brand-gray200 bg-brand-gray100 p-5">
+          <h3 className="text-sm font-extrabold uppercase tracking-[0.1em] text-brand-charcoal">
+            Why this packet is tailored to this engagement
+          </h3>
+          <p className="mt-2 text-[15px] leading-7 text-brand-gray700">
+            This packet uses the selected {engagementType.toLowerCase()} context,
+            the {audience.toLowerCase()} audience, the {sampleSite} customer/site profile,
+            the {serviceLens.label} service lens, {equipmentCount} installed{" "}
+            {equipmentCount === 1 ? "system" : "systems"}, prep resources, and{" "}
+            {selectedRecall ? "selected recall context" : "automatic product safety context"}.
+          </p>
+        </div>
+        <div className="rounded-2xl border border-brand-gray200 bg-white p-5">
+          <h3 className="text-sm font-extrabold uppercase tracking-[0.1em] text-brand-charcoal">
+            Sources used
+          </h3>
+          <div className="mt-3 flex flex-wrap gap-2">
+            <PacketBadge tone="neutral">Sample Customer/Site Profile</PacketBadge>
+            <PacketBadge tone="neutral">Ryan Service Lens</PacketBadge>
+            <PacketBadge tone="neutral">Prep Resources</PacketBadge>
+            <PacketBadge tone="neutral">Automatic Safety Review</PacketBadge>
+            {selectedRecall ? (
+              <PacketBadge tone="amber">Manual Recall Context</PacketBadge>
+            ) : null}
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-5 rounded-2xl border border-brand-gray200 bg-brand-gray100 p-5">
+        <h3 className="text-sm font-extrabold uppercase tracking-[0.1em] text-brand-charcoal">
+          Readiness Score Context
+        </h3>
+        <p className="mt-2 text-[15px] leading-7 text-brand-gray700">
+          Readiness reflects preparation completeness, not code compliance or
+          safety approval. {guidance.readinessScoreReason}
         </p>
       </div>
 
-      <div className="mt-5 grid gap-4 md:grid-cols-2">
-        <PacketSection title="Source Context Used" defaultOpen>
-          <ul className="space-y-2">
-            {guidance.sourceContextUsed.map((item) => (
-              <li key={item} className="flex gap-2">
-                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-green" />
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
-        </PacketSection>
-        <div className="rounded-xl border border-brand-gray200 bg-brand-gray100 p-4 md:col-span-2">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h3 className="text-sm font-extrabold uppercase tracking-[0.08em] text-brand-charcoal">
-                Readiness Score
-              </h3>
-              <p className="mt-2 text-sm leading-6 text-brand-gray700">
-                Readiness reflects preparation completeness, not code compliance
-                or safety approval.
-              </p>
-            </div>
-            <div className="text-4xl font-black text-brand-green">
-              {Math.round(guidance.readinessScore)}%
-            </div>
+      <div id="packet-priority" className="mt-6">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-brand-green">
+              Priority Review
+            </p>
+            <h3 className="mt-1 text-2xl font-black text-brand-charcoal">
+              Review These First
+            </h3>
           </div>
-          <p className="mt-3 text-sm leading-6 text-brand-gray700">
-            {guidance.readinessScoreReason}
-          </p>
+          <div className="flex flex-wrap gap-2">
+            <PacketBadge tone="red">Human Review Required</PacketBadge>
+            <PacketBadge tone="amber">Needs Verification</PacketBadge>
+            <PacketBadge tone="neutral">Source Verification Needed</PacketBadge>
+          </div>
         </div>
 
-        <PacketSection title="Key Attention Flags" defaultOpen>
-          <ul className="space-y-2">
-            {guidance.keyAttentionFlags.map((item) => (
-              <li key={item} className="flex gap-2">
-                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-red" />
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
-        </PacketSection>
-        <PacketSection title="Recommended Next Best Actions" defaultOpen>
-          <ul className="space-y-2">
-            {guidance.recommendedNextBestActions.map((item) => (
-              <li key={item} className="flex gap-2">
-                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-green" />
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
-        </PacketSection>
-        <PacketSection title="Missing Information to Verify">
-          <ul className="space-y-2">
-            {guidance.missingInformationToVerify.map((item) => (
-              <li key={item} className="flex gap-2">
-                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-red" />
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
-        </PacketSection>
-        <PacketSection title="Internal Field Brief" defaultOpen>
-          {guidance.internalFieldBrief}
-        </PacketSection>
-        <PacketSection title="Customer / Audience Talking Points">
-          <ul className="space-y-2">
-            {guidance.audienceSpecificTalkingPoints.map((item) => (
-              <li key={item} className="flex gap-2">
-                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-green" />
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
-        </PacketSection>
-        <PacketSection title="Installed Equipment Review">
-          <ul className="space-y-2">
-            {guidance.installedEquipmentReview.map((item) => (
-              <li key={item} className="flex gap-2">
-                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-green" />
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
-        </PacketSection>
-        <PacketSection title="Equipment / Product Checklist">
-          <ul className="space-y-2">
-            {guidance.equipmentProductChecklist.map((item) => (
-              <li key={item} className="flex gap-2">
-                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-red" />
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
-        </PacketSection>
-        <PacketSection title="Product Safety / Recall Review">
-          <ul className="space-y-2">
-            {guidance.productSafetyRecallReview.map((item) => (
-              <li key={item} className="flex gap-2">
-                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-warning" />
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
-        </PacketSection>
-        <PacketSection title="Instructor / Event Prep Notes">
-          <ul className="space-y-2">
-            {guidance.trainingOrEventPrepNotes.map((item) => (
-              <li key={item} className="flex gap-2">
-                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-green" />
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
-        </PacketSection>
-        <PacketSection title="Optional Manual Product Safety Search Result">
-          {selectedRecall ? (
-            <div className="space-y-3">
-              <p>
-                <strong className="text-brand-charcoal">Selected recall:</strong>{" "}
-                {selectedRecall.title}
-              </p>
-              <ul className="space-y-2">
-                {guidance.knownSourceFacts.map((item) => (
-                  <li key={item} className="flex gap-2">
-                    <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-green" />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
+        <div className="mt-4 grid gap-4 lg:grid-cols-2">
+          <PrioritySection
+            title="Key Attention Flags"
+            badges={<PacketBadge tone="red">High Attention</PacketBadge>}
+          >
+            <div className="mb-3 flex flex-wrap gap-2">
+              <PacketBadge tone="amber">Needs Verification</PacketBadge>
+              <PacketBadge tone="red">Human Review Required</PacketBadge>
             </div>
-          ) : (
-            <p>
-              No manual product safety recall selected. Packet uses the
-              automatic product safety review from installed site equipment.
-            </p>
-          )}
-        </PacketSection>
-        <PacketSection title="Automatic Review Details">
-          <div className="space-y-3">
-            <div>
-              <p className="font-extrabold text-brand-charcoal">Equipment checked</p>
-              <ul className="mt-1 space-y-1">
-                {automaticSafetyReview.equipmentChecked.map((item) => (
-                  <li key={`${item.category}-${item.productName}`}>
-                    {equipmentLabel(item)} - {item.locationContext}
-                  </li>
-                ))}
-              </ul>
+            <PacketList items={guidance.keyAttentionFlags} tone="red" />
+          </PrioritySection>
+
+          <PrioritySection
+            title="Missing Information to Verify"
+            badges={<PacketBadge tone="amber">Needs Verification</PacketBadge>}
+          >
+            <div className="mb-3 flex flex-wrap gap-2">
+              <PacketBadge tone="amber">Needs Verification</PacketBadge>
+              <PacketBadge tone="neutral">Known from site profile</PacketBadge>
             </div>
-            <div>
-              <p className="font-extrabold text-brand-charcoal">Search terms used</p>
-              <p>{automaticSafetyReview.searchTermsUsed.join(", ") || "No automatic search terms available."}</p>
+            <PacketList items={missingInformation} tone="amber" />
+          </PrioritySection>
+
+          <PrioritySection
+            title="Recommended Next Best Actions"
+            badges={<PacketBadge tone="green">Next Actions</PacketBadge>}
+          >
+            <div className="mb-3 flex flex-wrap gap-2">
+              <PacketBadge tone="green">AI interpretation</PacketBadge>
+              <PacketBadge tone="neutral">Known from site profile</PacketBadge>
             </div>
-            <p>
-              Possible matches are not applicability decisions. Verify model,
-              date range, manufacturer documentation, site equipment, and the
-              official source before action.
-            </p>
-          </div>
-        </PacketSection>
-        <PacketSection title="Protect / Prevent / Preserve Lens">
-          <ul className="space-y-2">
-            {guidance.protectPreventPreserveLens.map((item) => (
-              <li key={item} className="flex gap-2">
-                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-green" />
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
-        </PacketSection>
-        <PacketSection title="Deficiency / Documentation Follow-Up">
-          <ul className="space-y-2">
-            {guidance.deficiencyDocumentationFollowUp.map((item) => (
-              <li key={item} className="flex gap-2">
-                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-green" />
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
-        </PacketSection>
-        <PacketSection title="Related Service Considerations">
-          <div className="grid gap-3 md:grid-cols-2">
-            {[
-              ["Safety / Risk Reduction", guidance.relatedServiceGroups.safetyRiskReduction],
-              ["Maintenance / Testing", guidance.relatedServiceGroups.maintenanceTesting],
-              ["Customer Education", guidance.relatedServiceGroups.customerEducation],
-              ["Documentation / Follow-Up", guidance.relatedServiceGroups.documentationFollowUp],
-              [
-                "Modernization / Replacement Discussion",
-                guidance.relatedServiceGroups.modernizationReplacement,
-              ],
-            ].map(([groupTitle, items]) => (
-              <div key={groupTitle as string}>
-                <p className="font-extrabold text-brand-charcoal">
-                  {groupTitle as string}
-                </p>
-                <ul className="mt-1 space-y-1">
-                  {(items as string[]).map((item) => (
-                    <li key={item} className="flex gap-2">
-                      <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-green" />
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
+            <PacketList items={guidance.recommendedNextBestActions} tone="green" />
+          </PrioritySection>
+
+          <PrioritySection
+            title="Product Safety / Recall Review"
+            badges={
+              <>
+                <PacketBadge tone="neutral">Auto-Checked</PacketBadge>
+                {hasPossibleMatches ? (
+                  <PacketBadge tone="amber">Possible Match</PacketBadge>
+                ) : null}
+              </>
+            }
+          >
+            <div id="packet-product-safety" className="space-y-4">
+              <div className="flex flex-wrap gap-2">
+                <PacketBadge tone="neutral">Auto-checked</PacketBadge>
+                <PacketBadge tone="amber">Needs Verification</PacketBadge>
               </div>
-            ))}
-          </div>
-        </PacketSection>
-        <PacketSection title="Follow-Up Note Draft">
-          <div className="whitespace-pre-line">{guidance.followUpNoteDraft}</div>
-        </PacketSection>
-        <PacketSection title="Known from Source">
-          <ul className="space-y-2">
-            {guidance.knownSourceFacts.map((item) => (
-              <li key={item} className="flex gap-2">
-                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-green" />
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
-        </PacketSection>
-        <PacketSection title="Provided by User/Demo Profile">
-          <ul className="space-y-2">
-            {guidance.providedDemoProfileContext.map((item) => (
-              <li key={item} className="flex gap-2">
-                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-green" />
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
-        </PacketSection>
-        <PacketSection title="AI Interpretation">
-          <ul className="space-y-2">
-            {guidance.aiInterpretation.map((item) => (
-              <li key={item} className="flex gap-2">
-                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-warning" />
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
-        </PacketSection>
+              <div>
+                <p className="font-extrabold text-brand-charcoal">Equipment checked</p>
+                <p className="mt-1">
+                  {automaticSafetyReview.equipmentChecked
+                    .map((item) => equipmentLabel(item))
+                    .join(", ") ||
+                  "Select a customer/site profile to load known systems, installed equipment, and automatic product safety review."}
+                </p>
+              </div>
+              <div>
+                <p className="font-extrabold text-brand-charcoal">Search terms used</p>
+                <p className="mt-1">
+                  {automaticSafetyReview.searchTermsUsed.join(", ") ||
+                    "Select a customer/site profile to load known systems, installed equipment, and automatic product safety review."}
+                </p>
+              </div>
+              <div>
+                <p className="font-extrabold text-brand-charcoal">Possible matches</p>
+                {automaticSafetyReview.possibleMatches.length ? (
+                  <ul className="mt-1 space-y-2">
+                    {automaticSafetyReview.possibleMatches.map((match) => (
+                      <li key={`${match.searchTerm}-${match.recall.id}`}>
+                        Possible match for {match.equipmentLabel}:{" "}
+                        <span className="font-semibold text-brand-charcoal">
+                          {match.recall.title}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="mt-1">No obvious recall match found in this search.</p>
+                )}
+              </div>
+              <div>
+                <p className="font-extrabold text-brand-charcoal">No obvious matches</p>
+                <p className="mt-1">
+                  {automaticSafetyReview.noObviousMatchTerms.join(", ") ||
+                    "Select a customer/site profile to load known systems, installed equipment, and automatic product safety review."}
+                </p>
+              </div>
+              <div>
+                <p className="font-extrabold text-brand-charcoal">What needs verification</p>
+                <PacketList
+                  items={[
+                    ...guidance.productSafetyRecallReview,
+                    "Official source reminder: verify against CPSC notices, manufacturer instructions, applicable codes, NFPA standards, company procedures, and qualified internal review.",
+                  ]}
+                  tone="amber"
+                />
+              </div>
+            </div>
+          </PrioritySection>
+
+          <PrioritySection
+            title="Installed Equipment Review"
+            badges={<PacketBadge tone="neutral">Source Context</PacketBadge>}
+          >
+            <div id="packet-equipment">
+            {automaticSafetyReview.equipmentChecked.length ? (
+              <div className="grid gap-3">
+                <div className="flex flex-wrap gap-2">
+                  <PacketBadge tone="neutral">Known from site profile</PacketBadge>
+                  <PacketBadge tone="amber">Needs Verification</PacketBadge>
+                </div>
+                {automaticSafetyReview.equipmentChecked.map((item) => (
+                  <div
+                    key={`${item.category}-${item.productName}-${item.locationContext}`}
+                    className="rounded-xl border border-brand-gray200 bg-brand-gray100 p-4"
+                  >
+                    <div className="grid gap-3 md:grid-cols-2">
+                      <div>
+                        <p className="text-xs font-extrabold uppercase tracking-[0.1em] text-brand-gray700">
+                          Equipment/System
+                        </p>
+                        <p className="mt-1 font-extrabold text-brand-charcoal">
+                          {item.productName || item.category}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs font-extrabold uppercase tracking-[0.1em] text-brand-gray700">
+                          Manufacturer
+                        </p>
+                        <p className="mt-1">{item.manufacturer}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs font-extrabold uppercase tracking-[0.1em] text-brand-gray700">
+                          Model
+                        </p>
+                        <p className="mt-1">{item.model}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs font-extrabold uppercase tracking-[0.1em] text-brand-gray700">
+                          Status/Reminder
+                        </p>
+                        <p className="mt-1">{item.serviceStatus}</p>
+                      </div>
+                    </div>
+                    <p className="mt-3 text-sm leading-6">
+                      <span className="font-extrabold text-brand-charcoal">
+                        Verification need:
+                      </span>{" "}
+                      {item.documentationNote}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <PacketList items={guidance.installedEquipmentReview} tone="green" />
+            )}
+            </div>
+          </PrioritySection>
+          <PrioritySection
+            title="Related Service Considerations"
+            badges={<PacketBadge tone="green">Service Context</PacketBadge>}
+          >
+            <div className="mb-3 flex flex-wrap gap-2">
+              <PacketBadge tone="green">AI interpretation</PacketBadge>
+              <PacketBadge tone="neutral">Known from site profile</PacketBadge>
+            </div>
+            <div className="grid gap-3 md:grid-cols-2">
+              {[
+                ["Safety / Risk Reduction", guidance.relatedServiceGroups.safetyRiskReduction],
+                ["Maintenance / Testing", guidance.relatedServiceGroups.maintenanceTesting],
+                ["Customer Education", guidance.relatedServiceGroups.customerEducation],
+                ["Documentation / Follow-Up", guidance.relatedServiceGroups.documentationFollowUp],
+              ].map(([groupTitle, items]) => (
+                <div
+                  key={groupTitle as string}
+                  className="rounded-xl border border-brand-gray200 bg-brand-gray100 p-3"
+                >
+                  <p className="font-extrabold text-brand-charcoal">
+                    {groupTitle as string}
+                  </p>
+                  <ul className="mt-2 space-y-1">
+                    {(items as string[]).slice(0, 2).map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </PrioritySection>
+        </div>
       </div>
 
-      <div className="mt-5 rounded-xl border-l-4 border-brand-warning bg-[#fff8e8] p-4 text-sm leading-6 text-brand-gray700">
+      <div className="mt-6">
+        <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-brand-green">
+          Supporting Packet Details
+        </p>
+        <div className="mt-3 grid gap-3 md:grid-cols-2">
+          <PacketSection title="Source Context Used">
+            <PacketList items={guidance.sourceContextUsed} tone="neutral" />
+          </PacketSection>
+          <PacketSection title="Internal Field Brief">
+            <p className="text-[15px] leading-7">{guidance.internalFieldBrief}</p>
+          </PacketSection>
+          <PacketSection title="Customer / Audience Talking Points">
+            <PacketList items={guidance.audienceSpecificTalkingPoints} tone="green" />
+          </PacketSection>
+          <PacketSection title="Equipment / Product Checklist">
+            <PacketList items={guidance.equipmentProductChecklist} tone="amber" />
+          </PacketSection>
+          <PacketSection title="Instructor / Event Prep Notes">
+            <div id="packet-prep">
+            <PacketList items={guidance.trainingOrEventPrepNotes} tone="green" />
+            </div>
+          </PacketSection>
+          <PacketSection title="Protect / Prevent / Preserve Lens">
+            <PacketList items={guidance.protectPreventPreserveLens} tone="green" />
+          </PacketSection>
+          <PacketSection title="Deficiency / Documentation Follow-Up">
+            <PacketList items={guidance.deficiencyDocumentationFollowUp} tone="amber" />
+          </PacketSection>
+          <PacketSection title="Related Service Considerations">
+            <div className="grid gap-4">
+              {[
+                ["Safety / Risk Reduction", guidance.relatedServiceGroups.safetyRiskReduction],
+                ["Maintenance / Testing", guidance.relatedServiceGroups.maintenanceTesting],
+                ["Customer Education", guidance.relatedServiceGroups.customerEducation],
+                ["Documentation / Follow-Up", guidance.relatedServiceGroups.documentationFollowUp],
+                [
+                  "Modernization / Replacement Discussion",
+                  guidance.relatedServiceGroups.modernizationReplacement,
+                ],
+              ].map(([groupTitle, items]) => (
+                <div key={groupTitle as string}>
+                  <p className="font-extrabold text-brand-charcoal">
+                    {groupTitle as string}
+                  </p>
+                  <div className="mt-2">
+                    <PacketList items={items as string[]} tone="green" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </PacketSection>
+          <PacketSection title="Follow-Up Note Draft">
+            <div id="packet-follow-up" className="space-y-3">
+            {hasFollowUpNote ? (
+              <button
+                type="button"
+                onClick={() => copyText(guidance.followUpNoteDraft)}
+                className="rounded-xl border border-brand-gray200 bg-white px-3 py-2 text-sm font-extrabold text-brand-charcoal transition hover:bg-brand-gray100"
+              >
+                Copy Follow-Up Note
+              </button>
+            ) : null}
+            <div className="whitespace-pre-line text-[15px] leading-7">
+              {guidance.followUpNoteDraft}
+            </div>
+            </div>
+          </PacketSection>
+          <PacketSection title="Known from Source">
+            <PacketList items={guidance.knownSourceFacts} tone="neutral" />
+          </PacketSection>
+          <PacketSection title="Provided by User/Demo Profile">
+            <PacketList items={guidance.providedDemoProfileContext} tone="neutral" />
+          </PacketSection>
+          <PacketSection title="AI Interpretation">
+            <PacketList items={guidance.aiInterpretation} tone="amber" />
+          </PacketSection>
+        </div>
+      </div>
+
+      <div
+        id="packet-verification"
+        className="mt-6 rounded-2xl border border-brand-red border-l-4 border-l-brand-red bg-red-50 p-5 text-[15px] leading-7 text-brand-gray700"
+      >
+        <strong className="text-brand-charcoal">
+          Before using this with a customer:
+        </strong>{" "}
+        Confirm model numbers, manufacturer documentation, install/service dates,
+        recall applicability, prior deficiencies, and the internal review owner.
+        AI output supports preparation only and must be reviewed by qualified
+        personnel.
+      </div>
+
+      <div className="mt-4 rounded-2xl border border-brand-gray200 border-l-4 border-l-brand-warning bg-[#fff8e8] p-5 text-[15px] leading-7 text-brand-gray700">
         <strong className="text-brand-charcoal">Official Source Reminder:</strong>{" "}
         {guidance.officialSourceReminder}
       </div>
@@ -1001,7 +1781,7 @@ const ReadinessPacket = ({
 export default function Home() {
   const [engagementType, setEngagementType] =
     useState<EngagementType>("Inspection");
-  const [audience, setAudience] = useState<Audience>("Internal Inspector");
+  const [audience, setAudience] = useState<Audience>("Facility Manager");
   const [selectedSampleSite, setSelectedSampleSite] = useState(sampleSites[0]);
   const [selectedServiceLensId, setSelectedServiceLensId] = useState(serviceLenses[0].id);
   const [briefAction, setBriefAction] = useState<BriefAction>("inspection_prep");
@@ -1019,6 +1799,7 @@ export default function Home() {
   const [automaticSafetyReview, setAutomaticSafetyReview] =
     useState<AutomaticSafetyReview>(() => emptySafetyReview(sampleSiteDetails[sampleSites[0]].installedEquipment));
   const [autoReviewLoading, setAutoReviewLoading] = useState(false);
+  const [autoReviewCheckedAt, setAutoReviewCheckedAt] = useState<Date | null>(null);
 
   const prep = prepByEngagement[engagementType];
   const selectedSiteDetails = sampleSiteDetails[selectedSampleSite];
@@ -1029,7 +1810,7 @@ export default function Home() {
     selectedRecall
       ? `Optional manual CPSC recall result: ${selectedRecall.title}`
       : "No manual product safety recall selected. Packet is based on engagement, site, service, prep context, and automatic product safety review.",
-    `Sample site profile: ${selectedSiteDetails.label}`,
+    `Customer/Site Profile: ${selectedSiteDetails.label}`,
     `Ryan Service Lens: ${selectedServiceLens.label}`,
     `Engagement type: ${engagementType}`,
     `Audience: ${audience}`,
@@ -1040,6 +1821,22 @@ export default function Home() {
     if (!hasSearched || searching) return "";
     return `${results.length} ${results.length === 1 ? "result" : "results"} found`;
   }, [hasSearched, results.length, searching]);
+  const currentEquipmentCount = selectedSiteDetails.installedEquipment.length;
+  const currentProductSafetyStatus = autoReviewLoading
+    ? "Checking"
+    : automaticSafetyReview.possibleMatches.length
+      ? "Possible matches need verification"
+      : automaticSafetyReview.searchTermsUsed.length
+        ? "Auto-checked; verify sources"
+        : "Not checked";
+  const formattedAutoReviewCheckedAt = autoReviewCheckedAt
+    ? new Intl.DateTimeFormat("en-US", {
+        month: "short",
+        day: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+      }).format(autoReviewCheckedAt)
+    : "Pending";
 
   useEffect(() => {
     let ignore = false;
@@ -1056,6 +1853,7 @@ export default function Home() {
 
       if (!terms.length) {
         setAutoReviewLoading(false);
+        setAutoReviewCheckedAt(new Date());
         return;
       }
 
@@ -1106,6 +1904,7 @@ export default function Home() {
             "Verify official CPSC notices, manufacturer instructions, site records, and company procedures before action.",
           ],
         });
+        setAutoReviewCheckedAt(new Date());
       } catch {
         if (!ignore) {
           setAutomaticSafetyReview({
@@ -1117,6 +1916,7 @@ export default function Home() {
               "Verify product safety context manually against official CPSC and manufacturer sources.",
             ],
           });
+          setAutoReviewCheckedAt(new Date());
         }
       } finally {
         if (!ignore) setAutoReviewLoading(false);
@@ -1238,6 +2038,23 @@ export default function Home() {
     void searchRecalls();
   };
 
+  const startNewPacket = () => {
+    setEngagementType("Inspection");
+    setAudience("Facility Manager");
+    setSelectedSampleSite(sampleSites[0]);
+    setSelectedServiceLensId(serviceLenses[0].id);
+    setBriefAction("inspection_prep");
+    setQuery("");
+    setResults([]);
+    setHasSearched(false);
+    setSearchError("");
+    setSelectedRecall(null);
+    setGuidance(null);
+    setSummarySource("");
+    setSummaryError("");
+    setAdditionalNotes("");
+  };
+
   return (
     <main className="min-h-screen bg-brand-gray100">
       <div className="h-1.5 bg-brand-green" />
@@ -1270,7 +2087,7 @@ export default function Home() {
                 Prepare internal readiness packets for inspections, customer
                 training, fire department events, conventions, customer
                 meetings, and continuing education work using service context,
-                sample site details, optional public recall data, and
+                customer/site details, optional public recall data, and
                 AI-assisted reasoning.
               </p>
             </div>
@@ -1291,11 +2108,54 @@ export default function Home() {
 
       <div className="mx-auto max-w-[1180px] px-4 py-4 lg:px-6">
         <section className="rounded-2xl border border-brand-gray200 bg-white p-4 shadow-panel sm:p-5">
+          <SectionBand
+            icon="check"
+            title="Workflow Setup"
+            description="Choose the engagement, confirm the site/service context, review prep resources, and generate the packet."
+          />
           <SectionTitle
             eyebrow="Primary Workflow"
             title="Build an AI Engagement Readiness Packet"
             description="Start with the engagement context. Add product safety or manual context only if it is relevant."
           />
+          <div className="mt-4 rounded-2xl border border-brand-gray200 bg-brand-gray100 p-4">
+            <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+              <div>
+                <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-brand-green">
+                  Current Packet
+                </p>
+                <h3 className="mt-1 text-lg font-black text-brand-charcoal">
+                  {engagementType} readiness for {audience}
+                </h3>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <PacketBadge tone="green">{currentEquipmentCount} equipment items</PacketBadge>
+                <PacketBadge tone={automaticSafetyReview.possibleMatches.length ? "amber" : "neutral"}>
+                  {currentProductSafetyStatus}
+                </PacketBadge>
+              </div>
+            </div>
+            <div className="mt-3 grid gap-2 text-sm leading-6 text-brand-gray700 sm:grid-cols-2 lg:grid-cols-4">
+              <div>
+                <p className="font-extrabold text-brand-charcoal">Engagement</p>
+                <p>{engagementType}</p>
+              </div>
+              <div>
+                <p className="font-extrabold text-brand-charcoal">Audience</p>
+                <p>{audience}</p>
+              </div>
+              <div>
+                <p className="font-extrabold text-brand-charcoal">
+                  Sample Customer/Site Profile
+                </p>
+                <p>{selectedSampleSite}</p>
+              </div>
+              <div>
+                <p className="font-extrabold text-brand-charcoal">Service Lens</p>
+                <p>{selectedServiceLens.label}</p>
+              </div>
+            </div>
+          </div>
           <div className="mt-5">
             <StepLabel>Step 1: Engagement</StepLabel>
           </div>
@@ -1326,6 +2186,11 @@ export default function Home() {
         </section>
 
         <section className="mt-4 rounded-2xl border border-brand-gray200 bg-white p-4 shadow-panel sm:p-5">
+          <SectionBand
+            icon="building"
+            title="Site Equipment"
+            description="Demo site data appears here as the selected sample customer/site profile."
+          />
           <StepLabel>Step 2: Audience, Site, and Service Context</StepLabel>
           <div className="grid gap-3 md:grid-cols-3">
             <label className="text-sm font-bold text-brand-charcoal">
@@ -1344,7 +2209,7 @@ export default function Home() {
               </select>
             </label>
             <label className="text-sm font-bold text-brand-charcoal">
-              Sample Site Profile
+              Sample Customer/Site Profile
               <select
                 value={selectedSampleSite}
                 onChange={(event) => {
@@ -1383,13 +2248,19 @@ export default function Home() {
               {selectedSampleSite} | Service Lens: {selectedServiceLens.label}
             </p>
             <p className="mt-1">
+              <span className="rounded-full border border-brand-gray200 bg-white px-2 py-0.5 text-xs font-extrabold uppercase tracking-[0.08em] text-brand-gray700">
+                Sample profile
+              </span>{" "}
+              {selectedSiteDetails.shortSummary}
+            </p>
+            <p className="mt-1">
               Optional Manual Search Result:{" "}
               {selectedRecall ? selectedRecall.title : "None selected"}
             </p>
           </div>
           <div className="mt-3 rounded-xl border border-brand-gray200 bg-white p-3 text-sm leading-6 text-brand-gray700">
             <p className="font-extrabold text-brand-charcoal">
-              Installed Equipment / Products
+              Sample Customer/Site Profile: Installed Equipment / Products
             </p>
             <div className="mt-2 grid gap-2 md:grid-cols-3">
               {selectedSiteDetails.installedEquipment.length ? (
@@ -1406,7 +2277,10 @@ export default function Home() {
                   </div>
                 ))
               ) : (
-                <p>No installed equipment selected.</p>
+                <p>
+                  Select a customer/site profile to load known systems,
+                  installed equipment, and automatic product safety review.
+                </p>
               )}
             </div>
           </div>
@@ -1418,28 +2292,40 @@ export default function Home() {
               <div>
                 <p className="font-extrabold text-brand-charcoal">Known Systems</p>
                 <p>
-                  {selectedSiteDetails.systems.length
-                    ? selectedSiteDetails.systems.join(", ")
-                    : "No sample site systems selected."}
+                  {selectedSiteDetails.knownSystems.length
+                    ? selectedSiteDetails.knownSystems.join(", ")
+                    : "Select a customer/site profile to load known systems, installed equipment, and automatic product safety review."}
                 </p>
               </div>
               <div>
                 <p className="font-extrabold text-brand-charcoal">
                   Upcoming Reminder
                 </p>
-                <p>{selectedSiteDetails.reminder}</p>
+                <p>{selectedSiteDetails.upcomingReminder}</p>
               </div>
               <div>
                 <p className="font-extrabold text-brand-charcoal">
                   Training / Education Need
                 </p>
-                <p>{selectedSiteDetails.trainingNeed}</p>
+                <p>{selectedSiteDetails.trainingEducationNeed}</p>
               </div>
               <div>
                 <p className="font-extrabold text-brand-charcoal">
                   Documentation / Deficiency Context
                 </p>
-                <p>{selectedSiteDetails.documentationNeed}</p>
+                <p>{selectedSiteDetails.documentationDeficiencyContext}</p>
+              </div>
+              <div>
+                <p className="font-extrabold text-brand-charcoal">
+                  Service History Notes
+                </p>
+                <p>{selectedSiteDetails.serviceHistoryNotes}</p>
+              </div>
+              <div>
+                <p className="font-extrabold text-brand-charcoal">
+                  Recommended Prep Focus
+                </p>
+                <p>{selectedSiteDetails.recommendedPrepFocus}</p>
               </div>
               <div>
                 <p className="font-extrabold text-brand-charcoal">
@@ -1475,7 +2361,10 @@ export default function Home() {
                       </div>
                     ))
                   ) : (
-                    <p>No installed equipment selected.</p>
+                    <p>
+                      Select a customer/site profile to load known systems,
+                      installed equipment, and automatic product safety review.
+                    </p>
                   )}
                 </div>
               </div>
@@ -1492,6 +2381,11 @@ export default function Home() {
             </div>
           </details>
           <div className="mt-4 rounded-xl border border-brand-gray200 bg-white p-3">
+            <SectionBand
+              icon="clipboard"
+              title="Engagement Prep"
+              description="Auto-filled prep resources based on the selected engagement type."
+            />
             <StepLabel>Step 3: Engagement Prep Resources</StepLabel>
             <div className="grid gap-3 text-sm leading-6 text-brand-gray700 md:grid-cols-3">
               <div>
@@ -1554,22 +2448,60 @@ export default function Home() {
             </details>
           </div>
           <div className="mt-4 rounded-xl border border-brand-gray200 bg-white p-3">
+            <SectionBand
+              icon="shield"
+              title="Automatic Safety Review"
+              description="The app automatically checks selected site equipment against public product safety data."
+            />
             <StepLabel>Step 4: Automatic Product Safety Review</StepLabel>
             <div className="rounded-xl border border-brand-gray200 bg-brand-gray100 p-3">
-              <p className="text-sm font-extrabold uppercase tracking-[0.08em] text-brand-charcoal">
-                Automatic Product Safety Review
-              </p>
-              <p className="mt-2 text-sm leading-6 text-brand-gray700">
-                The app checks public CPSC recall data using installed equipment
-                from the selected site profile. Possible matches need
-                verification; the app does not decide whether a recall applies.
-              </p>
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                <div>
+                  <p className="text-sm font-extrabold uppercase tracking-[0.08em] text-brand-charcoal">
+                    Automatic Product Safety Review
+                  </p>
+                  <p className="mt-2 text-sm leading-6 text-brand-gray700">
+                    The app checks public CPSC recall data using installed
+                    equipment from the selected customer/site profile. Possible matches
+                    need verification; the app does not decide whether a recall
+                    applies.
+                  </p>
+                </div>
+                <span className="w-fit rounded-full border border-brand-gray200 bg-white px-3 py-1 text-xs font-extrabold uppercase tracking-[0.08em] text-brand-gray700">
+                  Last checked: {formattedAutoReviewCheckedAt}
+                </span>
+              </div>
               {autoReviewLoading ? (
                 <p className="mt-3 text-sm font-extrabold text-brand-charcoal">
                   Checking installed equipment against public recall data...
                 </p>
               ) : (
-                <div className="mt-3 grid gap-3 text-sm leading-6 text-brand-gray700 md:grid-cols-2">
+                <div className="mt-4 space-y-4 text-sm leading-6 text-brand-gray700">
+                  <div className="grid gap-2 md:grid-cols-5">
+                    {[
+                      ["Equipment loaded", `${automaticSafetyReview.equipmentChecked.length} items`],
+                      ["Search terms generated", `${automaticSafetyReview.searchTermsUsed.length} terms`],
+                      ["CPSC checked", "Public data reviewed"],
+                      [
+                        "Possible matches reviewed",
+                        `${automaticSafetyReview.possibleMatches.length} possible`,
+                      ],
+                      ["Human verification required", "Always required"],
+                    ].map(([label, value]) => (
+                      <div
+                        key={label}
+                        className="rounded-xl border border-brand-gray200 bg-white p-3"
+                      >
+                        <p className="text-xs font-extrabold uppercase tracking-[0.08em] text-brand-gray700">
+                          {label}
+                        </p>
+                        <p className="mt-1 font-extrabold text-brand-charcoal">
+                          {value}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="grid gap-3 md:grid-cols-2">
                   <div>
                     <p className="font-extrabold text-brand-charcoal">
                       Equipment checked
@@ -1588,7 +2520,7 @@ export default function Home() {
                     </p>
                     <p>
                       {automaticSafetyReview.searchTermsUsed.join(", ") ||
-                        "No automatic search terms available."}
+                        "Select a customer/site profile to load known systems, installed equipment, and automatic product safety review."}
                     </p>
                   </div>
                   <div>
@@ -1633,6 +2565,51 @@ export default function Home() {
                       ))}
                     </ul>
                   </div>
+                  </div>
+                  <div className="hidden overflow-hidden rounded-xl border border-brand-gray200 bg-white md:block">
+                    <table className="w-full text-left text-sm">
+                      <thead className="bg-brand-gray100 text-xs uppercase tracking-[0.08em] text-brand-gray700">
+                        <tr>
+                          <th className="px-3 py-2">Equipment</th>
+                          <th className="px-3 py-2">Search Terms</th>
+                          <th className="px-3 py-2">Result</th>
+                          <th className="px-3 py-2">Status</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-brand-gray200">
+                        {automaticSafetyReview.equipmentChecked.map((item) => {
+                          const label = equipmentLabel(item);
+                          const terms = automaticSafetyReview.searchTermsUsed.filter(
+                            (term) =>
+                              term.toLowerCase().includes(item.category.toLowerCase()) ||
+                              term.toLowerCase().includes(item.manufacturer.toLowerCase()) ||
+                              term.toLowerCase().includes(item.productName.toLowerCase()),
+                          );
+                          const matches = automaticSafetyReview.possibleMatches.filter(
+                            (match) => match.equipmentLabel === label,
+                          );
+                          return (
+                            <tr key={`${item.category}-${item.productName}-review-row`}>
+                              <td className="px-3 py-3 font-extrabold text-brand-charcoal">
+                                {label}
+                              </td>
+                              <td className="px-3 py-3">
+                                {terms.slice(0, 3).join(", ") || "General equipment terms"}
+                              </td>
+                              <td className="px-3 py-3">
+                                {matches.length
+                                  ? `${matches.length} possible match${matches.length === 1 ? "" : "es"}`
+                                  : "No obvious match"}
+                              </td>
+                              <td className="px-3 py-3">
+                                <PacketBadge tone="amber">Needs Verification</PacketBadge>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               )}
             </div>
@@ -1643,7 +2620,7 @@ export default function Home() {
               <p className="mt-2 text-sm leading-6 text-brand-gray700">
                 Use this only to check an additional product, manufacturer,
                 model, hazard, or keyword that is not already included in the
-                selected site profile.
+                selected customer/site profile.
               </p>
               {resultCountLabel ? (
                 <p className="mt-3 w-fit rounded-full bg-brand-gray100 px-3 py-1 text-sm font-bold text-brand-gray700">
@@ -1882,9 +2859,21 @@ export default function Home() {
               <div className="h-2 w-full overflow-hidden rounded-full bg-brand-gray100">
                 <div className="h-full w-1/2 animate-pulse rounded-full bg-brand-green" />
               </div>
-              <p className="mt-3 text-sm font-extrabold text-brand-charcoal">
-                Generating AI Engagement Readiness Packet...
-              </p>
+              <div className="mt-4 grid gap-2 text-sm md:grid-cols-4">
+                {[
+                  "Reviewing site equipment",
+                  "Checking product safety data",
+                  "Applying engagement context",
+                  "Building readiness packet",
+                ].map((item) => (
+                  <div
+                    key={item}
+                    className="rounded-xl border border-brand-gray200 bg-brand-gray100 p-3 font-extrabold text-brand-charcoal"
+                  >
+                    {item}
+                  </div>
+                ))}
+              </div>
             </div>
           ) : null}
           {summaryError && !selectedRecall ? (
@@ -1894,17 +2883,38 @@ export default function Home() {
           ) : null}
         </section>
         <div className="mt-5">
-          <ReadinessPacket
-            guidance={guidance}
-            selectedRecall={selectedRecall}
-            engagementType={engagementType}
-            audience={audience}
-            sampleSite={selectedSampleSite}
-            serviceLens={selectedServiceLens}
-            summarySource={summarySource}
-            briefAction={briefAction}
-            automaticSafetyReview={automaticSafetyReview}
-          />
+          {guidance ? (
+            <ReadinessPacket
+              guidance={guidance}
+              selectedRecall={selectedRecall}
+              engagementType={engagementType}
+              audience={audience}
+              sampleSite={selectedSampleSite}
+              serviceLens={selectedServiceLens}
+              summarySource={summarySource}
+              briefAction={briefAction}
+              automaticSafetyReview={automaticSafetyReview}
+              onRegenerate={() => void generateSummary(selectedRecall, briefAction)}
+              onStartNew={startNewPacket}
+            />
+          ) : (
+            <section className="rounded-2xl border border-dashed border-brand-gray200 bg-white p-5 shadow-panel">
+              <SectionBand
+                icon="file"
+                title="Generated Packet"
+                description="Packet Preview"
+              />
+              <h2 className="text-xl font-black text-brand-charcoal">
+                Packet Preview
+              </h2>
+              <p className="mt-2 text-sm leading-6 text-brand-gray700">
+                Select context and generate a readiness packet that includes
+                installed equipment, automatic product safety review, prep
+                resources, related service considerations, and verification
+                reminders.
+              </p>
+            </section>
+          )}
         </div>
 
         <details className="mt-5 rounded-2xl border border-brand-gray200 bg-white p-4 text-sm leading-6 text-brand-gray700 shadow-panel">
@@ -1921,11 +2931,18 @@ export default function Home() {
           </ol>
         </details>
 
-        <section className="mt-5 rounded-2xl border-l-4 border-brand-warning bg-[#fff8e8] p-4 text-sm leading-6 text-brand-gray700 shadow-sm sm:p-5">
+        <section className="mt-5 rounded-2xl border border-brand-gray200 bg-white p-4 shadow-panel sm:p-5">
+          <SectionBand
+            icon="alert"
+            title="Verification Required"
+            description="Use the packet as internal preparation support, then verify against official sources and qualified internal review."
+          />
+          <div className="rounded-2xl border-l-4 border-brand-warning bg-[#fff8e8] p-4 text-sm leading-6 text-brand-gray700">
           <strong className="text-brand-charcoal">Responsible AI:</strong>{" "}
           AI-generated guidance should be reviewed against official CPSC
           notices, manufacturer instructions, applicable codes, NFPA standards,
           and company procedures before action is taken.
+          </div>
         </section>
 
       </div>
