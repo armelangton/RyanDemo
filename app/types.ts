@@ -24,6 +24,13 @@ export type AiGuidance = {
   equipmentProductChecklist: string[];
   trainingOrEventPrepNotes: string[];
   relatedServiceConsiderations: string[];
+  relatedServiceGroups: {
+    safetyRiskReduction: string[];
+    maintenanceTesting: string[];
+    customerEducation: string[];
+    documentationFollowUp: string[];
+    modernizationReplacement: string[];
+  };
   recommendedNextBestActions: string[];
   followUpNoteDraft: string;
   missingInformationToVerify: string[];

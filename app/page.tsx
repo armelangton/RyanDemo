@@ -9,6 +9,7 @@ type EngagementType =
   | "Customer Training"
   | "Fire Department / Recruit Training"
   | "Municipality / Public Safety Event"
+  | "Convention / Trade Show"
   | "Customer Meeting"
   | "Continuing Education Prep";
 
@@ -50,6 +51,7 @@ const engagementTypes: EngagementType[] = [
   "Customer Training",
   "Fire Department / Recruit Training",
   "Municipality / Public Safety Event",
+  "Convention / Trade Show",
   "Customer Meeting",
   "Continuing Education Prep",
 ];
@@ -243,10 +245,16 @@ const briefActions: Array<{ label: string; value: BriefAction }> = [
 ];
 
 const quickSearches = [
+  "smoke alarm",
   "fire extinguisher",
   "sprinkler",
+  "fire alarm",
   "alarm panel",
   "hydrant",
+  "fire pump",
+  "emergency light",
+  "exit sign",
+  "special hazard",
   "Kidde",
   "First Alert",
 ];
@@ -321,6 +329,32 @@ const prepByEngagement: Record<
     topics: ["Inspection timing", "Risk prioritization", "Community or facility impact"],
     followUp: "Document public safety questions and route them to the right internal owner.",
     notes: "Keep guidance educational and avoid final code or compliance determinations.",
+  },
+  "Convention / Trade Show": {
+    materials: [
+      "Approved service literature",
+      "Lead capture or follow-up notes",
+      "Product safety talking points",
+    ],
+    checklist: [
+      "Prepare concise explanation of relevant recall or product safety issue",
+      "Identify likely attendee roles and questions",
+      "Flag questions that need service leadership or technical follow-up",
+    ],
+    questions: [
+      "Is this product installed at your facility?",
+      "Do you have upcoming inspections or training needs?",
+      "Who manages documentation and follow-up for your systems?",
+    ],
+    topics: [
+      "Customer education",
+      "Inspection and documentation awareness",
+      "Related service considerations",
+    ],
+    followUp:
+      "Capture attendee questions, related system interests, and any items that require qualified internal review.",
+    notes:
+      "Use this as convention prep only; do not make final product, compliance, or service commitments from AI guidance.",
   },
   "Customer Meeting": {
     materials: ["Account notes", "Open service items", "Relevant recall summaries"],
@@ -404,6 +438,32 @@ const BriefBlock = ({
   </div>
 );
 
+const PacketSection = ({
+  title,
+  children,
+  defaultOpen = false,
+}: {
+  title: string;
+  children: React.ReactNode;
+  defaultOpen?: boolean;
+}) => (
+  <details
+    open={defaultOpen}
+    className="rounded-xl border border-brand-gray200 bg-brand-gray100 p-4"
+  >
+    <summary className="cursor-pointer text-sm font-extrabold uppercase tracking-[0.08em] text-brand-charcoal">
+      {title}
+    </summary>
+    <div className="mt-3 text-sm leading-6 text-brand-gray700">{children}</div>
+  </details>
+);
+
+const StepLabel = ({ children }: { children: React.ReactNode }) => (
+  <p className="mb-2 text-xs font-extrabold uppercase tracking-[0.14em] text-brand-green">
+    {children}
+  </p>
+);
+
 const ReadinessPacket = ({
   guidance,
   selectedRecall,
@@ -423,7 +483,7 @@ const ReadinessPacket = ({
   summarySource: string;
   briefAction: BriefAction;
 }) => {
-  if (!guidance || !selectedRecall) return null;
+  if (!guidance) return null;
 
   return (
     <section className="rounded-2xl border border-brand-gray200 bg-white p-5 shadow-panel sm:p-6">
@@ -449,7 +509,10 @@ const ReadinessPacket = ({
           {engagementType} | {audience} |{" "}
           {briefActions.find((action) => action.value === briefAction)?.label}.
           Site context: {sampleSite}. Service lens: {serviceLens.label}.
-          Recall source: {selectedRecall.title}
+          Product safety context:{" "}
+          {selectedRecall
+            ? selectedRecall.title
+            : "No product safety recall selected"}
         </p>
       </div>
 
@@ -474,7 +537,7 @@ const ReadinessPacket = ({
           </p>
         </div>
 
-        <BriefBlock title="Key Attention Flags">
+        <PacketSection title="Key Attention Flags" defaultOpen>
           <ul className="space-y-2">
             {guidance.keyAttentionFlags.map((item) => (
               <li key={item} className="flex gap-2">
@@ -483,8 +546,8 @@ const ReadinessPacket = ({
               </li>
             ))}
           </ul>
-        </BriefBlock>
-        <BriefBlock title="Recommended Next Best Actions">
+        </PacketSection>
+        <PacketSection title="Recommended Next Best Actions" defaultOpen>
           <ul className="space-y-2">
             {guidance.recommendedNextBestActions.map((item) => (
               <li key={item} className="flex gap-2">
@@ -493,8 +556,8 @@ const ReadinessPacket = ({
               </li>
             ))}
           </ul>
-        </BriefBlock>
-        <BriefBlock title="Missing Information to Verify">
+        </PacketSection>
+        <PacketSection title="Missing Information to Verify">
           <ul className="space-y-2">
             {guidance.missingInformationToVerify.map((item) => (
               <li key={item} className="flex gap-2">
@@ -503,11 +566,11 @@ const ReadinessPacket = ({
               </li>
             ))}
           </ul>
-        </BriefBlock>
-        <BriefBlock title="Internal Field Brief">
+        </PacketSection>
+        <PacketSection title="Internal Field Brief" defaultOpen>
           {guidance.internalFieldBrief}
-        </BriefBlock>
-        <BriefBlock title="Audience-Specific Talking Points">
+        </PacketSection>
+        <PacketSection title="Audience-Specific Talking Points">
           <ul className="space-y-2">
             {guidance.audienceSpecificTalkingPoints.map((item) => (
               <li key={item} className="flex gap-2">
@@ -516,8 +579,8 @@ const ReadinessPacket = ({
               </li>
             ))}
           </ul>
-        </BriefBlock>
-        <BriefBlock title="Equipment / Product Checklist">
+        </PacketSection>
+        <PacketSection title="Equipment / Product Checklist">
           <ul className="space-y-2">
             {guidance.equipmentProductChecklist.map((item) => (
               <li key={item} className="flex gap-2">
@@ -526,8 +589,8 @@ const ReadinessPacket = ({
               </li>
             ))}
           </ul>
-        </BriefBlock>
-        <BriefBlock title="Training or Event Prep Notes">
+        </PacketSection>
+        <PacketSection title="Training or Event Prep Notes">
           <ul className="space-y-2">
             {guidance.trainingOrEventPrepNotes.map((item) => (
               <li key={item} className="flex gap-2">
@@ -536,18 +599,36 @@ const ReadinessPacket = ({
               </li>
             ))}
           </ul>
-        </BriefBlock>
-        <BriefBlock title="Related Service Considerations">
-          <ul className="space-y-2">
-            {guidance.relatedServiceConsiderations.map((item) => (
-              <li key={item} className="flex gap-2">
-                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-green" />
-                <span>{item}</span>
-              </li>
+        </PacketSection>
+        <PacketSection title="Related Service Considerations">
+          <div className="grid gap-3 md:grid-cols-2">
+            {[
+              ["Safety / Risk Reduction", guidance.relatedServiceGroups.safetyRiskReduction],
+              ["Maintenance / Testing", guidance.relatedServiceGroups.maintenanceTesting],
+              ["Customer Education", guidance.relatedServiceGroups.customerEducation],
+              ["Documentation / Follow-Up", guidance.relatedServiceGroups.documentationFollowUp],
+              [
+                "Modernization / Replacement Discussion",
+                guidance.relatedServiceGroups.modernizationReplacement,
+              ],
+            ].map(([groupTitle, items]) => (
+              <div key={groupTitle as string}>
+                <p className="font-extrabold text-brand-charcoal">
+                  {groupTitle as string}
+                </p>
+                <ul className="mt-1 space-y-1">
+                  {(items as string[]).map((item) => (
+                    <li key={item} className="flex gap-2">
+                      <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-green" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             ))}
-          </ul>
-        </BriefBlock>
-        <BriefBlock title="Source Context Used">
+          </div>
+        </PacketSection>
+        <PacketSection title="Source Context Used">
           <ul className="space-y-2">
             {guidance.sourceContextUsed.map((item) => (
               <li key={item} className="flex gap-2">
@@ -556,11 +637,11 @@ const ReadinessPacket = ({
               </li>
             ))}
           </ul>
-        </BriefBlock>
-        <BriefBlock title="Follow-Up Note Draft">
+        </PacketSection>
+        <PacketSection title="Follow-Up Note Draft">
           <div className="whitespace-pre-line">{guidance.followUpNoteDraft}</div>
-        </BriefBlock>
-        <BriefBlock title="Known from Source">
+        </PacketSection>
+        <PacketSection title="Known from Source">
           <ul className="space-y-2">
             {guidance.knownSourceFacts.map((item) => (
               <li key={item} className="flex gap-2">
@@ -569,8 +650,8 @@ const ReadinessPacket = ({
               </li>
             ))}
           </ul>
-        </BriefBlock>
-        <BriefBlock title="Provided by User/Demo Profile">
+        </PacketSection>
+        <PacketSection title="Provided by User/Demo Profile">
           <ul className="space-y-2">
             {guidance.providedDemoProfileContext.map((item) => (
               <li key={item} className="flex gap-2">
@@ -579,8 +660,8 @@ const ReadinessPacket = ({
               </li>
             ))}
           </ul>
-        </BriefBlock>
-        <BriefBlock title="AI Interpretation">
+        </PacketSection>
+        <PacketSection title="AI Interpretation">
           <ul className="space-y-2">
             {guidance.aiInterpretation.map((item) => (
               <li key={item} className="flex gap-2">
@@ -589,7 +670,7 @@ const ReadinessPacket = ({
               </li>
             ))}
           </ul>
-        </BriefBlock>
+        </PacketSection>
       </div>
 
       <div className="mt-5 rounded-xl border-l-4 border-brand-warning bg-[#fff8e8] p-4 text-sm leading-6 text-brand-gray700">
@@ -617,6 +698,7 @@ export default function Home() {
   const [summarySource, setSummarySource] = useState("");
   const [summarizingId, setSummarizingId] = useState("");
   const [summaryError, setSummaryError] = useState("");
+  const [additionalNotes, setAdditionalNotes] = useState("");
 
   const prep = prepByEngagement[engagementType];
   const selectedSiteDetails = sampleSiteDetails[selectedSampleSite];
@@ -625,7 +707,7 @@ export default function Home() {
   const sourceContextUsed = [
     selectedRecall
       ? `CPSC recall result: ${selectedRecall.title}`
-      : "CPSC recall result: selected after a recall card is used",
+      : "No product safety recall selected. Packet is based on engagement, site, service, and prep context.",
     `Sample site profile: ${selectedSiteDetails.label}`,
     `Ryan Service Lens: ${selectedServiceLens.label}`,
     `Engagement type: ${engagementType}`,
@@ -670,12 +752,17 @@ export default function Home() {
     }
   };
 
-  const generateSummary = async (recall: RecallResult, action = briefAction) => {
-    setSelectedRecall(recall);
+  const generateSummary = async (
+    recall: RecallResult | null = selectedRecall,
+    action = briefAction,
+  ) => {
+    if (recall) {
+      setSelectedRecall(recall);
+    }
     setGuidance(null);
     setSummarySource("");
     setSummaryError("");
-    setSummarizingId(recall.id);
+    setSummarizingId(recall?.id ?? "engagement-packet");
     setBriefAction(action);
 
     try {
@@ -694,6 +781,8 @@ export default function Home() {
           trainingNeed: selectedSiteDetails.trainingNeed,
           documentationNeed: selectedSiteDetails.documentationNeed,
           relatedServiceConsideration: selectedSiteDetails.relatedService,
+          prepResources: prep,
+          additionalNotes,
           sourceContext: {
             sourceContextUsed,
             responsibleAiLabels: knowledgeBase.responsibleAiLabels,
@@ -742,62 +831,58 @@ export default function Home() {
       <div className="h-1.5 bg-brand-green" />
 
       <header className="bg-white">
-        <div className="mx-auto max-w-[1180px] px-5 py-6 lg:px-6">
-          <div className="flex flex-col gap-4 border-b border-brand-gray200 pb-5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mx-auto max-w-[1180px] px-4 py-3 lg:px-6">
+          <div className="flex flex-col gap-2 border-b border-brand-gray200 pb-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <p className="text-2xl font-black uppercase tracking-[0.03em] text-brand-green">
+              <p className="text-lg font-black uppercase tracking-[0.03em] text-brand-green sm:text-2xl">
                 RYAN FIRE PROTECTION, INC.
               </p>
-              <p className="mt-1 text-sm font-semibold text-brand-gray700">
+              <p className="mt-0.5 text-xs font-semibold text-brand-gray700 sm:text-sm">
                 Internal Field Assistant Concept
               </p>
             </div>
-            <span className="w-fit rounded-full border border-brand-gray200 bg-brand-gray100 px-3 py-1 text-xs font-extrabold uppercase tracking-[0.12em] text-brand-gray700">
+            <span className="w-fit rounded-full border border-brand-gray200 bg-brand-gray100 px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-[0.1em] text-brand-gray700 sm:text-xs">
               Not an official Ryan product
             </span>
           </div>
 
-          <section className="grid gap-5 py-7 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
+          <section className="py-3">
             <div>
               <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-brand-green">
                 Fire Protection Field Assistant
               </p>
-              <h1 className="mt-3 max-w-3xl text-[32px] font-black leading-tight text-brand-charcoal sm:text-[44px]">
-                What do I need to know before I walk in?
+              <h1 className="mt-2 max-w-3xl text-[22px] font-black leading-tight text-brand-charcoal sm:text-[34px]">
+                Prepare for a field, training, or public safety engagement
               </h1>
-              <p className="mt-4 max-w-3xl text-base leading-7 text-brand-gray700">
-                Use public recall data, sample site context, and AI-assisted
-                reasoning to prepare for inspections, training, customer
-                meetings, and public safety events before the conversation
-                starts.
+              <p className="mt-3 max-w-3xl text-sm leading-6 text-brand-gray700 sm:text-base">
+                Search public recall data, confirm the audience/site context,
+                and generate an internal AI readiness packet.
               </p>
             </div>
-            <div className="rounded-2xl border border-brand-gray200 bg-brand-gray100 p-4">
-              <p className="font-extrabold text-brand-charcoal">
-                Suggested demo path
-              </p>
-              <ol className="mt-3 space-y-2 text-sm leading-6 text-brand-gray700">
-                <li>1. Choose an engagement, audience, site profile, and service lens.</li>
-                <li>2. Search <strong>smoke alarm</strong> or another equipment term.</li>
-                <li>3. Generate an AI Engagement Readiness Packet from a recall card.</li>
-              </ol>
-              <div className="mt-4 rounded-xl border-l-4 border-brand-green bg-white p-3 text-sm leading-6 text-brand-gray700">
-                CPSC search works without an API key. AI uses OpenAI when
-                configured, with a structured demo fallback otherwise.
-              </div>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <span className="rounded-full bg-brand-gray100 px-3 py-1 text-xs font-extrabold uppercase tracking-[0.1em] text-brand-gray700">
+                Live CPSC Data
+              </span>
+              <span className="rounded-full bg-brand-gray100 px-3 py-1 text-xs font-extrabold uppercase tracking-[0.1em] text-brand-gray700">
+                AI-Generated Packet
+              </span>
+              <span className="rounded-full border border-brand-warning px-3 py-1 text-xs font-extrabold uppercase tracking-[0.1em] text-brand-warning">
+                Human Review Required
+              </span>
             </div>
           </section>
         </div>
       </header>
 
-      <div className="mx-auto max-w-[1180px] px-5 py-6 lg:px-6">
-        <section className="rounded-2xl border border-brand-gray200 bg-white p-5 shadow-panel">
+      <div className="mx-auto max-w-[1180px] px-4 py-4 lg:px-6">
+        <section className="rounded-2xl border border-brand-gray200 bg-white p-4 shadow-panel sm:p-5">
+          <StepLabel>Step 1: Choose engagement type</StepLabel>
           <SectionTitle
             eyebrow="Engagement"
-            title="What are you preparing for?"
-            description="Choose the context first so the field brief is framed for the right conversation."
+            title="Choose engagement type"
+            description="Pick the type of work you are preparing for."
           />
-          <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-4 grid grid-cols-2 gap-2 lg:grid-cols-3">
             {engagementTypes.map((type) => (
               <button
                 key={type}
@@ -806,7 +891,7 @@ export default function Home() {
                   setEngagementType(type);
                   setGuidance(null);
                 }}
-                className={`rounded-xl border px-4 py-3 text-left text-sm font-extrabold transition ${
+                className={`min-h-12 rounded-xl border px-3 py-2 text-left text-xs font-extrabold transition sm:text-sm ${
                   engagementType === type
                     ? "border-brand-green bg-brand-green text-white"
                     : "border-brand-gray200 bg-white text-brand-charcoal hover:bg-brand-gray100"
@@ -816,7 +901,11 @@ export default function Home() {
               </button>
             ))}
           </div>
-          <div className="mt-4 grid gap-3 md:grid-cols-3">
+        </section>
+
+        <section className="mt-4 rounded-2xl border border-brand-gray200 bg-white p-4 shadow-panel sm:p-5">
+          <StepLabel>Step 2: Choose audience, site, and service context</StepLabel>
+          <div className="grid gap-3 md:grid-cols-3">
             <label className="text-sm font-bold text-brand-charcoal">
               Audience
               <select
@@ -825,7 +914,7 @@ export default function Home() {
                   setAudience(event.target.value as Audience);
                   setGuidance(null);
                 }}
-                className="mt-2 min-h-12 w-full rounded-xl border border-brand-gray200 bg-white px-3 text-brand-charcoal"
+                className="mt-2 min-h-11 w-full rounded-xl border border-brand-gray200 bg-white px-3 text-brand-charcoal"
               >
                 {audiences.map((item) => (
                   <option key={item}>{item}</option>
@@ -840,7 +929,7 @@ export default function Home() {
                   setSelectedSampleSite(event.target.value);
                   setGuidance(null);
                 }}
-                className="mt-2 min-h-12 w-full rounded-xl border border-brand-gray200 bg-white px-3 text-brand-charcoal"
+                className="mt-2 min-h-11 w-full rounded-xl border border-brand-gray200 bg-white px-3 text-brand-charcoal"
               >
                 {sampleSites.map((item) => (
                   <option key={item}>{item}</option>
@@ -855,7 +944,7 @@ export default function Home() {
                   setSelectedServiceLensId(event.target.value);
                   setGuidance(null);
                 }}
-                className="mt-2 min-h-12 w-full rounded-xl border border-brand-gray200 bg-white px-3 text-brand-charcoal"
+                className="mt-2 min-h-11 w-full rounded-xl border border-brand-gray200 bg-white px-3 text-brand-charcoal"
               >
                 {serviceLenses.map((lens) => (
                   <option key={lens.id} value={lens.id}>
@@ -865,48 +954,184 @@ export default function Home() {
               </select>
             </label>
           </div>
-          <div className="mt-4 grid gap-3 md:grid-cols-3">
-            <BriefBlock title="Known systems">
-              {selectedSiteDetails.systems.length
-                ? selectedSiteDetails.systems.join(", ")
-                : "Select a sample site to add equipment context."}
-            </BriefBlock>
-            <BriefBlock title="Upcoming reminder">
-              {selectedSiteDetails.reminder}
-            </BriefBlock>
-            <BriefBlock title="Training / education need">
-              {selectedSiteDetails.trainingNeed}
-            </BriefBlock>
+          <div className="mt-4 rounded-xl border border-brand-gray200 bg-brand-gray100 p-3 text-sm leading-6 text-brand-gray700">
+            <p className="font-extrabold text-brand-charcoal">Context being used</p>
+            <p className="mt-1">
+              Engagement: {engagementType} | Audience: {audience} | Site:{" "}
+              {selectedSampleSite} | Service Lens: {selectedServiceLens.label}
+            </p>
+            <p className="mt-1">
+              Product Safety / Recall Context:{" "}
+              {selectedRecall ? selectedRecall.title : "None selected"}
+            </p>
           </div>
-          <div className="mt-4 grid gap-3 md:grid-cols-2">
-            <BriefBlock title="Ryan Service Lens Focus">
-              {selectedServiceLens.focus.join(", ")}
-            </BriefBlock>
-            <BriefBlock title="Documentation / deficiency context">
-              {selectedSiteDetails.documentationNeed}
-            </BriefBlock>
-          </div>
-          <div className="mt-4 rounded-xl border border-brand-gray200 bg-brand-gray100 p-4">
-            <h3 className="text-sm font-extrabold uppercase tracking-[0.08em] text-brand-charcoal">
-              Source Context Used
-            </h3>
-            <div className="mt-3 grid gap-2 text-sm leading-6 text-brand-gray700 md:grid-cols-2">
-              {sourceContextUsed.map((item) => (
-                <div key={item} className="flex gap-2">
-                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-green" />
-                  <span>{item}</span>
-                </div>
-              ))}
+          <details className="mt-3 rounded-xl border border-brand-gray200 bg-white p-3">
+            <summary className="cursor-pointer text-sm font-extrabold text-brand-charcoal">
+              View site and source details
+            </summary>
+            <div className="mt-3 grid gap-3 text-sm leading-6 text-brand-gray700 md:grid-cols-2">
+              <div>
+                <p className="font-extrabold text-brand-charcoal">Known Systems</p>
+                <p>
+                  {selectedSiteDetails.systems.length
+                    ? selectedSiteDetails.systems.join(", ")
+                    : "No sample site systems selected."}
+                </p>
+              </div>
+              <div>
+                <p className="font-extrabold text-brand-charcoal">
+                  Upcoming Reminder
+                </p>
+                <p>{selectedSiteDetails.reminder}</p>
+              </div>
+              <div>
+                <p className="font-extrabold text-brand-charcoal">
+                  Training / Education Need
+                </p>
+                <p>{selectedSiteDetails.trainingNeed}</p>
+              </div>
+              <div>
+                <p className="font-extrabold text-brand-charcoal">
+                  Documentation Need
+                </p>
+                <p>{selectedSiteDetails.documentationNeed}</p>
+              </div>
+              <div>
+                <p className="font-extrabold text-brand-charcoal">
+                  Ryan Service Lens Focus
+                </p>
+                <p>{selectedServiceLens.focus.join(", ")}</p>
+              </div>
+              <div>
+                <p className="font-extrabold text-brand-charcoal">
+                  Related Service Considerations
+                </p>
+                <p>{selectedSiteDetails.relatedService}</p>
+              </div>
             </div>
+          </details>
+          <div className="mt-4 rounded-xl border border-brand-gray200 bg-white p-3">
+            <StepLabel>Step 3: Review instructor / event prep resources</StepLabel>
+            <div className="grid gap-3 text-sm leading-6 text-brand-gray700 md:grid-cols-3">
+              <div>
+                <p className="font-extrabold text-brand-charcoal">
+                  Materials to bring
+                </p>
+                <ul className="mt-1 space-y-1">
+                  {prep.materials.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <p className="font-extrabold text-brand-charcoal">
+                  Suggested agenda / topics
+                </p>
+                <ul className="mt-1 space-y-1">
+                  {prep.topics.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <p className="font-extrabold text-brand-charcoal">
+                  Likely attendee questions
+                </p>
+                <ul className="mt-1 space-y-1">
+                  {prep.questions.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+            <details className="mt-3 rounded-xl border border-brand-gray200 bg-brand-gray100 p-3">
+              <summary className="cursor-pointer text-sm font-extrabold text-brand-charcoal">
+                View equipment checklist and training notes
+              </summary>
+              <div className="mt-3 grid gap-3 text-sm leading-6 text-brand-gray700 md:grid-cols-2">
+                <div>
+                  <p className="font-extrabold text-brand-charcoal">
+                    Equipment checklist
+                  </p>
+                  <ul className="mt-1 space-y-1">
+                    {prep.checklist.map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  <p className="font-extrabold text-brand-charcoal">
+                    Follow-up reminder
+                  </p>
+                  <p>{prep.followUp}</p>
+                  <p className="mt-2 font-extrabold text-brand-charcoal">
+                    Training notes
+                  </p>
+                  <p>{prep.notes}</p>
+                </div>
+              </div>
+            </details>
+          </div>
+          <label className="mt-4 block text-sm font-bold text-brand-charcoal">
+            Optional: Additional Manual / Site / Training Notes
+            <textarea
+              value={additionalNotes}
+              onChange={(event) => {
+                setAdditionalNotes(event.target.value);
+                setGuidance(null);
+              }}
+              placeholder="Paste manual excerpts, service notes, customer details, training context, product notes, or event details here."
+              className="mt-2 min-h-28 w-full rounded-xl border border-brand-gray200 bg-white px-3 py-3 text-sm leading-6 text-brand-charcoal shadow-sm placeholder:text-brand-gray500"
+            />
+          </label>
+          <div className="mt-4">
+            <button
+              type="button"
+              onClick={() => void generateSummary(selectedRecall, briefAction)}
+              disabled={Boolean(summarizingId)}
+              className="w-full rounded-xl bg-brand-green px-4 py-3 text-left text-sm font-extrabold text-white transition hover:bg-brand-greenDark disabled:cursor-not-allowed disabled:bg-brand-gray500 sm:w-auto"
+            >
+              {summarizingId
+                ? "Generating AI Engagement Readiness Packet..."
+                : "Generate AI Engagement Readiness Packet"}
+            </button>
+          </div>
+          {summarizingId === "engagement-packet" ? (
+            <div className="mt-4 rounded-xl border border-brand-gray200 bg-white p-4">
+              <div className="h-2 w-full overflow-hidden rounded-full bg-brand-gray100">
+                <div className="h-full w-1/2 animate-pulse rounded-full bg-brand-green" />
+              </div>
+              <p className="mt-3 text-sm font-extrabold text-brand-charcoal">
+                Generating AI Engagement Readiness Packet...
+              </p>
+            </div>
+          ) : null}
+          {summaryError && !selectedRecall ? (
+            <div className="mt-4 rounded-xl border border-red-200 bg-red-50 p-4 text-sm font-bold text-brand-red">
+              {summaryError}
+            </div>
+          ) : null}
+          <div className="mt-4">
+            <ReadinessPacket
+              guidance={guidance}
+              selectedRecall={selectedRecall}
+              engagementType={engagementType}
+              audience={audience}
+              sampleSite={selectedSampleSite}
+              serviceLens={selectedServiceLens}
+              summarySource={summarySource}
+              briefAction={briefAction}
+            />
           </div>
         </section>
 
-        <section className="mt-5 rounded-2xl border border-brand-gray200 bg-white p-5 shadow-panel sm:p-6">
+        <section className="mt-4 rounded-2xl border border-brand-gray200 bg-white p-4 shadow-panel sm:p-6">
+          <StepLabel>Step 4: Optional product safety / recall context</StepLabel>
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <SectionTitle
-              eyebrow="Product Safety Lookup"
-              title="Search public CPSC recall data"
-              description="Search by product, manufacturer, model number, keyword, hazard, remedy, or description."
+              eyebrow="Optional External Data"
+              title="Product Safety Lookup"
+              description="Search public CPSC recall data by product, manufacturer, model, hazard, or keyword."
             />
             {resultCountLabel ? (
               <p className="rounded-full bg-brand-gray100 px-3 py-1 text-sm font-bold text-brand-gray700">
@@ -932,13 +1157,6 @@ export default function Home() {
           </form>
 
           <div className="mt-4 flex flex-wrap gap-2">
-            <button
-              type="button"
-              onClick={() => void searchRecalls("smoke alarm")}
-              className="rounded-full bg-brand-green px-4 py-2 text-sm font-extrabold text-white transition hover:bg-brand-greenDark"
-            >
-              Try demo search: smoke alarm
-            </button>
             {quickSearches.map((term) => (
               <button
                 key={term}
@@ -950,9 +1168,24 @@ export default function Home() {
               </button>
             ))}
           </div>
+          <details className="mt-4 rounded-xl border border-brand-gray200 bg-brand-gray100 p-3">
+            <summary className="cursor-pointer text-sm font-extrabold text-brand-charcoal">
+              How it works
+            </summary>
+            <ol className="mt-3 space-y-1 text-sm leading-6 text-brand-gray700">
+              <li>1. Choose the engagement.</li>
+              <li>2. Search product safety data.</li>
+              <li>3. Select a recall.</li>
+              <li>4. Confirm audience, site, and service context.</li>
+              <li>5. Generate an AI readiness packet.</li>
+            </ol>
+          </details>
         </section>
 
-        <section className="mt-5 grid gap-5 lg:grid-cols-[1fr_0.85fr]">
+        <section className="mt-4">
+          <p className="mb-2 text-xs font-extrabold uppercase tracking-[0.14em] text-brand-green">
+            Recall Results
+          </p>
           <div className="space-y-3">
             {searching ? (
               <div className="rounded-2xl border border-brand-gray200 bg-white p-6 shadow-panel">
@@ -998,15 +1231,16 @@ export default function Home() {
             ) : null}
 
             {!searching &&
-              results.map((recall) => (
-                <article
-                  key={recall.id}
-                  className={`rounded-2xl border bg-white p-4 shadow-sm ${
-                    selectedRecall?.id === recall.id
-                      ? "border-brand-green"
-                      : "border-brand-gray200"
-                  }`}
-                >
+              results.map((recall) => {
+                const isSelected = selectedRecall?.id === recall.id;
+
+                return (
+                  <article
+                    key={recall.id}
+                    className={`rounded-2xl border bg-white p-4 shadow-sm ${
+                      isSelected ? "border-brand-green" : "border-brand-gray200"
+                    }`}
+                  >
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                     <div>
                       <div className="flex flex-wrap gap-2">
@@ -1055,118 +1289,61 @@ export default function Home() {
                       Official CPSC source
                     </a>
                   ) : null}
-                  <div className="mt-4 grid gap-2 border-t border-brand-gray200 pt-4 sm:grid-cols-2">
-                    {briefActions.map((action) => (
+                  <div className="mt-4 border-t border-brand-gray200 pt-4">
+                    {!isSelected ? (
                       <button
-                        key={action.value}
                         type="button"
-                        onClick={() => void generateSummary(recall, action.value)}
-                        disabled={Boolean(summarizingId)}
-                        className="rounded-xl border border-brand-green bg-white px-3 py-2 text-left text-sm font-extrabold text-brand-green transition hover:bg-brand-green hover:text-white disabled:cursor-not-allowed disabled:border-brand-gray200 disabled:text-brand-gray500"
+                        onClick={() => {
+                          setSelectedRecall(recall);
+                          setGuidance(null);
+                          setSummaryError("");
+                          setSummarySource("");
+                        }}
+                        className="w-full rounded-xl bg-brand-green px-4 py-3 text-left text-sm font-extrabold text-white transition hover:bg-brand-greenDark sm:w-auto"
                       >
-                        {summarizingId === recall.id &&
-                        briefAction === action.value
-                          ? "Generating..."
-                          : action.label}
+                        Select recall
                       </button>
-                    ))}
+                    ) : (
+                      <div className="rounded-xl border border-brand-green bg-brand-gray100 p-4">
+                        <div className="flex flex-wrap gap-2">
+                          <span className="rounded-full bg-brand-green px-3 py-1 text-xs font-extrabold uppercase tracking-[0.1em] text-white">
+                            Selected Recall
+                          </span>
+                          <span className="rounded-full border border-brand-warning px-3 py-1 text-xs font-extrabold uppercase tracking-[0.1em] text-brand-warning">
+                            Optional Product Safety Context
+                          </span>
+                        </div>
+                        <p className="mt-3 text-sm leading-6 text-brand-gray700">
+                          This recall will be included as Product Safety / Recall Context in the AI Engagement Readiness Packet. Adjust audience, site, service lens, prep resources, or manual notes in the main workflow card above, then generate the packet there.
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedRecall(null);
+                            setGuidance(null);
+                            setSummaryError("");
+                            setSummarySource("");
+                          }}
+                          className="mt-3 rounded-xl border border-brand-gray200 bg-white px-3 py-2 text-sm font-extrabold text-brand-charcoal transition hover:bg-brand-gray100"
+                        >
+                          Clear selected recall
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </article>
-              ))}
-          </div>
-
-          <div className="space-y-5 lg:sticky lg:top-5 lg:self-start">
-            {summarizingId ? (
-              <div className="rounded-2xl border border-brand-gray200 bg-white p-5 shadow-panel">
-                <div className="h-2 w-full overflow-hidden rounded-full bg-brand-gray100">
-                  <div className="h-full w-1/2 animate-pulse rounded-full bg-brand-green" />
-                </div>
-                <p className="mt-4 font-extrabold text-brand-charcoal">
-                  Generating AI-assisted field brief...
-                </p>
-              </div>
-            ) : null}
-
-            {summaryError ? (
-              <div className="rounded-2xl border border-red-200 bg-red-50 p-5 text-sm font-bold text-brand-red">
-                {summaryError}
-              </div>
-            ) : null}
-
-            <ReadinessPacket
-              guidance={guidance}
-              selectedRecall={selectedRecall}
-              engagementType={engagementType}
-              audience={audience}
-              sampleSite={selectedSampleSite}
-              serviceLens={selectedServiceLens}
-              summarySource={summarySource}
-              briefAction={briefAction}
-            />
+                );
+              })}
           </div>
         </section>
 
-        <section className="mt-6 rounded-2xl border border-brand-gray200 bg-white p-5 shadow-panel sm:p-6">
-          <SectionTitle
-            eyebrow="Instructor & Event Prep"
-            title={`${engagementType} prep support`}
-            description="Compact internal prep notes for instructors, inspectors, and field employees. Demo data only; not an LMS."
-          />
-          <div className="mt-5 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            <BriefBlock title="Materials to bring">
-              <ul className="space-y-1">
-                {prep.materials.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </BriefBlock>
-            <BriefBlock title="Equipment checklist">
-              <ul className="space-y-1">
-                {prep.checklist.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </BriefBlock>
-            <BriefBlock title="Likely attendee questions">
-              <ul className="space-y-1">
-                {prep.questions.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </BriefBlock>
-            <BriefBlock title="Suggested discussion topics">
-              <ul className="space-y-1">
-                {prep.topics.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </BriefBlock>
-            <BriefBlock title="Follow-up reminder">{prep.followUp}</BriefBlock>
-            <BriefBlock title="Training or certification notes">
-              {prep.notes}
-            </BriefBlock>
-          </div>
-        </section>
-
-        <section className="mt-6 rounded-2xl border border-brand-gray200 bg-white p-5 shadow-panel sm:p-6">
-          <SectionTitle eyebrow="Why this concept exists" title="A practical AI workflow" />
-          <p className="mt-4 text-sm leading-7 text-brand-gray700">
-            Fire protection employees often need to prepare for inspections,
-            training sessions, customer meetings, and public safety events using
-            information from multiple sources. This concept demonstrates how
-            public recall data and AI-assisted guidance could help employees
-            quickly organize safety information, explain technical issues in
-            plain language, and identify related service considerations before
-            or after a customer engagement.
-          </p>
-        </section>
-
-        <section className="mt-6 rounded-2xl border-l-4 border-brand-warning bg-[#fff8e8] p-5 text-sm leading-6 text-brand-gray700 shadow-sm">
+        <section className="mt-5 rounded-2xl border-l-4 border-brand-warning bg-[#fff8e8] p-4 text-sm leading-6 text-brand-gray700 shadow-sm sm:p-5">
           <strong className="text-brand-charcoal">Responsible AI:</strong>{" "}
           AI-generated guidance should be reviewed against official CPSC
           notices, manufacturer instructions, applicable codes, NFPA standards,
           and company procedures before action is taken.
         </section>
+
       </div>
 
       <footer className="mt-2 bg-brand-green px-5 py-5 text-center text-xs leading-6 text-white">
@@ -1176,3 +1353,4 @@ export default function Home() {
     </main>
   );
 }
+

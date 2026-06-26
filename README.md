@@ -1,12 +1,12 @@
 # Fire Protection Field Assistant
 
-An internal field assistant proof of concept inspired by Ryan Fire Protection service workflows. The app helps inspectors, instructors, service managers, and field employees prepare for inspections, customer training, customer meetings, public safety events, and continuing education prep.
+An internal employee preparation workspace inspired by Ryan Fire Protection service workflows. The app helps inspectors, instructors, service managers, field employees, sales engineers, project managers, convention representatives, and other customer-facing employees prepare for inspections, customer training, customer meetings, fire department events, public safety engagements, conventions/trade shows, and continuing education prep.
 
 This is not official Ryan Fire Protection software. It is a concept prototype created for demonstration purposes and is not affiliated with or endorsed by Ryan Fire Protection, Inc.
 
 ## Purpose
 
-Fire protection employees often need to prepare using information from multiple sources. This app demonstrates how public recall data and AI-assisted guidance could help employees quickly organize safety information, explain technical issues in plain language, and identify related service considerations before or after a customer engagement.
+Fire protection employees often need to prepare using information from multiple sources: public safety notices, product information, manufacturer documentation to verify, training resources, customer-friendly explanations, related service considerations, and follow-up topics. This app demonstrates how public recall data and AI-assisted guidance could help employees quickly organize that information, explain technical issues in plain language, and prepare for more informed customer engagements.
 
 The project is intentionally framed as an AI implementation concept rather than a software engineering showcase. It uses a practical public-data workflow to show how an internal employee could combine recall information, service context, audience needs, and responsible review boundaries before taking action.
 
@@ -14,17 +14,20 @@ The project is intentionally framed as an AI implementation concept rather than 
 
 The app lets a Ryan Fire Protection-style internal user search public CPSC product recall data, select a relevant recall, choose an engagement type, choose an audience, select a sample site profile, and apply a Ryan Service Lens. It then generates an AI Engagement Readiness Packet that organizes the recall and context into practical preparation guidance.
 
-The packet is designed to help employees understand what to verify, what to discuss, what questions may come up, what related service considerations may matter, and what information still needs official or internal review.
+The packet is designed to help employees understand what to verify, what to discuss, what questions may come up, what related service considerations may matter, what customer-friendly explanations may be useful, and what information still needs official or internal review.
 
 ## Who It Is For
 
 This proof of concept is intended for internal fire protection employees such as:
 
 - Inspectors preparing for field visits
+- Field technicians preparing for site conversations
 - Service managers reviewing safety-related customer questions
 - Trainers preparing customer or fire department education
+- Sales engineers and project managers preparing customer discussions
 - Account or customer-facing employees preparing for meetings
 - Employees supporting municipality or public safety events
+- Convention or trade show representatives preparing discussion points
 - Continuing education presenters preparing discussion material
 
 It is not a customer portal, CRM, LMS, inspection authority, or compliance decision system.
@@ -45,7 +48,7 @@ Users can search by:
 - Remedy
 - Description
 
-## AI Field Briefs
+## AI Engagement Readiness Packet
 
 The app uses `/api/summarize` to turn a selected recall into an **AI Engagement Readiness Packet**. The request includes the selected recall, engagement type, audience, sample site profile, Ryan Service Lens, equipment/systems, upcoming reminder, documentation need, related service consideration, and requested preparation action.
 
@@ -56,6 +59,16 @@ Available brief actions:
 - Generate Event Prep
 - Generate Customer Talking Points
 - Generate Follow-Up Notes
+
+Supported engagement types:
+
+- Inspection
+- Customer Training
+- Fire Department / Recruit Training
+- Municipality / Public Safety Event
+- Convention / Trade Show
+- Customer Meeting
+- Continuing Education Prep
 
 The readiness packet includes:
 
@@ -74,6 +87,22 @@ The readiness packet includes:
 - Follow-Up Note Draft
 - Missing Information to Verify
 - Official Source Reminder
+
+## Prototype Prep Resources
+
+The app also includes demonstration preparation resources that support the selected engagement type. These are sample/demo materials, not official Ryan Fire Protection documents or live manufacturer documentation.
+
+Examples include:
+
+- Materials or resources to bring
+- Equipment/prep checklist
+- Suggested discussion topics
+- Demonstration or training notes
+- Likely attendee questions
+- Follow-up reminders
+- Related service considerations
+
+These resources are intended to show how AI could organize customer engagement preparation in one workspace while keeping final decisions with qualified employees and official sources.
 
 If `OPENAI_API_KEY` is configured, the app uses OpenAI. If no key is configured, it displays a local demo fallback so the app still works visually during review.
 

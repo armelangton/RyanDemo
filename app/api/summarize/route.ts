@@ -19,8 +19,11 @@ Use the selected recall/product safety information and the selected preparation 
 - selected action
 - responsible AI/source hierarchy
 - demo source notes
+- instructor/event prep resources
+- additional manual/site/training notes
 
-Do not produce a generic recall summary.
+This is an internal customer engagement preparation workspace. Do not produce a generic recall summary. Help the employee prepare for inspections, customer training, fire department/recruit training, municipality/public safety events, conventions/trade shows, customer meetings, and continuing education prep.
+Recall data is optional. If no recall is selected, say: "No product safety recall selected. Packet is based on engagement, site, service, and prep context." If a recall is selected, include it under Product Safety / Recall Context.
 
 The packet must include:
 1. Readiness Score
@@ -52,6 +55,7 @@ Ryan-aligned service context:
 - Prevent: identify inspection, maintenance, training, testing, or documentation steps that reduce risk.
 - Preserve: support system reliability, customer confidence, facility continuity, and follow-up planning.
 - Every packet must reflect the selected Ryan Service Lens. If the lens does not clearly apply, state what needs verification instead of forcing the connection.
+- Treat training resources, product knowledge, manufacturer documentation, and event preparation material as preparation context unless explicitly provided as official source facts.
 
 Audience guidance:
 - Fire Department: response awareness, system behavior, scene safety, what crews should recognize/report, and likely recruit questions.
@@ -61,7 +65,17 @@ Audience guidance:
 - Internal Inspector: what to verify, field checks, missing information, equipment details, and follow-up.
 - Instructor / Trainer: teaching points, examples, likely questions, materials to bring, and discussion prompts.
 
+Engagement guidance:
+- Inspection: focus on field verification, model/date range checks, service history, documentation, deficiencies, and follow-up.
+- Customer Training: focus on customer-friendly explanations, materials to bring, likely questions, safe escalation language, and follow-up reminders.
+- Fire Department / Recruit Training: focus on response awareness, scene safety, system behavior, recruit questions, and what crews should recognize or report.
+- Municipality / Public Safety Event: focus on public safety, documentation, inspection timing, risk prioritization, and community/facility impact.
+- Convention / Trade Show: focus on concise talking points, attendee questions, product awareness, service follow-up, lead notes, and routing technical questions to qualified review.
+- Customer Meeting: focus on customer confidence, maintenance planning, documentation, service timing, risk reduction, and clear next steps.
+- Continuing Education Prep: focus on instructor preparation, teaching points, discussion prompts, practical examples, standards/manuals to verify, and follow-up reminders.
+
 Do not use the word "upsell." Use "Related Service Considerations." Frame related service considerations as safety, education, maintenance, compliance awareness, documentation, prevention, modernization, customer confidence, or risk reduction.
+Group Related Service Considerations under Safety / Risk Reduction, Maintenance / Testing, Customer Education, Documentation / Follow-Up, and Modernization / Replacement Discussion.
 
 Responsible AI boundaries:
 - Do not make final code, engineering, legal, compliance, fire safety, inspection, or operational determinations.
@@ -123,6 +137,24 @@ const responseSchema = {
         type: "array",
         items: { type: "string" },
       },
+      relatedServiceGroups: {
+        type: "object",
+        additionalProperties: false,
+        properties: {
+          safetyRiskReduction: { type: "array", items: { type: "string" } },
+          maintenanceTesting: { type: "array", items: { type: "string" } },
+          customerEducation: { type: "array", items: { type: "string" } },
+          documentationFollowUp: { type: "array", items: { type: "string" } },
+          modernizationReplacement: { type: "array", items: { type: "string" } },
+        },
+        required: [
+          "safetyRiskReduction",
+          "maintenanceTesting",
+          "customerEducation",
+          "documentationFollowUp",
+          "modernizationReplacement",
+        ],
+      },
       recommendedNextBestActions: {
         type: "array",
         items: { type: "string" },
@@ -147,6 +179,7 @@ const responseSchema = {
       "equipmentProductChecklist",
       "trainingOrEventPrepNotes",
       "relatedServiceConsiderations",
+      "relatedServiceGroups",
       "recommendedNextBestActions",
       "followUpNoteDraft",
       "missingInformationToVerify",
@@ -303,6 +336,8 @@ const fallbackPacket = ({
   serviceLens,
   siteProfile,
   sourceContext,
+  prepResources,
+  additionalNotes,
   briefAction,
 }: {
   recall: Record<string, unknown>;
@@ -317,6 +352,8 @@ const fallbackPacket = ({
   serviceLens: Record<string, unknown>;
   siteProfile: Record<string, unknown>;
   sourceContext: Record<string, unknown>;
+  prepResources: Record<string, unknown>;
+  additionalNotes: string;
   briefAction: string;
 }) => {
   const title = textValue(recall.title);
@@ -329,6 +366,10 @@ const fallbackPacket = ({
   const siteType = textValue(siteProfile.type);
   const primaryAudience = textValue(siteProfile.primaryAudience);
   const sourceContextUsed = listValue(sourceContext.sourceContextUsed);
+  const hasRecall = title !== "not specified";
+  const prepMaterials = listValue(prepResources.materials);
+  const prepTopics = listValue(prepResources.topics);
+  const prepQuestions = listValue(prepResources.questions);
   const audienceContext = audienceGuidance(audience);
   const score = calculateReadinessScore({
     recall,
@@ -349,20 +390,26 @@ const fallbackPacket = ({
     sourceContextUsed: sourceContextUsed.length
       ? sourceContextUsed
       : [
-          `CPSC recall result: ${title}`,
+          hasRecall
+            ? `Product Safety / Recall Context: ${title}`
+            : "No product safety recall selected. Packet is based on engagement, site, service, and prep context.",
           `Sample site profile: ${sampleSite}`,
           `Ryan Service Lens: ${serviceLensLabel}`,
           `Engagement type: ${engagementType}`,
           `Audience: ${audience}`,
           "Demo source notes: service environment brief, source hierarchy, documentation/deficiency follow-up logic, and training/event prep frameworks",
         ],
-    knownSourceFacts: [
-      `Known from source: CPSC recall title is "${title}".`,
-      `Known from source: manufacturer/company is ${manufacturer}.`,
-      `Known from source: product description is ${product}.`,
-      `Known from source: listed hazard is ${hazard}.`,
-      `Known from source: listed remedy is ${remedy}.`,
-    ],
+    knownSourceFacts: hasRecall
+      ? [
+          `Known from source: CPSC recall title is "${title}".`,
+          `Known from source: manufacturer/company is ${manufacturer}.`,
+          `Known from source: product description is ${product}.`,
+          `Known from source: listed hazard is ${hazard}.`,
+          `Known from source: listed remedy is ${remedy}.`,
+        ]
+      : [
+          "No product safety recall selected. Packet is based on engagement, site, service, and prep context.",
+        ],
     providedDemoProfileContext: [
       `Provided by user/demo profile: selected site profile is ${sampleSite} (${siteType}).`,
       `Provided by user/demo profile: primary audience is ${primaryAudience}.`,
@@ -371,10 +418,14 @@ const fallbackPacket = ({
       `Provided by user/demo profile: training or education need is ${trainingNeed}.`,
       `Provided by user/demo profile: documentation need is ${documentationNeed}.`,
       `Provided by user/demo profile: selected Ryan Service Lens is ${serviceLensLabel}, focused on ${serviceLensFocus.join(", ") || "not specified"}.`,
+      `Provided by user/demo profile: prep resources include ${[...prepMaterials, ...prepTopics, ...prepQuestions].slice(0, 6).join(", ") || "not specified"}.`,
+      `Provided by user/demo profile: additional manual/site/training notes are ${additionalNotes || "not provided"}.`,
     ],
     aiInterpretation: [
       `AI interpretation: use the ${serviceLensLabel} lens to prepare ${actionLabel(briefAction)} for ${engagementType}.`,
-      "AI interpretation: compare recall product details with site equipment before making any customer-facing statement.",
+      hasRecall
+        ? "AI interpretation: compare recall product details with site equipment before making any customer-facing statement."
+        : "AI interpretation: prepare the engagement packet from site, audience, service lens, prep resources, and manual notes because no recall was selected.",
       "AI interpretation: connect related service considerations to safety, documentation, prevention, customer confidence, and risk reduction.",
       "Human review required: route any safety, code, compliance, inspection, engineering, or customer communication decision through qualified internal review.",
     ],
@@ -393,19 +444,29 @@ const fallbackPacket = ({
         ? "Training or education opportunity"
         : "Missing training context",
     ],
-    internalFieldBrief: `For ${engagementType}, prepare ${actionLabel(briefAction)} for ${audience} using the ${serviceLensLabel} service lens. Source fact from recall: "${title}" lists manufacturer/company as ${manufacturer}, product context as ${product}, hazard as ${hazard}, and remedy as ${remedy}. Provided demo profile context: ${sampleSite} includes ${systemsText}, with reminder "${upcomingReminder}" and documentation need "${documentationNeed}". AI interpretation: compare recall details with site systems before discussing applicability.`,
+    internalFieldBrief: `For ${engagementType}, prepare ${actionLabel(briefAction)} for ${audience} using the ${serviceLensLabel} service lens. ${hasRecall ? `Product Safety / Recall Context: "${title}" lists manufacturer/company as ${manufacturer}, product context as ${product}, hazard as ${hazard}, and remedy as ${remedy}.` : "No product safety recall selected. Packet is based on engagement, site, service, and prep context."} Provided demo profile context: ${sampleSite} includes ${systemsText}, with reminder "${upcomingReminder}" and documentation need "${documentationNeed}". Additional notes: ${additionalNotes || "none provided"}.`,
     audienceSpecificTalkingPoints: [
       audienceContext.talkingPoint,
-      "Describe the product, hazard, and remedy in plain language.",
-      "Ask whether the site has matching equipment, model numbers, date ranges, or service history.",
+      hasRecall
+        ? "Describe the product, hazard, and remedy in plain language."
+        : "Use plain-language talking points based on the engagement, site profile, service lens, and prep resources.",
+      hasRecall
+        ? "Ask whether the site has matching equipment, model numbers, date ranges, or service history."
+        : "Ask what equipment, documentation, training history, or site details should be reviewed before the engagement.",
       "Emphasize that official CPSC and manufacturer documentation must be checked before action.",
     ],
     equipmentProductChecklist: [
-      `Verify manufacturer/company: ${manufacturer}.`,
-      `Verify product or description: ${product}.`,
+      hasRecall
+        ? `Verify manufacturer/company: ${manufacturer}.`
+        : "No recall selected; verify any product or manufacturer details from manual/site/training notes.",
+      hasRecall
+        ? `Verify product or description: ${product}.`
+        : "Confirm relevant equipment, systems, or customer details before using the packet.",
       "Confirm exact product model, serial/date code, and installation location.",
       `Compare selected site systems: ${systemsText}.`,
-      "Confirm whether the recall remedy has already been completed.",
+      hasRecall
+        ? "Confirm whether the recall remedy has already been completed."
+        : "Confirm whether any product-specific follow-up requires official manufacturer or internal review.",
     ],
     trainingOrEventPrepNotes: [
       audienceContext.trainingNote,
@@ -413,6 +474,8 @@ const fallbackPacket = ({
       `Ryan Service Lens focus: ${serviceLensFocus.join(", ") || "not specified"}.`,
       `Upcoming reminder: ${upcomingReminder}.`,
       `Documentation/deficiency context: ${documentationNeed}.`,
+      `Additional manual/site/training notes: ${additionalNotes || "none provided"}.`,
+      `Prep materials/resources: ${prepMaterials.join(", ") || "not specified"}.`,
       "Prepare examples of how employees should identify product labels or report concerns.",
       "Avoid final compliance or inspection determinations during prep discussion.",
     ],
@@ -430,14 +493,42 @@ const fallbackPacket = ({
       "Recurring inspection reminders",
       "Continuing education topic follow-up",
     ].filter((item, index, array) => item && array.indexOf(item) === index),
+    relatedServiceGroups: {
+      safetyRiskReduction: [
+        "Review safety-sensitive issues with a qualified internal employee.",
+        "Use the service lens to identify risk reduction and prevention topics.",
+      ],
+      maintenanceTesting: [
+        "Review inspection, testing, maintenance, and preventive maintenance needs.",
+        "Consider alarm testing, sprinkler inspections, extinguisher readiness, hydrant testing, or emergency lighting where relevant.",
+      ],
+      customerEducation: [
+        "Prepare customer-friendly explanations and likely attendee questions.",
+        "Consider customer training or continuing education follow-up when relevant.",
+      ],
+      documentationFollowUp: [
+        "Review inspection reports, service notes, photos, deficiencies, and follow-up reminders.",
+        "Document unresolved questions for manager or technical review.",
+      ],
+      modernizationReplacement: [
+        "Discuss replacement or modernization only when safety-related and verified by qualified review.",
+        "Confirm manufacturer guidance and site applicability before recommending action.",
+      ],
+    },
     recommendedNextBestActions: [
       audienceContext.nextAction,
-      "Verify exact product model and affected date range.",
-      "Confirm whether the product is installed at the selected site.",
-      "Review official CPSC notice and manufacturer remedy instructions.",
+      hasRecall
+        ? "Verify exact product model and affected date range."
+        : "Confirm whether product, equipment, or training details need to be added before the engagement.",
+      hasRecall
+        ? "Confirm whether the product is installed at the selected site."
+        : "Review site profile, known systems, prep resources, and additional notes with the appropriate internal owner.",
+      hasRecall
+        ? "Review official CPSC notice and manufacturer remedy instructions."
+        : "Verify manufacturer documentation, applicable standards, and company procedures for any product-specific discussion.",
       "Review related service considerations with a qualified internal employee.",
     ],
-    followUpNoteDraft: `Reviewed public recall information for ${title} while preparing for ${engagementType} with ${audience}. Need to verify exact model, affected date range, site equipment match, manufacturer instructions, service history, and whether remedy has been completed. Related service considerations include ${relatedServiceConsideration || "documentation review and preventive maintenance"}. Next step: route findings through qualified internal review before customer or operational action.`,
+    followUpNoteDraft: `${hasRecall ? `Reviewed public recall information for ${title}` : "Prepared engagement readiness packet without a selected product safety recall"} while preparing for ${engagementType} with ${audience}. Need to verify product/equipment details, site equipment match, manufacturer instructions, service history, training context, and open documentation questions. Related service considerations include ${relatedServiceConsideration || "documentation review and preventive maintenance"}. Next step: route findings through qualified internal review before customer or operational action.`,
     missingInformationToVerify: [
       "Exact product model",
       "Manufacturer documentation",
@@ -456,7 +547,7 @@ const fallbackPacket = ({
 };
 
 export async function POST(request: Request) {
-  let recall: Record<string, unknown> | null = null;
+  let recall: Record<string, unknown> = {};
   let engagementType = "Inspection";
   let audience = "Internal Inspector";
   let sampleSite = "No sample site selected";
@@ -470,11 +561,13 @@ export async function POST(request: Request) {
   )[0];
   let siteProfile: Record<string, unknown> = {};
   let sourceContext: Record<string, unknown> = {};
+  let prepResources: Record<string, unknown> = {};
+  let additionalNotes = "";
   let briefAction = "inspection_prep";
 
   try {
     const body = await request.json();
-    recall = body?.recall ?? null;
+    recall = body?.recall && typeof body.recall === "object" ? body.recall : {};
     engagementType =
       typeof body?.engagementType === "string" ? body.engagementType : engagementType;
     audience = typeof body?.audience === "string" ? body.audience : audience;
@@ -501,12 +594,11 @@ export async function POST(request: Request) {
     }
     siteProfile = objectValue(body?.siteProfile);
     sourceContext = objectValue(body?.sourceContext);
+    prepResources = objectValue(body?.prepResources);
+    additionalNotes =
+      typeof body?.additionalNotes === "string" ? body.additionalNotes.trim() : "";
     briefAction =
       typeof body?.briefAction === "string" ? body.briefAction : briefAction;
-
-    if (!recall) {
-      return NextResponse.json({ error: "Recall data is required." }, { status: 400 });
-    }
 
     const fallback = fallbackPacket({
       recall,
@@ -521,6 +613,8 @@ export async function POST(request: Request) {
       serviceLens,
       siteProfile,
       sourceContext,
+      prepResources,
+      additionalNotes,
       briefAction,
     });
 
@@ -554,6 +648,8 @@ export async function POST(request: Request) {
                 serviceLens,
                 siteProfile,
                 sourceContext,
+                prepResources,
+                additionalNotes,
                 briefAction,
                 recall,
               },
@@ -595,6 +691,8 @@ export async function POST(request: Request) {
           serviceLens,
           siteProfile,
           sourceContext,
+          prepResources,
+          additionalNotes,
           briefAction,
         }),
         source: "fallback",

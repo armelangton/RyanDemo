@@ -4,7 +4,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Fire Protection Field Assistant",
   description:
-    "Ryan Fire Protection-style internal field assistant concept for public recall lookup and AI-assisted engagement preparation.",
+    "Ryan Fire Protection-style internal employee preparation workspace for public recall lookup and AI-assisted engagement readiness packets.",
 };
 
 export default function RootLayout({
