@@ -275,6 +275,14 @@ const logOpenAiError = (error: unknown) => {
   console.error("OpenAI summarize failed", { error: String(error) });
 };
 
+const safeErrorMessage = (error: unknown) => {
+  if (error instanceof Error) {
+    return error.message.replace(/Bearer\s+[A-Za-z0-9._-]+/g, "Bearer [redacted]");
+  }
+
+  return String(error).replace(/Bearer\s+[A-Za-z0-9._-]+/g, "Bearer [redacted]");
+};
+
 const actionLabel = (briefAction: string) => {
   switch (briefAction) {
     case "training_prep":
@@ -757,7 +765,11 @@ export async function POST(request: Request) {
 
     const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) {
-      return NextResponse.json({ guidance: fallback, source: "fallback" });
+      return NextResponse.json({
+        guidance: fallback,
+        source: "fallback",
+        fallbackReason: "OPENAI_API_KEY is not configured.",
+      });
     }
 
     const response = await fetch("https://api.openai.com/v1/responses", {
@@ -837,6 +849,7 @@ export async function POST(request: Request) {
           automaticSafetyReview,
         }),
         source: "fallback",
+        fallbackReason: safeErrorMessage(error),
       });
     }
 
