@@ -23,6 +23,8 @@ export type AiGuidance = {
   audienceSpecificTalkingPoints: string[];
   equipmentProductChecklist: string[];
   trainingOrEventPrepNotes: string[];
+  protectPreventPreserveLens: string[];
+  deficiencyDocumentationFollowUp: string[];
   relatedServiceConsiderations: string[];
   relatedServiceGroups: {
     safetyRiskReduction: string[];

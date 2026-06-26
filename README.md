@@ -66,7 +66,6 @@ Supported engagement types:
 - Customer Training
 - Fire Department / Recruit Training
 - Municipality / Public Safety Event
-- Convention / Trade Show
 - Customer Meeting
 - Continuing Education Prep
 

@@ -5,12 +5,13 @@ export const dynamic = "force-dynamic";
 
 const systemPrompt = `You are generating an internal AI Engagement Readiness Packet for a fire protection employee.
 
-Use the selected recall/product safety information and the selected preparation context to create practical internal guidance. You must reason across all provided context:
-- selected recall data
+Use the selected preparation context and optional recall/product safety information to create practical internal guidance. You must use available context in this order:
 - engagement type
 - audience
 - sample site profile
 - selected Ryan Service Lens
+- additional manual/site/training notes
+- selected recall data, if present
 - equipment/systems from the sample site
 - upcoming reminder
 - training/education need
@@ -22,7 +23,7 @@ Use the selected recall/product safety information and the selected preparation 
 - instructor/event prep resources
 - additional manual/site/training notes
 
-This is an internal customer engagement preparation workspace. Do not produce a generic recall summary. Help the employee prepare for inspections, customer training, fire department/recruit training, municipality/public safety events, conventions/trade shows, customer meetings, and continuing education prep.
+This is an internal customer engagement preparation workspace. Do not produce a generic recall summary. Help the employee prepare for inspections, customer training, fire department/recruit training, municipality/public safety events, customer meetings, and continuing education prep.
 Recall data is optional. If no recall is selected, say: "No product safety recall selected. Packet is based on engagement, site, service, and prep context." If a recall is selected, include it under Product Safety / Recall Context.
 
 The packet must include:
@@ -32,11 +33,13 @@ The packet must include:
 4. Audience-Specific Talking Points
 5. Equipment / Product Checklist
 6. Training or Event Prep Notes
-7. Related Service Considerations
-8. Recommended Next Best Actions
-9. Follow-Up Note Draft
-10. Missing Information to Verify
-11. Official Source Reminder
+7. Protect / Prevent / Preserve Lens
+8. Deficiency / Documentation Follow-Up
+9. Related Service Considerations
+10. Recommended Next Best Actions
+11. Follow-Up Note Draft
+12. Missing Information to Verify
+13. Official Source Reminder
 
 Readiness score:
 - Return a number from 0 to 100.
@@ -70,7 +73,6 @@ Engagement guidance:
 - Customer Training: focus on customer-friendly explanations, materials to bring, likely questions, safe escalation language, and follow-up reminders.
 - Fire Department / Recruit Training: focus on response awareness, scene safety, system behavior, recruit questions, and what crews should recognize or report.
 - Municipality / Public Safety Event: focus on public safety, documentation, inspection timing, risk prioritization, and community/facility impact.
-- Convention / Trade Show: focus on concise talking points, attendee questions, product awareness, service follow-up, lead notes, and routing technical questions to qualified review.
 - Customer Meeting: focus on customer confidence, maintenance planning, documentation, service timing, risk reduction, and clear next steps.
 - Continuing Education Prep: focus on instructor preparation, teaching points, discussion prompts, practical examples, standards/manuals to verify, and follow-up reminders.
 
@@ -133,6 +135,14 @@ const responseSchema = {
         type: "array",
         items: { type: "string" },
       },
+      protectPreventPreserveLens: {
+        type: "array",
+        items: { type: "string" },
+      },
+      deficiencyDocumentationFollowUp: {
+        type: "array",
+        items: { type: "string" },
+      },
       relatedServiceConsiderations: {
         type: "array",
         items: { type: "string" },
@@ -178,6 +188,8 @@ const responseSchema = {
       "audienceSpecificTalkingPoints",
       "equipmentProductChecklist",
       "trainingOrEventPrepNotes",
+      "protectPreventPreserveLens",
+      "deficiencyDocumentationFollowUp",
       "relatedServiceConsiderations",
       "relatedServiceGroups",
       "recommendedNextBestActions",
@@ -478,6 +490,16 @@ const fallbackPacket = ({
       `Prep materials/resources: ${prepMaterials.join(", ") || "not specified"}.`,
       "Prepare examples of how employees should identify product labels or report concerns.",
       "Avoid final compliance or inspection determinations during prep discussion.",
+    ],
+    protectPreventPreserveLens: [
+      `Protect: identify immediate safety or customer impact for ${engagementType}.`,
+      `Prevent: use ${serviceLensLabel} context to identify inspection, maintenance, training, testing, or documentation steps that reduce risk.`,
+      "Preserve: support long-term system reliability, facility continuity, customer confidence, and follow-up planning.",
+    ],
+    deficiencyDocumentationFollowUp: [
+      `Review documentation/deficiency context: ${documentationNeed}.`,
+      "Capture open questions, photos, service notes, reports, and unresolved deficiencies for qualified internal review.",
+      "Confirm whether follow-up reminders, customer communication, quote preparation, or service leadership review are needed.",
     ],
     relatedServiceConsiderations: [
       relatedServiceConsideration,

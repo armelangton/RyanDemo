@@ -9,7 +9,6 @@ type EngagementType =
   | "Customer Training"
   | "Fire Department / Recruit Training"
   | "Municipality / Public Safety Event"
-  | "Convention / Trade Show"
   | "Customer Meeting"
   | "Continuing Education Prep";
 
@@ -51,7 +50,6 @@ const engagementTypes: EngagementType[] = [
   "Customer Training",
   "Fire Department / Recruit Training",
   "Municipality / Public Safety Event",
-  "Convention / Trade Show",
   "Customer Meeting",
   "Continuing Education Prep",
 ];
@@ -330,32 +328,6 @@ const prepByEngagement: Record<
     followUp: "Document public safety questions and route them to the right internal owner.",
     notes: "Keep guidance educational and avoid final code or compliance determinations.",
   },
-  "Convention / Trade Show": {
-    materials: [
-      "Approved service literature",
-      "Lead capture or follow-up notes",
-      "Product safety talking points",
-    ],
-    checklist: [
-      "Prepare concise explanation of relevant recall or product safety issue",
-      "Identify likely attendee roles and questions",
-      "Flag questions that need service leadership or technical follow-up",
-    ],
-    questions: [
-      "Is this product installed at your facility?",
-      "Do you have upcoming inspections or training needs?",
-      "Who manages documentation and follow-up for your systems?",
-    ],
-    topics: [
-      "Customer education",
-      "Inspection and documentation awareness",
-      "Related service considerations",
-    ],
-    followUp:
-      "Capture attendee questions, related system interests, and any items that require qualified internal review.",
-    notes:
-      "Use this as convention prep only; do not make final product, compliance, or service commitments from AI guidance.",
-  },
   "Customer Meeting": {
     materials: ["Account notes", "Open service items", "Relevant recall summaries"],
     checklist: [
@@ -517,6 +489,16 @@ const ReadinessPacket = ({
       </div>
 
       <div className="mt-5 grid gap-4 md:grid-cols-2">
+        <PacketSection title="Source Context Used" defaultOpen>
+          <ul className="space-y-2">
+            {guidance.sourceContextUsed.map((item) => (
+              <li key={item} className="flex gap-2">
+                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-green" />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </PacketSection>
         <div className="rounded-xl border border-brand-gray200 bg-brand-gray100 p-4 md:col-span-2">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
@@ -600,6 +582,26 @@ const ReadinessPacket = ({
             ))}
           </ul>
         </PacketSection>
+        <PacketSection title="Protect / Prevent / Preserve Lens">
+          <ul className="space-y-2">
+            {guidance.protectPreventPreserveLens.map((item) => (
+              <li key={item} className="flex gap-2">
+                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-green" />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </PacketSection>
+        <PacketSection title="Deficiency / Documentation Follow-Up">
+          <ul className="space-y-2">
+            {guidance.deficiencyDocumentationFollowUp.map((item) => (
+              <li key={item} className="flex gap-2">
+                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-green" />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </PacketSection>
         <PacketSection title="Related Service Considerations">
           <div className="grid gap-3 md:grid-cols-2">
             {[
@@ -627,16 +629,6 @@ const ReadinessPacket = ({
               </div>
             ))}
           </div>
-        </PacketSection>
-        <PacketSection title="Source Context Used">
-          <ul className="space-y-2">
-            {guidance.sourceContextUsed.map((item) => (
-              <li key={item} className="flex gap-2">
-                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-green" />
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
         </PacketSection>
         <PacketSection title="Follow-Up Note Draft">
           <div className="whitespace-pre-line">{guidance.followUpNoteDraft}</div>
@@ -855,8 +847,10 @@ export default function Home() {
                 Prepare for a field, training, or public safety engagement
               </h1>
               <p className="mt-3 max-w-3xl text-sm leading-6 text-brand-gray700 sm:text-base">
-                Search public recall data, confirm the audience/site context,
-                and generate an internal AI readiness packet.
+                Use Ryan-style service context, sample site details, optional
+                public recall data, and AI-assisted reasoning to prepare
+                internal readiness packets for inspections, training, customer
+                meetings, public safety events, and continuing education prep.
               </p>
             </div>
             <div className="mt-3 flex flex-wrap gap-2">
@@ -876,7 +870,14 @@ export default function Home() {
 
       <div className="mx-auto max-w-[1180px] px-4 py-4 lg:px-6">
         <section className="rounded-2xl border border-brand-gray200 bg-white p-4 shadow-panel sm:p-5">
-          <StepLabel>Step 1: Choose engagement type</StepLabel>
+          <SectionTitle
+            eyebrow="Primary Workflow"
+            title="Build an Engagement Readiness Packet"
+            description="Start with the engagement context. Add product safety or manual context only if it is relevant."
+          />
+          <div className="mt-5">
+            <StepLabel>Step 1: Engagement</StepLabel>
+          </div>
           <SectionTitle
             eyebrow="Engagement"
             title="Choose engagement type"
@@ -904,7 +905,7 @@ export default function Home() {
         </section>
 
         <section className="mt-4 rounded-2xl border border-brand-gray200 bg-white p-4 shadow-panel sm:p-5">
-          <StepLabel>Step 2: Choose audience, site, and service context</StepLabel>
+          <StepLabel>Step 2: Audience, Site, and Service Context</StepLabel>
           <div className="grid gap-3 md:grid-cols-3">
             <label className="text-sm font-bold text-brand-charcoal">
               Audience
@@ -1126,12 +1127,12 @@ export default function Home() {
         </section>
 
         <section className="mt-4 rounded-2xl border border-brand-gray200 bg-white p-4 shadow-panel sm:p-6">
-          <StepLabel>Step 4: Optional product safety / recall context</StepLabel>
+          <StepLabel>Step 5: Optional Product Safety / Recall Context</StepLabel>
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <SectionTitle
               eyebrow="Optional External Data"
-              title="Product Safety Lookup"
-              description="Search public CPSC recall data by product, manufacturer, model, hazard, or keyword."
+              title="Optional Product Safety / Recall Context"
+              description="Search public CPSC recall data when product safety information may be relevant to the engagement."
             />
             {resultCountLabel ? (
               <p className="rounded-full bg-brand-gray100 px-3 py-1 text-sm font-bold text-brand-gray700">
