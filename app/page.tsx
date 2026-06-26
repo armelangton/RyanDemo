@@ -865,14 +865,6 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
 
 const sampleSites = Object.keys(sampleSiteDetails);
 
-const briefActions: Array<{ label: string; value: BriefAction }> = [
-  { label: "Generate Inspection Prep", value: "inspection_prep" },
-  { label: "Generate Training Prep", value: "training_prep" },
-  { label: "Generate Event Prep", value: "event_prep" },
-  { label: "Generate Customer Talking Points", value: "customer_talking_points" },
-  { label: "Generate Follow-Up Notes", value: "follow_up_notes" },
-];
-
 const quickSearches = [
   "smoke alarm",
   "fire extinguisher",
@@ -1038,155 +1030,6 @@ const emptySafetyReview = (equipment: InstalledEquipment[] = []): AutomaticSafet
   ],
 });
 
-const SectionBand = ({
-  title,
-  description,
-  icon,
-}: {
-  title: string;
-  description?: string;
-  icon: "building" | "tool" | "shield" | "clipboard" | "file" | "alert" | "check";
-}) => {
-  const paths = {
-    building: "M4 20h16M6 20V5a1 1 0 0 1 1-1h7a1 1 0 0 1 1 1v15M9 8h1M9 12h1M12 8h1M12 12h1M17 20v-7h2v7",
-    tool: "M14.7 6.3a4 4 0 0 0-5 5L4 17l3 3 5.7-5.7a4 4 0 0 0 5-5l-2.8 2.8-3-3 2.8-2.8Z",
-    shield: "M12 3 5 6v5c0 4.5 3 7.5 7 10 4-2.5 7-5.5 7-10V6l-7-3Z",
-    clipboard: "M9 4h6l1 2h2v14H6V6h2l1-2Zm0 6h6M9 14h6",
-    file: "M6 3h8l4 4v14H6V3Zm8 0v5h4M9 13h6M9 17h6",
-    alert: "M12 4 3 20h18L12 4Zm0 5v5m0 3h.01",
-    check: "M20 6 9 17l-5-5",
-  }[icon];
-
-  return (
-    <div className="mb-4 rounded-2xl border border-brand-gray200 bg-brand-gray100 px-4 py-3">
-      <div className="flex items-start gap-3">
-        <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-brand-gray200 bg-white text-brand-green">
-          <svg
-            viewBox="0 0 24 24"
-            aria-hidden="true"
-            className="h-5 w-5"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d={paths} />
-          </svg>
-        </span>
-        <div>
-          <h2 className="text-base font-black text-brand-charcoal">{title}</h2>
-          {description ? (
-            <p className="mt-1 text-sm leading-6 text-brand-gray700">
-              {description}
-            </p>
-          ) : null}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const PacketSection = ({
-  title,
-  children,
-  defaultOpen = false,
-}: {
-  title: string;
-  children: React.ReactNode;
-  defaultOpen?: boolean;
-}) => (
-  <details
-    open={defaultOpen}
-    className="group rounded-2xl border border-brand-gray200 bg-white p-4 shadow-sm"
-  >
-    <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-extrabold uppercase tracking-[0.08em] text-brand-charcoal">
-      <span>{title}</span>
-      <span className="rounded-full border border-brand-gray200 bg-brand-gray100 px-2 py-0.5 text-xs text-brand-gray700 group-open:hidden">
-        Open
-      </span>
-      <span className="hidden rounded-full border border-brand-gray200 bg-brand-gray100 px-2 py-0.5 text-xs text-brand-gray700 group-open:inline">
-        Close
-      </span>
-    </summary>
-    <div className="mt-4 border-t border-brand-gray200 pt-4 text-[15px] leading-7 text-brand-gray700">
-      {children}
-    </div>
-  </details>
-);
-
-const PacketBadge = ({
-  children,
-  tone = "neutral",
-}: {
-  children: React.ReactNode;
-  tone?: "green" | "amber" | "red" | "neutral";
-}) => {
-  const toneClass = {
-    green: "border-brand-green bg-green-50 text-brand-green",
-    amber: "border-brand-warning bg-[#fff8e8] text-brand-warning",
-    red: "border-brand-red bg-red-50 text-brand-red",
-    neutral: "border-brand-gray200 bg-brand-gray100 text-brand-gray700",
-  }[tone];
-
-  return (
-    <span className={`rounded-full border px-3 py-1 text-xs font-extrabold uppercase tracking-[0.08em] ${toneClass}`}>
-      {children}
-    </span>
-  );
-};
-
-const PacketSummaryTile = ({
-  label,
-  value,
-  detail,
-  tone = "neutral",
-}: {
-  label: string;
-  value: string;
-  detail: string;
-  tone?: "green" | "amber" | "red" | "neutral";
-}) => {
-  const toneClass = {
-    green: "border-brand-green bg-green-50",
-    amber: "border-brand-warning bg-[#fff8e8]",
-    red: "border-brand-red bg-red-50",
-    neutral: "border-brand-gray200 bg-brand-gray100",
-  }[tone];
-
-  return (
-    <div className={`rounded-2xl border p-4 ${toneClass}`}>
-      <p className="text-xs font-extrabold uppercase tracking-[0.12em] text-brand-gray700">
-        {label}
-      </p>
-      <p className="mt-2 text-2xl font-black leading-tight text-brand-charcoal">
-        {value}
-      </p>
-      <p className="mt-2 text-sm leading-6 text-brand-gray700">{detail}</p>
-    </div>
-  );
-};
-
-const PrioritySection = ({
-  title,
-  badges,
-  children,
-}: {
-  title: string;
-  badges?: React.ReactNode;
-  children: React.ReactNode;
-}) => (
-  <section className="rounded-2xl border border-brand-gray200 bg-white p-5 shadow-sm">
-    <div className="flex flex-col gap-3 border-b border-brand-gray200 pb-3 sm:flex-row sm:items-start sm:justify-between">
-      <h3 className="text-lg font-black leading-tight text-brand-charcoal">
-        {title}
-      </h3>
-      {badges ? <div className="flex flex-wrap gap-2">{badges}</div> : null}
-    </div>
-    <div className="mt-4 text-[15px] leading-7 text-brand-gray700">{children}</div>
-  </section>
-);
-
 const PacketList = ({
   items,
   tone = "green",
@@ -1213,6 +1056,32 @@ const PacketList = ({
   );
 };
 
+const PrepBriefSection = ({
+  title,
+  children,
+  tone = "green",
+}: {
+  title: string;
+  children: React.ReactNode;
+  tone?: "green" | "amber" | "red" | "neutral";
+}) => {
+  const accentClass = {
+    green: "border-l-brand-green",
+    amber: "border-l-brand-warning",
+    red: "border-l-brand-red",
+    neutral: "border-l-brand-gray500",
+  }[tone];
+
+  return (
+    <section className={`rounded-2xl border border-brand-gray200 border-l-4 ${accentClass} bg-white p-5`}>
+      <h3 className="text-xl font-black leading-tight text-brand-charcoal">
+        {title}
+      </h3>
+      <div className="mt-4 text-base leading-7 text-brand-gray700">{children}</div>
+    </section>
+  );
+};
+
 const ReadinessPacket = ({
   guidance,
   selectedRecall,
@@ -1222,9 +1091,6 @@ const ReadinessPacket = ({
   engagementType,
   audience,
   sampleSite,
-  serviceLens,
-  summarySource,
-  briefAction,
   automaticSafetyReview,
   onRegenerate,
   onStartNew,
@@ -1237,27 +1103,13 @@ const ReadinessPacket = ({
   engagementType: EngagementType;
   audience: Audience;
   sampleSite: string;
-  serviceLens: ServiceLens;
-  summarySource: string;
-  briefAction: BriefAction;
   automaticSafetyReview: AutomaticSafetyReview;
   onRegenerate: () => void;
   onStartNew: () => void;
 }) => {
   if (!guidance) return null;
 
-  const equipmentCount =
-    automaticSafetyReview.equipmentChecked.length ||
-    guidance.installedEquipmentReview.length;
   const hasPossibleMatches = automaticSafetyReview.possibleMatches.length > 0;
-  const productSafetyStatus = hasPossibleMatches
-    ? "Possible matches"
-    : automaticSafetyReview.noObviousMatchTerms.length
-      ? "Needs verification"
-      : "No obvious matches";
-  const verificationNeeded =
-    guidance.missingInformationToVerify.slice(0, 3).join(", ") ||
-    "Model, date range, site details";
   const missingInformation =
     guidance.missingInformationToVerify.length > 0
       ? guidance.missingInformationToVerify
@@ -1269,6 +1121,7 @@ const ReadinessPacket = ({
           "Prior deficiencies",
           "Internal review owner",
         ];
+  const topicText = selectedTopics.join(", ") || "None selected";
   const standardsObjectiveAlignment =
     guidance.standardsObjectiveAlignment?.length
       ? guidance.standardsObjectiveAlignment
@@ -1282,10 +1135,12 @@ const ReadinessPacket = ({
     guidance.simpleLessonPlan?.length
       ? guidance.simpleLessonPlan
       : [
-          "Open with the training objective and why the topic matters in the field.",
-          `Review practical examples for ${selectedTopics.join(", ") || "the selected topics"}.`,
-          "Use site equipment or demo materials to connect concepts to real work.",
-          "Close with questions, attendance/certification reminders, and follow-up items.",
+          "0-5 min: Introduction, audience expectations, and safety boundaries.",
+          `5-15 min: Core concept review for ${topicText}.`,
+          "15-25 min: Demonstration or scenario discussion using approved examples.",
+          "25-35 min: Guided practice or Q&A.",
+          "35-42 min: Knowledge check.",
+          "42-45 min: Wrap-up, attendance documentation, and follow-up reminder.",
         ];
   const materialsEquipmentNeeded =
     guidance.materialsEquipmentNeeded?.length
@@ -1304,76 +1159,119 @@ const ReadinessPacket = ({
           "Verify whether any certificate or credit language is approved before use.",
           "Route standards, credit, or certification questions to qualified review.",
         ];
+  const productSafetyItems = [
+    ...automaticSafetyReview.equipmentChecked.slice(0, 4).map((item) => {
+      const label = equipmentLabel(item);
+      const hasMatch = automaticSafetyReview.possibleMatches.some((match) =>
+        match.equipmentLabel.toLowerCase().includes(label.toLowerCase()),
+      );
+      return hasMatch
+        ? `${label}: Possible product safety match found. Verify manufacturer, model, date code, and installed location before discussing relevance.`
+        : `${label}: No obvious public recall match from available demo review. Verify manufacturer documentation if concerns arise.`;
+    }),
+    hasPossibleMatches
+      ? "Possible matches are verification prompts only; do not state that a recall applies until model, manufacturer, date range, and site details confirm it."
+      : "No obvious match does not prove there are no applicable recalls; verify official product and manufacturer sources before action.",
+  ].slice(0, 5);
+  const inspectorStartHere = [
+    "Verify product model numbers, manufacturer labels, and date codes while onsite.",
+    "Check inspection/service dates and documentation gaps before discussing status.",
+    ...guidance.recommendedNextBestActions,
+  ].slice(0, 5);
+  const instructorStartHere = [
+    "Confirm class topic, audience level, location, and session purpose.",
+    "Prepare demo equipment, safety boundaries, and practical examples before class.",
+    "Confirm attendance, certificate, or credit documentation requirements.",
+    ...guidance.recommendedNextBestActions,
+  ].slice(0, 5);
+  const siteSnapshot = [
+    `Site/profile: ${sampleSite}.`,
+    `Role and engagement: ${role} for ${roleEngagement}.`,
+    `Topics: ${topicText}.`,
+    ...guidance.installedEquipmentReview,
+  ].slice(0, 5);
+  const trainingSnapshot = [
+    `Training profile: ${sampleSite}.`,
+    `Session type: ${roleEngagement}.`,
+    `Training focus: ${topicText}.`,
+    ...guidance.trainingOrEventPrepNotes,
+  ].slice(0, 5);
+  const relatedServiceItems = [
+    ...guidance.relatedServiceGroups.safetyRiskReduction,
+    ...guidance.relatedServiceGroups.maintenanceTesting,
+    ...guidance.relatedServiceGroups.customerEducation,
+    ...guidance.relatedServiceGroups.documentationFollowUp,
+    ...guidance.relatedServiceConsiderations,
+  ].filter((item, index, list) => item && list.indexOf(item) === index).slice(0, 5);
+  const followUpItems = guidance.followUpNoteDraft
+    ? [guidance.followUpNoteDraft]
+    : ["Document unresolved questions, product verification needs, and the internal owner for follow-up."];
+  const officialReminder =
+    "Verify official sources, manufacturer instructions, applicable codes, NFPA standards, department requirements, company procedures, and AHJ requirements before action.";
   const packetText = [
     "AI Engagement Readiness Packet",
-    `Role: ${role}`,
-    `Engagement: ${roleEngagement}`,
-    `Topics: ${selectedTopics.join(", ")}`,
-    `Site: ${sampleSite}`,
-    `Service Lens: ${serviceLens.label}`,
+    `${sampleSite} - ${role} - ${roleEngagement}`,
+    `Topics: ${topicText}`,
     "",
-    "Key Attention Flags",
-    ...guidance.keyAttentionFlags.map((item) => `- ${item}`),
+    "Start Here",
+    ...(role === "Instructor" ? instructorStartHere : inspectorStartHere).map((item) => `- ${item}`),
     "",
-    "Missing Information to Verify",
-    ...missingInformation.map((item) => `- ${item}`),
+    role === "Instructor" ? "Training Session Snapshot" : "Site Snapshot",
+    ...(role === "Instructor" ? trainingSnapshot : siteSnapshot).map((item) => `- ${item}`),
     "",
-    "Recommended Next Best Actions",
-    ...guidance.recommendedNextBestActions.map((item) => `- ${item}`),
+    ...(role === "Instructor"
+      ? [
+          "Standards / Objective Alignment",
+          ...standardsObjectiveAlignment.map((item) => `- ${item}`),
+          "",
+          "Simple Lesson Plan",
+          ...simpleLessonPlan.map((item) => `- ${item}`),
+          "",
+          "Materials / Equipment Needed",
+          ...materialsEquipmentNeeded.map((item) => `- ${item}`),
+          "",
+          "Certification / Attendance Reminders",
+          ...certificationAttendanceReminders.map((item) => `- ${item}`),
+        ]
+      : [
+          "Items to Verify Onsite",
+          ...missingInformation.slice(0, 6).map((item) => `- ${item}`),
+          "",
+          "Product Safety / Recall Check",
+          ...productSafetyItems.map((item) => `- ${item}`),
+        ]),
     "",
-    "Product Safety / Recall Review",
-    ...guidance.productSafetyRecallReview.map((item) => `- ${item}`),
+    "Talking Points",
+    ...guidance.audienceSpecificTalkingPoints.slice(0, 5).map((item) => `- ${item}`),
     "",
-    "Installed Equipment Review",
-    ...guidance.installedEquipmentReview.map((item) => `- ${item}`),
+    "Related Service Considerations",
+    ...relatedServiceItems.map((item) => `- ${item}`),
     "",
-    "Follow-Up Note Draft",
-    guidance.followUpNoteDraft,
+    "Follow-Up Notes",
+    ...followUpItems.map((item) => `- ${item}`),
     "",
     "Official Source Reminder",
-    guidance.officialSourceReminder,
+    officialReminder,
   ].join("\n");
   const copyText = (text: string) => {
     if (typeof navigator === "undefined" || !navigator.clipboard) return;
     void navigator.clipboard.writeText(text);
   };
   const hasFollowUpNote = guidance.followUpNoteDraft.trim().length > 0;
-  const navItems = [
-    ["Summary", "#packet-summary"],
-    ["Priority Review", "#packet-priority"],
-    ["Equipment", "#packet-equipment"],
-    ["Product Safety", "#packet-product-safety"],
-    ["Prep Notes", "#packet-prep"],
-    ["Follow-Up", "#packet-follow-up"],
-    ["Verification", "#packet-verification"],
-  ];
 
   return (
-    <section className="rounded-2xl border border-brand-gray200 bg-white p-5 shadow-panel sm:p-6">
-      <SectionBand
-        icon="file"
-        title="Generated Packet"
-        description="A scan-ready internal readiness report built from engagement, site, equipment, prep, and product-safety context."
-      />
-      <div className="border-b border-brand-gray200 pb-4">
-        <div className="flex flex-wrap gap-2">
-          <span className="rounded-full border border-brand-red px-3 py-1 text-xs font-extrabold uppercase tracking-[0.1em] text-brand-red">
-            Human Review Required
-          </span>
-        </div>
-        <div className="mt-3 flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+    <section className="rounded-2xl border border-brand-gray200 bg-white p-5 shadow-panel sm:p-7">
+      <div className="border-b border-brand-gray200 pb-5">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div>
-            <h2 className="text-2xl font-extrabold text-brand-charcoal">
+            <h2 className="text-3xl font-black leading-tight text-brand-charcoal">
               AI Engagement Readiness Packet
             </h2>
-            <p className="mt-2 text-sm leading-6 text-brand-gray700">
-              {role} | {roleEngagement} | Topics:{" "}
-              {selectedTopics.join(", ") || "none selected"}. Site context:{" "}
-              {sampleSite}. Service lens: {serviceLens.label}.
-              Product safety context:{" "}
-              {selectedRecall
-                ? selectedRecall.title
-                : "No manual product safety recall selected"}
+            <p className="mt-2 text-base leading-7 text-brand-gray700">
+              {sampleSite} · {role} · {roleEngagement}
+            </p>
+            <p className="mt-1 text-sm font-bold text-brand-gray700">
+              Topics: {topicText}
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -1407,352 +1305,94 @@ const ReadinessPacket = ({
             </button>
           </div>
         </div>
-        <nav className="mt-4 flex gap-2 overflow-x-auto pb-1 text-xs font-extrabold uppercase tracking-[0.08em]">
-          {navItems.map(([label, href]) => (
-            <a
-              key={href}
-              href={href}
-              className="shrink-0 rounded-full border border-brand-gray200 bg-brand-gray100 px-3 py-2 text-brand-gray700 transition hover:border-brand-green hover:text-brand-green"
-            >
-              {label}
-            </a>
-          ))}
-        </nav>
-      </div>
-
-      <div id="packet-summary" className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-        <PacketSummaryTile
-          label="Readiness Score"
-          value={`${Math.round(guidance.readinessScore)}%`}
-          detail="Preparation completeness only, not safety approval."
-          tone="green"
-        />
-        <PacketSummaryTile
-          label="Equipment Reviewed"
-          value={`${equipmentCount} ${equipmentCount === 1 ? "system" : "systems"}`}
-          detail="Based on selected site equipment and service context."
-          tone="neutral"
-        />
-        <PacketSummaryTile
-          label="Product Safety Status"
-          value={productSafetyStatus}
-          detail="Auto-checked against public recall data; verify before action."
-          tone={hasPossibleMatches ? "amber" : "neutral"}
-        />
-        <PacketSummaryTile
-          label="Verification Needed"
-          value="Human review"
-          detail={verificationNeeded}
-          tone="amber"
-        />
-      </div>
-
-      <div className="mt-5 grid gap-4 lg:grid-cols-2">
-        <div className="rounded-2xl border border-brand-gray200 bg-brand-gray100 p-5">
-          <h3 className="text-sm font-extrabold uppercase tracking-[0.1em] text-brand-charcoal">
-            Why this packet is tailored to this engagement
-          </h3>
-          <p className="mt-2 text-[15px] leading-7 text-brand-gray700">
-            This packet uses the selected {role.toLowerCase()} role,{" "}
-            {roleEngagement.toLowerCase()} engagement, {sampleSite} customer/site
-            profile, {selectedTopics.join(", ") || "selected topics"}, the{" "}
-            {serviceLens.label} service lens, {equipmentCount} installed{" "}
-            {equipmentCount === 1 ? "system" : "systems"}, prep resources, and{" "}
-            {selectedRecall ? "selected recall context" : "automatic product safety context"}.
-          </p>
-        </div>
-        <div className="rounded-2xl border border-brand-gray200 bg-white p-5">
-          <h3 className="text-sm font-extrabold uppercase tracking-[0.1em] text-brand-charcoal">
-            Sources used
-          </h3>
-          <ul className="mt-3 space-y-1 text-[15px] leading-7 text-brand-gray700">
-            <li>Sample customer/site profile</li>
-            <li>Service Lens: {serviceLens.label}</li>
-            <li>Prep resources for {role}: {roleEngagement}</li>
-            <li>Topics: {selectedTopics.join(", ") || "none selected"}</li>
-            <li>Automatic product safety review</li>
-            {selectedRecall ? <li>Manual recall context: {selectedRecall.title}</li> : null}
-          </ul>
-        </div>
-      </div>
-
-      <div className="mt-5 rounded-2xl border border-brand-gray200 bg-brand-gray100 p-5">
-        <h3 className="text-sm font-extrabold uppercase tracking-[0.1em] text-brand-charcoal">
-          Readiness Score Context
-        </h3>
-        <p className="mt-2 text-[15px] leading-7 text-brand-gray700">
-          Readiness reflects preparation completeness, not code compliance or
-          safety approval. {guidance.readinessScoreReason}
-        </p>
-      </div>
-
-      <div id="packet-priority" className="mt-6">
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-brand-green">
-              Priority Review
+        <div className="mt-5 grid gap-3 md:grid-cols-3">
+          <div className="rounded-xl border border-brand-gray200 bg-brand-gray100 p-3">
+            <p className="text-sm font-black text-brand-charcoal">Action needed</p>
+            <p className="mt-1 text-sm leading-6 text-brand-gray700">
+              {role === "Instructor"
+                ? "Confirm attendance/certification documentation"
+                : "Verify product model numbers"}
             </p>
-            <h3 className="mt-1 text-2xl font-black text-brand-charcoal">
-              Review These First
-            </h3>
           </div>
-          <div className="flex flex-wrap gap-2">
-            <PacketBadge tone="red">Human Review Required</PacketBadge>
-            <PacketBadge tone="amber">Needs Verification</PacketBadge>
+          <div className="rounded-xl border border-brand-gray200 bg-brand-gray100 p-3">
+            <p className="text-sm font-black text-brand-charcoal">
+              {role === "Instructor" ? "Training focus" : "Safety check"}
+            </p>
+            <p className="mt-1 text-sm leading-6 text-brand-gray700">
+              {role === "Instructor"
+                ? topicText
+                : hasPossibleMatches
+                  ? "Possible product matches need review"
+                  : "Product context still needs verification"}
+            </p>
           </div>
-        </div>
-
-        <div className="mt-4 grid gap-4 lg:grid-cols-2">
-          <PrioritySection title="Key Attention Flags">
-            <div className="mb-3 flex flex-wrap gap-2">
-              <PacketBadge tone="amber">Needs Verification</PacketBadge>
-              <PacketBadge tone="red">Human Review Required</PacketBadge>
-            </div>
-            <PacketList items={guidance.keyAttentionFlags} tone="red" />
-          </PrioritySection>
-
-          <PrioritySection
-            title="Missing Information to Verify"
-            badges={<PacketBadge tone="amber">Needs Verification</PacketBadge>}
-          >
-            <div className="mb-3 flex flex-wrap gap-2">
-              <PacketBadge tone="amber">Needs Verification</PacketBadge>
-            </div>
-            <PacketList items={missingInformation} tone="amber" />
-          </PrioritySection>
-
-          <PrioritySection title="Recommended Next Best Actions">
-            <PacketList items={guidance.recommendedNextBestActions} tone="green" />
-          </PrioritySection>
-
-          <PrioritySection
-            title="Product Safety / Recall Review"
-            badges={
-              <>
-                <PacketBadge tone="neutral">Auto-Checked</PacketBadge>
-                {hasPossibleMatches ? (
-                  <PacketBadge tone="amber">Possible Match</PacketBadge>
-                ) : null}
-              </>
-            }
-          >
-            <div id="packet-product-safety" className="space-y-4">
-              <div className="flex flex-wrap gap-2">
-                <PacketBadge tone="neutral">Auto-checked</PacketBadge>
-                <PacketBadge tone="amber">Needs Verification</PacketBadge>
-              </div>
-              <div>
-                <p className="font-extrabold text-brand-charcoal">Equipment checked</p>
-                <p className="mt-1">
-                  {automaticSafetyReview.equipmentChecked
-                    .map((item) => equipmentLabel(item))
-                    .join(", ") ||
-                  "Select a customer/site profile to load known systems, installed equipment, and automatic product safety review."}
-                </p>
-              </div>
-              <div>
-                <p className="font-extrabold text-brand-charcoal">Search terms used</p>
-                <p className="mt-1">
-                  {automaticSafetyReview.searchTermsUsed.join(", ") ||
-                    "Select a customer/site profile to load known systems, installed equipment, and automatic product safety review."}
-                </p>
-              </div>
-              <div>
-                <p className="font-extrabold text-brand-charcoal">Possible matches</p>
-                {automaticSafetyReview.possibleMatches.length ? (
-                  <ul className="mt-1 space-y-2">
-                    {automaticSafetyReview.possibleMatches.map((match) => (
-                      <li key={`${match.searchTerm}-${match.recall.id}`}>
-                        Possible match for {match.equipmentLabel}:{" "}
-                        <span className="font-semibold text-brand-charcoal">
-                          {match.recall.title}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="mt-1">No obvious recall match found in this search.</p>
-                )}
-              </div>
-              <div>
-                <p className="font-extrabold text-brand-charcoal">No obvious matches</p>
-                <p className="mt-1">
-                  {automaticSafetyReview.noObviousMatchTerms.join(", ") ||
-                    "Select a customer/site profile to load known systems, installed equipment, and automatic product safety review."}
-                </p>
-              </div>
-              <div>
-                <p className="font-extrabold text-brand-charcoal">What needs verification</p>
-                <PacketList
-                  items={[
-                    ...guidance.productSafetyRecallReview,
-                    "Official source reminder: verify against CPSC notices, manufacturer instructions, applicable codes, NFPA standards, company procedures, and qualified internal review.",
-                  ]}
-                  tone="amber"
-                />
-              </div>
-            </div>
-          </PrioritySection>
-
-          {role === "Inspector" ? (
-          <PrioritySection title="Installed Equipment Review">
-            <div id="packet-equipment">
-            {automaticSafetyReview.equipmentChecked.length ? (
-              <div className="grid gap-3">
-                <div className="flex flex-wrap gap-2">
-                  <PacketBadge tone="amber">Needs Verification</PacketBadge>
-                </div>
-                {automaticSafetyReview.equipmentChecked.map((item) => (
-                  <div
-                    key={`${item.category}-${item.productName}-${item.locationContext}`}
-                    className="rounded-xl border border-brand-gray200 bg-brand-gray100 p-4"
-                  >
-                    <div className="grid gap-3 md:grid-cols-2">
-                      <div>
-                        <p className="text-xs font-extrabold uppercase tracking-[0.1em] text-brand-gray700">
-                          Equipment/System
-                        </p>
-                        <p className="mt-1 font-extrabold text-brand-charcoal">
-                          {item.productName || item.category}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-xs font-extrabold uppercase tracking-[0.1em] text-brand-gray700">
-                          Manufacturer
-                        </p>
-                        <p className="mt-1">{item.manufacturer}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs font-extrabold uppercase tracking-[0.1em] text-brand-gray700">
-                          Model
-                        </p>
-                        <p className="mt-1">{item.model}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs font-extrabold uppercase tracking-[0.1em] text-brand-gray700">
-                          Status/Reminder
-                        </p>
-                        <p className="mt-1">{item.serviceStatus}</p>
-                      </div>
-                    </div>
-                    <p className="mt-3 text-sm leading-6">
-                      <span className="font-extrabold text-brand-charcoal">
-                        Verification need:
-                      </span>{" "}
-                      {item.documentationNote}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <PacketList items={guidance.installedEquipmentReview} tone="green" />
-            )}
-            </div>
-          </PrioritySection>
-          ) : null}
-          <PrioritySection title="Related Service Considerations">
-            <div className="grid gap-3 md:grid-cols-2">
-              {[
-                ["Safety / Risk Reduction", guidance.relatedServiceGroups.safetyRiskReduction],
-                ["Maintenance / Testing", guidance.relatedServiceGroups.maintenanceTesting],
-                ["Customer Education", guidance.relatedServiceGroups.customerEducation],
-                ["Documentation / Follow-Up", guidance.relatedServiceGroups.documentationFollowUp],
-              ].map(([groupTitle, items]) => (
-                <div
-                  key={groupTitle as string}
-                  className="rounded-xl border border-brand-gray200 bg-brand-gray100 p-3"
-                >
-                  <p className="font-extrabold text-brand-charcoal">
-                    {groupTitle as string}
-                  </p>
-                  <ul className="mt-2 space-y-1">
-                    {(items as string[]).slice(0, 2).map((item) => (
-                      <li key={item}>{item}</li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
-          </PrioritySection>
+          <div className="rounded-xl border border-brand-gray200 bg-brand-gray100 p-3">
+            <p className="text-sm font-black text-brand-charcoal">Verification</p>
+            <p className="mt-1 text-sm leading-6 text-brand-gray700">
+              {role === "Instructor"
+                ? "Standards alignment requires instructor review"
+                : "Confirm documents, dates, and onsite conditions"}
+            </p>
+          </div>
         </div>
       </div>
 
-      <div className="mt-6">
-        <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-brand-green">
-          Supporting Packet Details
-        </p>
-        <div className="mt-3 grid gap-3 md:grid-cols-2">
-          <PacketSection
-            title={role === "Instructor" ? "Training Session Context" : "Jobsite / Site Context"}
-          >
-            <p className="text-[15px] leading-7">{guidance.internalFieldBrief}</p>
-          </PacketSection>
-          {role === "Instructor" ? (
-            <>
-              <PacketSection title="Standards / Objective Alignment">
-                <PacketList items={standardsObjectiveAlignment} tone="amber" />
-              </PacketSection>
-              <PacketSection title="Simple Lesson Plan">
-                <PacketList items={simpleLessonPlan} tone="green" />
-              </PacketSection>
-              <PacketSection title="Materials / Equipment Needed">
-                <PacketList items={materialsEquipmentNeeded} tone="green" />
-              </PacketSection>
-              <PacketSection title="Certification / Attendance Reminders">
-                <PacketList items={certificationAttendanceReminders} tone="amber" />
-              </PacketSection>
-            </>
-          ) : (
-            <>
-              <PacketSection title="Equipment / Product Context">
-                <PacketList items={guidance.installedEquipmentReview} tone="green" />
-              </PacketSection>
-              <PacketSection title="Items to Verify">
-                <PacketList items={guidance.equipmentProductChecklist} tone="amber" />
-              </PacketSection>
-            </>
-          )}
-          <PacketSection title="Talking Points">
-            <PacketList items={guidance.audienceSpecificTalkingPoints} tone="green" />
-          </PacketSection>
-          {role === "Instructor" ? null : (
-          <PacketSection title="Equipment / Product Checklist">
-            <PacketList items={guidance.equipmentProductChecklist} tone="amber" />
-          </PacketSection>
-          )}
-          {role === "Instructor" ? null : (
-          <PacketSection title="Protect / Prevent / Preserve Lens">
-            <PacketList items={guidance.protectPreventPreserveLens} tone="green" />
-          </PacketSection>
-          )}
-          <PacketSection title="Deficiency / Documentation Follow-Up">
-            <PacketList items={guidance.deficiencyDocumentationFollowUp} tone="amber" />
-          </PacketSection>
-          <PacketSection title="Related Service Considerations">
-            <div className="grid gap-4">
-              {[
-                ["Safety / Risk Reduction", guidance.relatedServiceGroups.safetyRiskReduction],
-                ["Maintenance / Testing", guidance.relatedServiceGroups.maintenanceTesting],
-                ["Customer Education", guidance.relatedServiceGroups.customerEducation],
-                ["Documentation / Follow-Up", guidance.relatedServiceGroups.documentationFollowUp],
-                [
-                  "Modernization / Replacement Discussion",
-                  guidance.relatedServiceGroups.modernizationReplacement,
-                ],
-              ].map(([groupTitle, items]) => (
-                <div key={groupTitle as string}>
-                  <p className="font-extrabold text-brand-charcoal">
-                    {groupTitle as string}
-                  </p>
-                  <div className="mt-2">
-                    <PacketList items={items as string[]} tone="green" />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </PacketSection>
-          <PacketSection title="Follow-Up Note Draft">
-            <div id="packet-follow-up" className="space-y-3">
+      <div className="mt-6 space-y-5">
+        <PrepBriefSection title="Start Here" tone="green">
+          <PacketList
+            items={role === "Instructor" ? instructorStartHere : inspectorStartHere}
+            tone="green"
+          />
+        </PrepBriefSection>
+
+        {role === "Instructor" ? (
+          <>
+            <PrepBriefSection title="Training Session Snapshot" tone="green">
+              <PacketList items={trainingSnapshot} tone="green" />
+            </PrepBriefSection>
+            <PrepBriefSection title="Standards / Objective Alignment" tone="amber">
+              <PacketList items={standardsObjectiveAlignment} tone="amber" />
+            </PrepBriefSection>
+            <PrepBriefSection title="Simple Lesson Plan" tone="green">
+              <PacketList items={simpleLessonPlan} tone="green" />
+            </PrepBriefSection>
+            <PrepBriefSection title="Materials / Equipment Needed" tone="green">
+              <PacketList items={materialsEquipmentNeeded} tone="green" />
+            </PrepBriefSection>
+          </>
+        ) : (
+          <>
+            <PrepBriefSection title="Site Snapshot" tone="green">
+              <PacketList items={siteSnapshot} tone="green" />
+            </PrepBriefSection>
+            <PrepBriefSection title="Items to Verify Onsite" tone="red">
+              <PacketList items={missingInformation.slice(0, 6)} tone="red" />
+            </PrepBriefSection>
+            <PrepBriefSection title="Product Safety / Recall Check" tone="amber">
+              <PacketList items={productSafetyItems} tone="amber" />
+            </PrepBriefSection>
+          </>
+        )}
+
+        <PrepBriefSection title="Talking Points" tone="green">
+          <PacketList
+            items={guidance.audienceSpecificTalkingPoints.slice(0, 5)}
+            tone="green"
+          />
+        </PrepBriefSection>
+
+        {role === "Instructor" ? (
+          <PrepBriefSection title="Certification / Attendance Reminders" tone="amber">
+            <PacketList items={certificationAttendanceReminders} tone="amber" />
+          </PrepBriefSection>
+        ) : null}
+
+        <PrepBriefSection title="Related Service Considerations" tone="green">
+          <PacketList items={relatedServiceItems} tone="green" />
+        </PrepBriefSection>
+
+        <PrepBriefSection title="Follow-Up Notes" tone="neutral">
+          <div className="space-y-3">
             {hasFollowUpNote ? (
               <button
                 type="button"
@@ -1762,39 +1402,13 @@ const ReadinessPacket = ({
                 Copy Follow-Up Note
               </button>
             ) : null}
-            <div className="whitespace-pre-line text-[15px] leading-7">
-              {guidance.followUpNoteDraft}
-            </div>
-            </div>
-          </PacketSection>
-          <PacketSection title="Known from Source">
-            <PacketList items={guidance.knownSourceFacts} tone="neutral" />
-          </PacketSection>
-          <PacketSection title="Provided by User/Demo Profile">
-            <PacketList items={guidance.providedDemoProfileContext} tone="neutral" />
-          </PacketSection>
-          <PacketSection title="AI Interpretation">
-            <PacketList items={guidance.aiInterpretation} tone="amber" />
-          </PacketSection>
-        </div>
-      </div>
+            <PacketList items={followUpItems} tone="neutral" />
+          </div>
+        </PrepBriefSection>
 
-      <div
-        id="packet-verification"
-        className="mt-6 rounded-2xl border border-brand-red border-l-4 border-l-brand-red bg-red-50 p-5 text-[15px] leading-7 text-brand-gray700"
-      >
-        <strong className="text-brand-charcoal">
-          Before using this with a customer:
-        </strong>{" "}
-        Confirm model numbers, manufacturer documentation, install/service dates,
-        recall applicability, prior deficiencies, and the internal review owner.
-        AI output supports preparation only and must be reviewed by qualified
-        personnel.
-      </div>
-
-      <div className="mt-4 rounded-2xl border border-brand-gray200 border-l-4 border-l-brand-warning bg-[#fff8e8] p-5 text-[15px] leading-7 text-brand-gray700">
-        <strong className="text-brand-charcoal">Official Source Reminder:</strong>{" "}
-        {guidance.officialSourceReminder}
+        <PrepBriefSection title="Official Source Reminder" tone="amber">
+          <p>{officialReminder}</p>
+        </PrepBriefSection>
       </div>
     </section>
   );
@@ -2305,9 +1919,6 @@ export default function Home() {
                 engagementType={engagementType}
                 audience={audience}
                 sampleSite={selectedSampleSite}
-                serviceLens={selectedServiceLens}
-                summarySource={summarySource}
-                briefAction={briefAction}
                 automaticSafetyReview={automaticSafetyReview}
                 onRegenerate={() => void generateSummary(selectedRecall, briefAction)}
                 onStartNew={startNewPacket}

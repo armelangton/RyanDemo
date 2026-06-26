@@ -33,32 +33,25 @@ Manual recall data is optional. If no manual recall is selected, say: "No manual
 
 The packet must include:
 1. Source Context Used
-2. Readiness Score
-3. Key Attention Flags
-4. Internal Field Brief
-5. Customer / Audience Talking Points
-6. Installed Equipment Review
-7. Product Safety / Recall Review
-8. Instructor / Event Prep Notes
-9. Protect / Prevent / Preserve Lens
-10. Deficiency / Documentation Follow-Up
-11. Related Service Considerations
-12. Recommended Next Best Actions
-13. Follow-Up Note Draft
-14. Missing Information to Verify
-15. Official Source Reminder
+2. Key Attention Flags
+3. Internal Field Brief
+4. Customer / Audience Talking Points
+5. Installed Equipment Review
+6. Product Safety / Recall Review
+7. Instructor / Event Prep Notes
+8. Protect / Prevent / Preserve Lens
+9. Deficiency / Documentation Follow-Up
+10. Related Service Considerations
+11. Recommended Next Best Actions
+12. Follow-Up Note Draft
+13. Missing Information to Verify
+14. Official Source Reminder
 
 Role-specific output:
 - If role is "Inspector", create a jobsite readiness packet. Do not include lesson plans. Focus on jobsite/site context, equipment/product context, product safety/recall review, items to verify, talking points, related service considerations, follow-up notes, missing information, and official source reminder.
 - If role is "Instructor", create a training readiness packet. Include standards/objective alignment, a simple lesson plan, materials/equipment needed, certification or attendance reminders, talking points, related service considerations, follow-up notes, missing information, and official source reminder. Use demo-safe language and do not claim official certification approval.
 - For instructor Standards / Objective Alignment, include draft measurable learning objectives, brief alignment notes, a simple check-for-understanding method, and this caution: "Draft alignment for planning purposes. Verify against current Indiana, Pro Board/IFSAC, NFPA, department, company, and AHJ requirements before using for credit or certification."
 - Do not invent official standard numbers unless source text is provided.
-
-Readiness score:
-- Return a number from 0 to 100.
-- Readiness reflects preparation completeness, not code compliance or safety approval.
-- Higher score when recall, engagement type, audience, sample site, known systems, reminder, and training need are present.
-- Lower score when exact model, site equipment match, manufacturer documentation, service history, or recall applicability are unknown.
 
 Source-aware output:
 - Separate official recall facts from AI interpretation and internal follow-up where possible.
@@ -148,8 +141,6 @@ const responseSchema = {
         type: "array",
         items: { type: "string" },
       },
-      readinessScore: { type: "number" },
-      readinessScoreReason: { type: "string" },
       keyAttentionFlags: {
         type: "array",
         items: { type: "string" },
@@ -239,8 +230,6 @@ const responseSchema = {
       "aiInterpretation",
       "role",
       "selectedTopics",
-      "readinessScore",
-      "readinessScoreReason",
       "keyAttentionFlags",
       "internalFieldBrief",
       "standardsObjectiveAlignment",
@@ -367,7 +356,6 @@ const audienceGuidance = (audience: string) => {
           "Prepare recruit-style questions about recognizing product labels, reporting suspected affected equipment, and understanding system behavior during an incident.",
         nextAction:
           "Prepare a response-awareness explanation before the training or event.",
-        scoreModifier: -2,
       };
     case "Recruit Class":
       return {
@@ -377,7 +365,6 @@ const audienceGuidance = (audience: string) => {
           "Prepare practical examples and likely recruit questions about system behavior, labels, alarms, hydrants, pumps, and what to report.",
         nextAction:
           "Prepare recruit-facing demo notes and verify product safety examples before instruction.",
-        scoreModifier: -2,
       };
     case "Municipality":
       return {
@@ -387,7 +374,6 @@ const audienceGuidance = (audience: string) => {
           "Prepare public-safety examples that connect documentation, inspection timing, and facility readiness without making final compliance determinations.",
         nextAction:
           "Prepare a documentation and inspection-timing discussion for municipal stakeholders.",
-        scoreModifier: 1,
       };
     case "Building Owner":
       return {
@@ -397,7 +383,6 @@ const audienceGuidance = (audience: string) => {
           "Prepare plain-language examples that connect safety documentation to business continuity and confidence.",
         nextAction:
           "Prepare a concise owner-facing risk-reduction explanation for internal review.",
-        scoreModifier: -1,
       };
     case "Safety Coordinator":
       return {
@@ -407,7 +392,6 @@ const audienceGuidance = (audience: string) => {
           "Prepare practical prompts about recurring checks, reporting channels, training completion, and records that need review.",
         nextAction:
           "Prepare a safety-coordinator checklist for equipment, records, and unresolved follow-up items.",
-        scoreModifier: 0,
       };
     case "Convention Attendee":
       return {
@@ -417,7 +401,6 @@ const audienceGuidance = (audience: string) => {
           "Prepare short, customer-friendly explanations and route technical questions to qualified internal review.",
         nextAction:
           "Prepare event follow-up notes for questions, related service interest, and verification items.",
-        scoreModifier: -1,
       };
     case "Internal Sales / Marketing Team":
       return {
@@ -427,7 +410,6 @@ const audienceGuidance = (audience: string) => {
           "Prepare concise booth or event talking points and identify technical questions that need qualified follow-up.",
         nextAction:
           "Prepare a lead-capture and follow-up routing plan for the internal team.",
-        scoreModifier: -1,
       };
     case "Prospective Customer":
       return {
@@ -437,7 +419,6 @@ const audienceGuidance = (audience: string) => {
           "Prepare plain-language examples and avoid making final technical, compliance, or safety determinations.",
         nextAction:
           "Prepare a prospective-customer follow-up note with verification items and next steps.",
-        scoreModifier: -1,
       };
     case "Instructor / Trainer":
       return {
@@ -447,7 +428,6 @@ const audienceGuidance = (audience: string) => {
           "Prepare discussion prompts, practical examples, and standards or manuals that should be verified before teaching.",
         nextAction:
           "Prepare instructor notes and likely attendee questions before the session.",
-        scoreModifier: 0,
       };
     case "Facility Manager":
       return {
@@ -457,7 +437,6 @@ const audienceGuidance = (audience: string) => {
           "Prepare maintenance and documentation prompts that help the facility team locate product and service history.",
         nextAction:
           "Prepare a maintenance-documentation checklist for the facility manager.",
-        scoreModifier: 0,
       };
     case "Internal Inspector":
     default:
@@ -468,46 +447,8 @@ const audienceGuidance = (audience: string) => {
           "Prepare field-check prompts that help verify model, date range, equipment location, and service history.",
         nextAction:
           "Prepare a field verification checklist before the inspection.",
-        scoreModifier: 0,
       };
   }
-};
-
-const calculateReadinessScore = ({
-  recall,
-  engagementType,
-  audience,
-  sampleSite,
-  equipmentSystems,
-  upcomingReminder,
-  trainingNeed,
-  serviceLens,
-  siteProfile,
-}: {
-  recall: Record<string, unknown>;
-  engagementType: string;
-  audience: string;
-  sampleSite: string;
-  equipmentSystems: string[];
-  upcomingReminder: string;
-  trainingNeed: string;
-  serviceLens: Record<string, unknown>;
-  siteProfile: Record<string, unknown>;
-}) => {
-  let score = 10;
-  if (textValue(recall.title) !== "not specified") score += 12;
-  if (engagementType) score += 8;
-  if (audience) score += 8;
-  if (sampleSite && sampleSite !== "No sample site selected") score += 10;
-  if (textValue(siteProfile.type) !== "not specified") score += 6;
-  if (textValue(serviceLens.label) !== "not specified") score += 8;
-  if (equipmentSystems.length) score += 12;
-  if (upcomingReminder && upcomingReminder !== "No reminder selected") score += 8;
-  if (trainingNeed && trainingNeed !== "No training need selected") score += 8;
-  if (textValue(recall.manufacturer) !== "not specified") score += 3;
-  if (textValue(recall.hazard) !== "not specified") score += 3;
-  score += audienceGuidance(audience).scoreModifier;
-  return Math.max(0, Math.min(92, score));
 };
 
 const fallbackPacket = ({
@@ -610,17 +551,6 @@ const fallbackPacket = ({
       ? `Optional manual product safety search result selected: ${title}. Treat this as additional context only until verified.`
       : "No manual product safety recall selected. Packet is based on engagement, site, service, prep context, and automatic product safety review.",
   ];
-  const score = calculateReadinessScore({
-    recall,
-    engagementType,
-    audience,
-    sampleSite,
-    equipmentSystems,
-    upcomingReminder,
-    trainingNeed,
-    serviceLens,
-    siteProfile,
-  });
   const systemsText = equipmentSystems.length
     ? equipmentSystems.join(", ")
     : "site equipment/systems not selected";
@@ -672,9 +602,6 @@ const fallbackPacket = ({
     ],
     role,
     selectedTopics,
-    readinessScore: score,
-    readinessScoreReason:
-      "Readiness reflects preparation completeness, not code compliance or safety approval. The score is limited because exact model match, site applicability, manufacturer documentation, and service history still need verification.",
     keyAttentionFlags: [
       "Model verification needed",
       "Site applicability unknown",

@@ -41,8 +41,6 @@ export type AiGuidance = {
   aiInterpretation: string[];
   role?: string;
   selectedTopics?: string[];
-  readinessScore: number;
-  readinessScoreReason: string;
   keyAttentionFlags: string[];
   internalFieldBrief: string;
   standardsObjectiveAlignment?: string[];
