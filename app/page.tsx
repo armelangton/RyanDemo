@@ -1829,6 +1829,11 @@ export default function Home() {
       : automaticSafetyReview.searchTermsUsed.length
         ? "Auto-checked; verify sources"
         : "Not checked";
+  const installedEquipmentSummary = selectedSiteDetails.installedEquipment
+    .map((item) => item.category)
+    .filter((category, index, list) => list.indexOf(category) === index)
+    .join(", ");
+  const possibleMatchCount = automaticSafetyReview.possibleMatches.length;
   const formattedAutoReviewCheckedAt = autoReviewCheckedAt
     ? new Intl.DateTimeFormat("en-US", {
         month: "short",
@@ -2061,46 +2066,24 @@ export default function Home() {
 
       <header className="bg-white">
         <div className="mx-auto max-w-[1180px] px-4 py-3 lg:px-6">
-          <div className="flex flex-col gap-2 border-b border-brand-gray200 pb-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="text-lg font-black uppercase tracking-[0.03em] text-brand-green sm:text-2xl">
-                RYAN FIRE PROTECTION, INC.
-              </p>
-              <p className="mt-0.5 text-xs font-semibold text-brand-gray700 sm:text-sm">
-                Internal Field Assistant Concept
-              </p>
-            </div>
-            <span className="w-fit rounded-full border border-brand-gray200 bg-brand-gray100 px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-[0.1em] text-brand-gray700 sm:text-xs">
-              Internal Field Assistant Concept
-            </span>
+          <div className="border-b border-brand-gray200 pb-3">
+            <p className="text-lg font-black uppercase tracking-[0.03em] text-brand-green sm:text-2xl">
+              RYAN FIRE PROTECTION, INC.
+            </p>
           </div>
 
-          <section className="py-3">
-            <div>
-              <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-brand-green">
-                Fire Protection Field Assistant
-              </p>
-              <h1 className="mt-2 max-w-3xl text-[22px] font-black leading-tight text-brand-charcoal sm:text-[34px]">
+          <section className="py-3 text-center">
+            <div className="mx-auto max-w-4xl">
+              <h1 className="text-[24px] font-black leading-tight text-brand-charcoal sm:text-[34px]">
                 Fire Protection Field Assistant
               </h1>
-              <p className="mt-3 max-w-3xl text-sm leading-6 text-brand-gray700 sm:text-base">
+              <p className="mt-3 text-sm leading-6 text-brand-gray700 sm:text-base">
                 Prepare internal readiness packets for inspections, customer
                 training, fire department events, conventions, customer
                 meetings, and continuing education work using service context,
-                customer/site details, optional public recall data, and
+                customer/site details, product safety review, and
                 AI-assisted reasoning.
               </p>
-            </div>
-            <div className="mt-3 flex flex-wrap gap-2">
-              <span className="rounded-full bg-brand-gray100 px-3 py-1 text-xs font-extrabold uppercase tracking-[0.1em] text-brand-gray700">
-                Live CPSC Data
-              </span>
-              <span className="rounded-full bg-brand-gray100 px-3 py-1 text-xs font-extrabold uppercase tracking-[0.1em] text-brand-gray700">
-                AI-Generated Packet
-              </span>
-              <span className="rounded-full border border-brand-warning px-3 py-1 text-xs font-extrabold uppercase tracking-[0.1em] text-brand-warning">
-                Human Review Required
-              </span>
             </div>
           </section>
         </div>
@@ -2108,16 +2091,6 @@ export default function Home() {
 
       <div className="mx-auto max-w-[1180px] px-4 py-4 lg:px-6">
         <section className="rounded-2xl border border-brand-gray200 bg-white p-4 shadow-panel sm:p-5">
-          <SectionBand
-            icon="check"
-            title="Workflow Setup"
-            description="Choose the engagement, confirm the site/service context, review prep resources, and generate the packet."
-          />
-          <SectionTitle
-            eyebrow="Primary Workflow"
-            title="Build an AI Engagement Readiness Packet"
-            description="Start with the engagement context. Add product safety or manual context only if it is relevant."
-          />
           <div className="mt-4 rounded-2xl border border-brand-gray200 bg-brand-gray100 p-4">
             <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
               <div>
@@ -2258,10 +2231,121 @@ export default function Home() {
               {selectedRecall ? selectedRecall.title : "None selected"}
             </p>
           </div>
-          <div className="mt-3 rounded-xl border border-brand-gray200 bg-white p-3 text-sm leading-6 text-brand-gray700">
-            <p className="font-extrabold text-brand-charcoal">
-              Sample Customer/Site Profile: Installed Equipment / Products
-            </p>
+          <div className="mt-4 grid gap-3 md:grid-cols-3">
+            <div className="rounded-xl border border-brand-gray200 bg-white p-3 text-sm leading-6 text-brand-gray700">
+              <div className="flex flex-wrap items-center gap-2">
+                <p className="font-extrabold text-brand-charcoal">
+                  Installed Equipment
+                </p>
+                <PacketBadge tone="neutral">Sample profile</PacketBadge>
+              </div>
+              <p className="mt-2">
+                {currentEquipmentCount} items:{" "}
+                {installedEquipmentSummary ||
+                  "Select a customer/site profile to load known systems, installed equipment, and automatic product safety review."}
+              </p>
+            </div>
+            <div className="rounded-xl border border-brand-gray200 bg-white p-3 text-sm leading-6 text-brand-gray700">
+              <p className="font-extrabold text-brand-charcoal">
+                Automatic Product Safety Review
+              </p>
+              <p className="mt-2">
+                {automaticSafetyReview.equipmentChecked.length} equipment items
+                checked · {automaticSafetyReview.searchTermsUsed.length} search
+                terms generated · {possibleMatchCount} possible matches · Needs
+                verification
+              </p>
+              <div className="mt-2 flex flex-wrap gap-2">
+                <PacketBadge tone="neutral">Auto-checked</PacketBadge>
+                {possibleMatchCount ? (
+                  <PacketBadge tone="amber">{possibleMatchCount} possible</PacketBadge>
+                ) : null}
+                <PacketBadge tone="amber">Needs review</PacketBadge>
+              </div>
+            </div>
+            <div className="rounded-xl border border-brand-gray200 bg-white p-3 text-sm leading-6 text-brand-gray700">
+              <p className="font-extrabold text-brand-charcoal">Engagement Prep</p>
+              <p className="mt-2">
+                Materials, discussion topics, likely questions, and follow-up
+                reminders are ready for this engagement type.
+              </p>
+            </div>
+          </div>
+          <div className="mt-4">
+            <StepLabel>Generate</StepLabel>
+            <button
+              type="button"
+              onClick={() => void generateSummary(selectedRecall, briefAction)}
+              disabled={Boolean(summarizingId)}
+              className="w-full rounded-xl bg-brand-green px-4 py-3 text-left text-sm font-extrabold text-white transition hover:bg-brand-greenDark disabled:cursor-not-allowed disabled:bg-brand-gray500 sm:w-auto"
+            >
+              {summarizingId
+                ? "Generating AI Engagement Readiness Packet..."
+                : "Generate AI Engagement Readiness Packet"}
+            </button>
+          </div>
+          {summarizingId === "engagement-packet" ? (
+            <div className="mt-4 rounded-xl border border-brand-gray200 bg-white p-4">
+              <div className="h-2 w-full overflow-hidden rounded-full bg-brand-gray100">
+                <div className="h-full w-1/2 animate-pulse rounded-full bg-brand-green" />
+              </div>
+              <div className="mt-4 grid gap-2 text-sm md:grid-cols-4">
+                {[
+                  "Reviewing site equipment",
+                  "Checking product safety data",
+                  "Applying engagement context",
+                  "Building readiness packet",
+                ].map((item) => (
+                  <div
+                    key={item}
+                    className="rounded-xl border border-brand-gray200 bg-brand-gray100 p-3 font-extrabold text-brand-charcoal"
+                  >
+                    {item}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : null}
+          {summaryError && !selectedRecall ? (
+            <div className="mt-4 rounded-xl border border-red-200 bg-red-50 p-4 text-sm font-bold text-brand-red">
+              {summaryError}
+            </div>
+          ) : null}
+          <div className="mt-5">
+            {guidance ? (
+              <ReadinessPacket
+                guidance={guidance}
+                selectedRecall={selectedRecall}
+                engagementType={engagementType}
+                audience={audience}
+                sampleSite={selectedSampleSite}
+                serviceLens={selectedServiceLens}
+                summarySource={summarySource}
+                briefAction={briefAction}
+                automaticSafetyReview={automaticSafetyReview}
+                onRegenerate={() => void generateSummary(selectedRecall, briefAction)}
+                onStartNew={startNewPacket}
+              />
+            ) : (
+              <div className="rounded-xl border border-brand-gray200 bg-white p-4 text-sm leading-6 text-brand-gray700">
+                <p className="text-lg font-black text-brand-charcoal">
+                  Packet Preview
+                </p>
+                <p className="mt-1">
+                  Generate a readiness packet to see the summarized output here.
+                </p>
+                <p className="mt-3 text-xs font-bold text-brand-gray700">
+                  Human review required: Verify official sources, manufacturer
+                  instructions, applicable codes, NFPA standards, and company
+                  procedures before action.
+                </p>
+              </div>
+            )}
+          </div>
+          <details className="mt-3 rounded-xl border border-brand-gray200 bg-white p-3 text-sm leading-6 text-brand-gray700">
+            <summary className="cursor-pointer font-extrabold text-brand-charcoal">
+              View equipment details
+            </summary>
             <div className="mt-2 grid gap-2 md:grid-cols-3">
               {selectedSiteDetails.installedEquipment.length ? (
                 selectedSiteDetails.installedEquipment.map((item) => (
@@ -2283,7 +2367,7 @@ export default function Home() {
                 </p>
               )}
             </div>
-          </div>
+          </details>
           <details className="mt-3 rounded-xl border border-brand-gray200 bg-white p-3">
             <summary className="cursor-pointer text-sm font-extrabold text-brand-charcoal">
               View site/source details
@@ -2341,35 +2425,6 @@ export default function Home() {
               </div>
               <div className="md:col-span-2">
                 <p className="font-extrabold text-brand-charcoal">
-                  Installed Equipment / Products
-                </p>
-                <div className="mt-2 grid gap-2">
-                  {selectedSiteDetails.installedEquipment.length ? (
-                    selectedSiteDetails.installedEquipment.map((item) => (
-                      <div
-                        key={`${item.category}-${item.productName}`}
-                        className="rounded-lg border border-brand-gray200 bg-brand-gray100 p-3"
-                      >
-                        <p className="font-extrabold text-brand-charcoal">
-                          {equipmentLabel(item)}
-                        </p>
-                        <p>Category: {item.category}</p>
-                        <p>Location/context: {item.locationContext}</p>
-                        <p>Service status: {item.serviceStatus}</p>
-                        <p>Documentation note: {item.documentationNote}</p>
-                        <p>Training relevance: {item.trainingRelevance}</p>
-                      </div>
-                    ))
-                  ) : (
-                    <p>
-                      Select a customer/site profile to load known systems,
-                      installed equipment, and automatic product safety review.
-                    </p>
-                  )}
-                </div>
-              </div>
-              <div className="md:col-span-2">
-                <p className="font-extrabold text-brand-charcoal">
                   Source Context Used
                 </p>
                 <ul className="mt-1 space-y-1">
@@ -2380,14 +2435,11 @@ export default function Home() {
               </div>
             </div>
           </details>
-          <div className="mt-4 rounded-xl border border-brand-gray200 bg-white p-3">
-            <SectionBand
-              icon="clipboard"
-              title="Engagement Prep"
-              description="Auto-filled prep resources based on the selected engagement type."
-            />
-            <StepLabel>Step 3: Engagement Prep Resources</StepLabel>
-            <div className="grid gap-3 text-sm leading-6 text-brand-gray700 md:grid-cols-3">
+          <details className="mt-4 rounded-xl border border-brand-gray200 bg-white p-3">
+            <summary className="cursor-pointer text-sm font-extrabold text-brand-charcoal">
+              View prep details
+            </summary>
+            <div className="mt-3 grid gap-3 text-sm leading-6 text-brand-gray700 md:grid-cols-3">
               <div>
                 <p className="font-extrabold text-brand-charcoal">
                   Materials to bring
@@ -2419,11 +2471,7 @@ export default function Home() {
                 </ul>
               </div>
             </div>
-            <details className="mt-3 rounded-xl border border-brand-gray200 bg-brand-gray100 p-3">
-              <summary className="cursor-pointer text-sm font-extrabold text-brand-charcoal">
-                View equipment checklist and training notes
-              </summary>
-              <div className="mt-3 grid gap-3 text-sm leading-6 text-brand-gray700 md:grid-cols-2">
+              <div className="mt-3 grid gap-3 rounded-xl border border-brand-gray200 bg-brand-gray100 p-3 text-sm leading-6 text-brand-gray700 md:grid-cols-2">
                 <div>
                   <p className="font-extrabold text-brand-charcoal">
                     Equipment checklist
@@ -2445,15 +2493,11 @@ export default function Home() {
                   <p>{prep.notes}</p>
                 </div>
               </div>
-            </details>
-          </div>
-          <div className="mt-4 rounded-xl border border-brand-gray200 bg-white p-3">
-            <SectionBand
-              icon="shield"
-              title="Automatic Safety Review"
-              description="The app automatically checks selected site equipment against public product safety data."
-            />
-            <StepLabel>Step 4: Automatic Product Safety Review</StepLabel>
+          </details>
+          <details className="mt-4 rounded-xl border border-brand-gray200 bg-white p-3">
+            <summary className="cursor-pointer text-sm font-extrabold text-brand-charcoal">
+              View safety review details
+            </summary>
             <div className="rounded-xl border border-brand-gray200 bg-brand-gray100 p-3">
               <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                 <div>
@@ -2602,7 +2646,7 @@ export default function Home() {
                                   : "No obvious match"}
                               </td>
                               <td className="px-3 py-3">
-                                <PacketBadge tone="amber">Needs Verification</PacketBadge>
+                                <PacketBadge tone="amber">Needs Review</PacketBadge>
                               </td>
                             </tr>
                           );
@@ -2613,14 +2657,19 @@ export default function Home() {
                 </div>
               )}
             </div>
+          </details>
             <details className="mt-4 rounded-xl border border-brand-gray200 bg-white p-3">
               <summary className="cursor-pointer text-sm font-extrabold text-brand-charcoal">
-                Optional Manual Product Safety Search
+                Product Recall Check
               </summary>
               <p className="mt-2 text-sm leading-6 text-brand-gray700">
-                Use this only to check an additional product, manufacturer,
-                model, hazard, or keyword that is not already included in the
-                selected customer/site profile.
+                Check an additional product by name, model, photo, UPC, barcode,
+                hazard, or keyword.
+              </p>
+              <p className="mt-2 text-xs leading-5 text-brand-gray700">
+                Photo and barcode capture are concept inputs for identifying
+                product details. Verify extracted details before relying on
+                recall results.
               </p>
               {resultCountLabel ? (
                 <p className="mt-3 w-fit rounded-full bg-brand-gray100 px-3 py-1 text-sm font-bold text-brand-gray700">
@@ -2643,6 +2692,24 @@ export default function Home() {
                   {searching ? "Searching..." : "Search Recalls"}
                 </button>
               </form>
+              <div className="mt-3 grid gap-3 md:grid-cols-2">
+                <label className="text-sm font-bold text-brand-charcoal">
+                  Product photo / take photo concept
+                  <input
+                    type="file"
+                    accept="image/*"
+                    capture="environment"
+                    className="mt-2 w-full rounded-xl border border-brand-gray200 bg-white px-3 py-2 text-sm text-brand-gray700"
+                  />
+                </label>
+                <label className="text-sm font-bold text-brand-charcoal">
+                  UPC / barcode entry concept
+                  <input
+                    placeholder="Enter or scan UPC/barcode"
+                    className="mt-2 min-h-11 w-full rounded-xl border border-brand-gray200 bg-white px-3 text-brand-charcoal"
+                  />
+                </label>
+              </div>
 
               <div className="mt-4 flex flex-wrap gap-2">
                 {quickSearches.map((term) => (
@@ -2825,12 +2892,13 @@ export default function Home() {
               </div>
               </div>
             </details>
-          </div>
-          <label className="mt-4 block text-sm font-bold text-brand-charcoal">
-            Step 5: Optional Manual / Site / Training Notes
-            <span className="mt-1 block font-extrabold text-brand-charcoal">
-              Additional Manual / Site Notes
-            </span>
+          <details className="mt-4 rounded-xl border border-brand-gray200 bg-white p-3">
+            <summary className="cursor-pointer text-sm font-extrabold text-brand-charcoal">
+              Additional Manual / Site / Training Notes
+            </summary>
+            <p className="mt-2 text-sm leading-6 text-brand-gray700">
+              Add manual, site, training, or product notes if helpful.
+            </p>
             <textarea
               value={additionalNotes}
               onChange={(event) => {
@@ -2840,82 +2908,8 @@ export default function Home() {
               placeholder="Paste manual excerpts, service notes, site-specific equipment details, customer training history, or internal prep notes here."
               className="mt-2 min-h-28 w-full rounded-xl border border-brand-gray200 bg-white px-3 py-3 text-sm leading-6 text-brand-charcoal shadow-sm placeholder:text-brand-gray500"
             />
-          </label>
-          <div className="mt-4">
-            <StepLabel>Step 6: Generate</StepLabel>
-            <button
-              type="button"
-              onClick={() => void generateSummary(selectedRecall, briefAction)}
-              disabled={Boolean(summarizingId)}
-              className="w-full rounded-xl bg-brand-green px-4 py-3 text-left text-sm font-extrabold text-white transition hover:bg-brand-greenDark disabled:cursor-not-allowed disabled:bg-brand-gray500 sm:w-auto"
-            >
-              {summarizingId
-                ? "Generating AI Engagement Readiness Packet..."
-                : "Generate AI Engagement Readiness Packet"}
-            </button>
-          </div>
-          {summarizingId === "engagement-packet" ? (
-            <div className="mt-4 rounded-xl border border-brand-gray200 bg-white p-4">
-              <div className="h-2 w-full overflow-hidden rounded-full bg-brand-gray100">
-                <div className="h-full w-1/2 animate-pulse rounded-full bg-brand-green" />
-              </div>
-              <div className="mt-4 grid gap-2 text-sm md:grid-cols-4">
-                {[
-                  "Reviewing site equipment",
-                  "Checking product safety data",
-                  "Applying engagement context",
-                  "Building readiness packet",
-                ].map((item) => (
-                  <div
-                    key={item}
-                    className="rounded-xl border border-brand-gray200 bg-brand-gray100 p-3 font-extrabold text-brand-charcoal"
-                  >
-                    {item}
-                  </div>
-                ))}
-              </div>
-            </div>
-          ) : null}
-          {summaryError && !selectedRecall ? (
-            <div className="mt-4 rounded-xl border border-red-200 bg-red-50 p-4 text-sm font-bold text-brand-red">
-              {summaryError}
-            </div>
-          ) : null}
+          </details>
         </section>
-        <div className="mt-5">
-          {guidance ? (
-            <ReadinessPacket
-              guidance={guidance}
-              selectedRecall={selectedRecall}
-              engagementType={engagementType}
-              audience={audience}
-              sampleSite={selectedSampleSite}
-              serviceLens={selectedServiceLens}
-              summarySource={summarySource}
-              briefAction={briefAction}
-              automaticSafetyReview={automaticSafetyReview}
-              onRegenerate={() => void generateSummary(selectedRecall, briefAction)}
-              onStartNew={startNewPacket}
-            />
-          ) : (
-            <section className="rounded-2xl border border-dashed border-brand-gray200 bg-white p-5 shadow-panel">
-              <SectionBand
-                icon="file"
-                title="Generated Packet"
-                description="Packet Preview"
-              />
-              <h2 className="text-xl font-black text-brand-charcoal">
-                Packet Preview
-              </h2>
-              <p className="mt-2 text-sm leading-6 text-brand-gray700">
-                Select context and generate a readiness packet that includes
-                installed equipment, automatic product safety review, prep
-                resources, related service considerations, and verification
-                reminders.
-              </p>
-            </section>
-          )}
-        </div>
 
         <details className="mt-5 rounded-2xl border border-brand-gray200 bg-white p-4 text-sm leading-6 text-brand-gray700 shadow-panel">
           <summary className="cursor-pointer font-extrabold text-brand-charcoal">
