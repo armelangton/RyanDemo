@@ -276,11 +276,20 @@ const logOpenAiError = (error: unknown) => {
 };
 
 const safeErrorMessage = (error: unknown) => {
-  if (error instanceof Error) {
-    return error.message.replace(/Bearer\s+[A-Za-z0-9._-]+/g, "Bearer [redacted]");
+  const message =
+    error instanceof Error ? error.message : String(error);
+
+  if (message.includes("insufficient_quota")) {
+    return "OpenAI API quota exceeded or billing limit reached.";
+  }
+  if (message.includes("invalid_api_key")) {
+    return "OpenAI API key was rejected.";
+  }
+  if (message.includes("rate_limit")) {
+    return "OpenAI API rate limit reached.";
   }
 
-  return String(error).replace(/Bearer\s+[A-Za-z0-9._-]+/g, "Bearer [redacted]");
+  return "OpenAI generation failed; structured fallback was used.";
 };
 
 const actionLabel = (briefAction: string) => {
