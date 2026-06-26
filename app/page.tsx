@@ -1193,6 +1193,26 @@ const StepLabel = ({ children }: { children: React.ReactNode }) => (
   </p>
 );
 
+const WorkflowStepHeader = ({
+  step,
+  title,
+  description,
+}: {
+  step: string;
+  title: string;
+  description: string;
+}) => (
+  <div>
+    <p className="text-xs font-extrabold text-brand-green">{step}</p>
+    <h2 className="mt-1 text-2xl font-extrabold leading-tight text-brand-charcoal sm:text-[28px]">
+      {title}
+    </h2>
+    <p className="mt-2 max-w-3xl text-sm leading-6 text-brand-gray700">
+      {description}
+    </p>
+  </div>
+);
+
 const ReadinessPacket = ({
   guidance,
   selectedRecall,
@@ -1295,20 +1315,9 @@ const ReadinessPacket = ({
       />
       <div className="border-b border-brand-gray200 pb-4">
         <div className="flex flex-wrap gap-2">
-          <span className="rounded-full bg-brand-green px-3 py-1 text-xs font-extrabold uppercase tracking-[0.1em] text-white">
-            AI-Generated
-          </span>
           <span className="rounded-full border border-brand-red px-3 py-1 text-xs font-extrabold uppercase tracking-[0.1em] text-brand-red">
             Human Review Required
           </span>
-          <span className="rounded-full border border-brand-warning px-3 py-1 text-xs font-extrabold uppercase tracking-[0.1em] text-brand-warning">
-            Source Verification Needed
-          </span>
-          {summarySource === "openai" ? (
-            <span className="rounded-full border border-brand-gray200 bg-brand-gray100 px-3 py-1 text-xs font-extrabold uppercase tracking-[0.1em] text-brand-gray700">
-              Generated with OpenAI
-            </span>
-          ) : null}
         </div>
         <div className="mt-3 flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
           <div>
@@ -1413,15 +1422,13 @@ const ReadinessPacket = ({
           <h3 className="text-sm font-extrabold uppercase tracking-[0.1em] text-brand-charcoal">
             Sources used
           </h3>
-          <div className="mt-3 flex flex-wrap gap-2">
-            <PacketBadge tone="neutral">Sample customer/site profile</PacketBadge>
-            <PacketBadge tone="neutral">Ryan Service Lens</PacketBadge>
-            <PacketBadge tone="neutral">Prep Resources</PacketBadge>
-            <PacketBadge tone="neutral">Automatic Safety Review</PacketBadge>
-            {selectedRecall ? (
-              <PacketBadge tone="amber">Manual Recall Context</PacketBadge>
-            ) : null}
-          </div>
+          <ul className="mt-3 space-y-1 text-[15px] leading-7 text-brand-gray700">
+            <li>Sample customer/site profile</li>
+            <li>Service Lens: {serviceLens.label}</li>
+            <li>Prep resources for {engagementType}</li>
+            <li>Automatic product safety review</li>
+            {selectedRecall ? <li>Manual recall context: {selectedRecall.title}</li> : null}
+          </ul>
         </div>
       </div>
 
@@ -1448,15 +1455,11 @@ const ReadinessPacket = ({
           <div className="flex flex-wrap gap-2">
             <PacketBadge tone="red">Human Review Required</PacketBadge>
             <PacketBadge tone="amber">Needs Verification</PacketBadge>
-            <PacketBadge tone="neutral">Source Verification Needed</PacketBadge>
           </div>
         </div>
 
         <div className="mt-4 grid gap-4 lg:grid-cols-2">
-          <PrioritySection
-            title="Key Attention Flags"
-            badges={<PacketBadge tone="red">High Attention</PacketBadge>}
-          >
+          <PrioritySection title="Key Attention Flags">
             <div className="mb-3 flex flex-wrap gap-2">
               <PacketBadge tone="amber">Needs Verification</PacketBadge>
               <PacketBadge tone="red">Human Review Required</PacketBadge>
@@ -1470,19 +1473,11 @@ const ReadinessPacket = ({
           >
             <div className="mb-3 flex flex-wrap gap-2">
               <PacketBadge tone="amber">Needs Verification</PacketBadge>
-              <PacketBadge tone="neutral">Known from site profile</PacketBadge>
             </div>
             <PacketList items={missingInformation} tone="amber" />
           </PrioritySection>
 
-          <PrioritySection
-            title="Recommended Next Best Actions"
-            badges={<PacketBadge tone="green">Next Actions</PacketBadge>}
-          >
-            <div className="mb-3 flex flex-wrap gap-2">
-              <PacketBadge tone="green">AI interpretation</PacketBadge>
-              <PacketBadge tone="neutral">Known from site profile</PacketBadge>
-            </div>
+          <PrioritySection title="Recommended Next Best Actions">
             <PacketList items={guidance.recommendedNextBestActions} tone="green" />
           </PrioritySection>
 
@@ -1557,13 +1552,11 @@ const ReadinessPacket = ({
 
           <PrioritySection
             title="Installed Equipment Review"
-            badges={<PacketBadge tone="neutral">Source Context</PacketBadge>}
           >
             <div id="packet-equipment">
             {automaticSafetyReview.equipmentChecked.length ? (
               <div className="grid gap-3">
                 <div className="flex flex-wrap gap-2">
-                  <PacketBadge tone="neutral">Known from site profile</PacketBadge>
                   <PacketBadge tone="amber">Needs Verification</PacketBadge>
                 </div>
                 {automaticSafetyReview.equipmentChecked.map((item) => (
@@ -1613,14 +1606,7 @@ const ReadinessPacket = ({
             )}
             </div>
           </PrioritySection>
-          <PrioritySection
-            title="Related Service Considerations"
-            badges={<PacketBadge tone="green">Service Context</PacketBadge>}
-          >
-            <div className="mb-3 flex flex-wrap gap-2">
-              <PacketBadge tone="green">AI interpretation</PacketBadge>
-              <PacketBadge tone="neutral">Known from site profile</PacketBadge>
-            </div>
+          <PrioritySection title="Related Service Considerations">
             <div className="grid gap-3 md:grid-cols-2">
               {[
                 ["Safety / Risk Reduction", guidance.relatedServiceGroups.safetyRiskReduction],
@@ -1765,6 +1751,8 @@ export default function Home() {
   const [summarizingId, setSummarizingId] = useState("");
   const [summaryError, setSummaryError] = useState("");
   const [additionalNotes, setAdditionalNotes] = useState("");
+  const [showNotesPanel, setShowNotesPanel] = useState(false);
+  const [showRecallCheckPanel, setShowRecallCheckPanel] = useState(false);
   const [automaticSafetyReview, setAutomaticSafetyReview] =
     useState<AutomaticSafetyReview>(() => emptySafetyReview(sampleSiteDetails[sampleSites[0]].installedEquipment));
   const [autoReviewLoading, setAutoReviewLoading] = useState(false);
@@ -2067,51 +2055,8 @@ export default function Home() {
 
       <div className="mx-auto max-w-[1180px] px-4 py-4 lg:px-6">
         <section className="rounded-2xl border border-brand-gray200 bg-white p-4 shadow-panel sm:p-5">
-          <div className="mt-4 rounded-2xl border border-brand-gray200 bg-brand-gray100 p-4">
-            <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-              <div>
-                <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-brand-green">
-                  Current Prep
-                </p>
-                <h3 className="mt-1 text-lg font-black text-brand-charcoal">
-                  {selectedSampleSite} | {engagementType} | {audience}
-                </h3>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                <PacketBadge tone="green">
-                  {currentEquipmentCount} demo equipment items
-                </PacketBadge>
-                <PacketBadge tone={automaticSafetyReview.possibleMatches.length ? "amber" : "neutral"}>
-                  {currentProductSafetyStatus}
-                </PacketBadge>
-              </div>
-            </div>
-            <div className="mt-3 grid gap-2 text-sm leading-6 text-brand-gray700 sm:grid-cols-2 lg:grid-cols-4">
-              <div>
-                <p className="font-extrabold text-brand-charcoal">Job to be done</p>
-                <p>{engagementType}</p>
-              </div>
-              <div>
-                <p className="font-extrabold text-brand-charcoal">Audience</p>
-                <p>{audience}</p>
-              </div>
-              <div>
-                <p className="font-extrabold text-brand-charcoal">
-                  Sample customer/site profile
-                </p>
-                <p>{selectedSampleSite}</p>
-              </div>
-              <div>
-                <p className="font-extrabold text-brand-charcoal">Service Lens</p>
-                <p>{selectedServiceLens.label}</p>
-              </div>
-            </div>
-          </div>
-          <div className="mt-5">
-            <StepLabel>Step 1: Where are you going?</StepLabel>
-          </div>
-          <SectionTitle
-            eyebrow="Destination"
+          <WorkflowStepHeader
+            step="Step 1"
             title="Where are you going?"
             description="Choose the customer, site, event, or training profile so the app can load the right equipment, records, materials, and prep context."
           />
@@ -2129,20 +2074,10 @@ export default function Home() {
                 <option key={item}>{item}</option>
               ))}
             </select>
-            <span className="mt-2 block text-xs font-medium leading-5 text-brand-gray700">
-              Demo profile simulates equipment, service, training, and event data
-              that could come from SAP, ERP, service records, training logs, CRM,
-              or an asset database.
-            </span>
-            <span className="mt-1 block text-xs font-extrabold uppercase tracking-[0.08em] text-brand-gray700">
-              Simulated asset data for proof-of-concept
-            </span>
           </label>
-          <div className="mt-5">
-            <StepLabel>Step 2: What are you doing there?</StepLabel>
-          </div>
-          <SectionTitle
-            eyebrow="Job to be done"
+          <div className="mt-5" />
+          <WorkflowStepHeader
+            step="Step 2"
             title="What are you doing there?"
             description="Choose the job you need to be ready for."
           />
@@ -2168,14 +2103,8 @@ export default function Home() {
         </section>
 
         <section className="mt-4 rounded-2xl border border-brand-gray200 bg-white p-4 shadow-panel sm:p-5">
-          <SectionBand
-            icon="building"
-            title="Site Equipment"
-            description="Seeded demo data simulates the customer/site asset context a production version could pull from SAP, ERP, service records, or an equipment database."
-          />
-          <StepLabel>Step 3: Who is this for?</StepLabel>
-          <SectionTitle
-            eyebrow="Audience and Context"
+          <WorkflowStepHeader
+            step="Step 3"
             title="Who is this for?"
             description="Choose the audience so the packet uses the right level of detail, talking points, and follow-up guidance."
           />
@@ -2195,8 +2124,17 @@ export default function Home() {
                 ))}
               </select>
             </label>
+          </div>
+          <div className="mt-5">
+            <WorkflowStepHeader
+              step="Step 4"
+              title="Service Lens"
+              description="Choose the service area or system focus for this packet."
+            />
+          </div>
+          <div className="mt-4 grid gap-3 md:grid-cols-2">
             <label className="text-sm font-bold text-brand-charcoal">
-              Step 4: Service Lens
+              Service Lens
               <select
                 value={selectedServiceLensId}
                 onChange={(event) => {
@@ -2211,35 +2149,20 @@ export default function Home() {
                   </option>
                 ))}
               </select>
-              <span className="mt-2 block text-xs font-medium leading-5 text-brand-gray700">
-                Choose the service area or system focus for this packet.
-              </span>
             </label>
           </div>
-          <div className="mt-4 rounded-xl border border-brand-gray200 bg-brand-gray100 p-3 text-sm leading-6 text-brand-gray700">
-            <p className="font-extrabold text-brand-charcoal">Context being used</p>
-            <p className="mt-1">
-              Engagement: {engagementType} | Audience: {audience} | Site:{" "}
-              {selectedSampleSite} | Service Lens: {selectedServiceLens.label}
-            </p>
-            <p className="mt-1">
-              <span className="rounded-full border border-brand-gray200 bg-white px-2 py-0.5 text-xs font-extrabold uppercase tracking-[0.08em] text-brand-gray700">
-                Sample profile
-              </span>{" "}
-              {selectedSiteDetails.shortSummary}
-            </p>
-            <p className="mt-1">
-              Product Recall Check Result:{" "}
-              {selectedRecall ? selectedRecall.title : "None selected"}
-            </p>
-          </div>
+          <p className="mt-4 text-xs leading-5 text-brand-gray700">
+            Demo profile simulates equipment, service, training, and event data
+            that could come from SAP, ERP, service records, training logs, CRM,
+            or an asset database.
+          </p>
+          {false ? (
           <div className="mt-4 grid gap-3 md:grid-cols-3">
             <div className="rounded-xl border border-brand-gray200 bg-white p-3 text-sm leading-6 text-brand-gray700">
               <div className="flex flex-wrap items-center gap-2">
                 <p className="font-extrabold text-brand-charcoal">
                   Demo Equipment Profile
                 </p>
-                <PacketBadge tone="neutral">Sample profile</PacketBadge>
               </div>
               <p className="mt-2">
                 {installedEquipmentSummary
@@ -2285,7 +2208,8 @@ export default function Home() {
               </p>
             </div>
           </div>
-          {showTrainingReadiness ? (
+          ) : null}
+          {false && showTrainingReadiness ? (
             <details className="mt-4 rounded-xl border border-brand-gray200 bg-white p-3 text-sm leading-6 text-brand-gray700">
               <summary className="cursor-pointer font-extrabold text-brand-charcoal">
                 Training / CE Readiness
@@ -2330,7 +2254,7 @@ export default function Home() {
               </div>
             </details>
           ) : null}
-          {showEventReadiness ? (
+          {false && showEventReadiness ? (
             <details className="mt-4 rounded-xl border border-brand-gray200 bg-white p-3 text-sm leading-6 text-brand-gray700">
               <summary className="cursor-pointer font-extrabold text-brand-charcoal">
                 Event Readiness
@@ -2369,8 +2293,175 @@ export default function Home() {
               </div>
             </details>
           ) : null}
+          <div className="mt-4 flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => setShowNotesPanel((value) => !value)}
+              className="rounded-xl border border-brand-gray200 bg-white px-3 py-2 text-sm font-extrabold text-brand-charcoal transition hover:bg-brand-gray100"
+            >
+              {showNotesPanel ? "Hide notes" : "Add notes"}
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowRecallCheckPanel((value) => !value)}
+              className="rounded-xl border border-brand-gray200 bg-white px-3 py-2 text-sm font-extrabold text-brand-charcoal transition hover:bg-brand-gray100"
+            >
+              {showRecallCheckPanel ? "Hide Product Recall Check" : "Product Recall Check"}
+            </button>
+          </div>
+
+          {showNotesPanel ? (
+            <div className="mt-4 rounded-xl border border-brand-gray200 bg-brand-gray100 p-3">
+              <label className="block text-sm font-bold text-brand-charcoal">
+                Additional Manual / Site / Training Notes
+                <textarea
+                  value={additionalNotes}
+                  onChange={(event) => {
+                    setAdditionalNotes(event.target.value);
+                    setGuidance(null);
+                  }}
+                  placeholder="Paste manual excerpts, service notes, site-specific equipment details, customer training history, or internal prep notes here."
+                  className="mt-2 min-h-28 w-full rounded-xl border border-brand-gray200 bg-white px-3 py-3 text-sm leading-6 text-brand-charcoal shadow-sm placeholder:text-brand-gray500"
+                />
+              </label>
+            </div>
+          ) : null}
+
+          {showRecallCheckPanel ? (
+            <div className="mt-4 rounded-xl border border-brand-gray200 bg-brand-gray100 p-3">
+              <h3 className="text-base font-black text-brand-charcoal">
+                Product Recall Check
+              </h3>
+              <p className="mt-1 text-sm leading-6 text-brand-gray700">
+                Optional public CPSC lookup for an item not already included in
+                the selected profile.
+              </p>
+              {resultCountLabel ? (
+                <p className="mt-3 text-sm font-bold text-brand-gray700">
+                  {resultCountLabel}
+                </p>
+              ) : null}
+              <form
+                onSubmit={handleSubmit}
+                className="mt-3 grid gap-3 lg:grid-cols-[1fr_auto]"
+              >
+                <input
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
+                  placeholder="Search by product, manufacturer, model, hazard, or keyword..."
+                  className="min-h-12 rounded-xl border border-brand-gray200 bg-white px-4 text-base text-brand-charcoal shadow-sm placeholder:text-brand-gray500"
+                />
+                <button
+                  type="submit"
+                  disabled={searching || !query.trim()}
+                  className="min-h-12 rounded-xl bg-brand-green px-6 font-extrabold text-white shadow-sm transition hover:bg-brand-greenDark disabled:cursor-not-allowed disabled:bg-brand-gray500"
+                >
+                  {searching ? "Searching..." : "Search Recalls"}
+                </button>
+              </form>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {quickSearches.map((term) => (
+                  <button
+                    key={term}
+                    type="button"
+                    onClick={() => void searchRecalls(term)}
+                    className="rounded-full border border-brand-gray200 bg-white px-3 py-2 text-sm font-bold text-brand-charcoal transition hover:border-brand-green hover:text-brand-green"
+                  >
+                    {term}
+                  </button>
+                ))}
+              </div>
+              <div className="mt-4 space-y-3">
+                {searching ? (
+                  <div className="rounded-xl border border-brand-gray200 bg-white p-4">
+                    <div className="h-2 w-full overflow-hidden rounded-full bg-brand-gray100">
+                      <div className="h-full w-2/5 animate-pulse rounded-full bg-brand-green" />
+                    </div>
+                    <p className="mt-3 font-extrabold text-brand-charcoal">
+                      Searching public recall data...
+                    </p>
+                  </div>
+                ) : null}
+                {!searching && searchError ? (
+                  <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm font-bold text-brand-red">
+                    {searchError}
+                  </div>
+                ) : null}
+                {!searching && hasSearched && !searchError && results.length === 0 ? (
+                  <div className="rounded-xl border border-brand-gray200 bg-white p-4">
+                    <p className="font-extrabold text-brand-charcoal">
+                      No matching CPSC results for &quot;{query}&quot;.
+                    </p>
+                    <p className="mt-1 text-sm leading-6 text-brand-gray700">
+                      This means the public CPSC API did not return matches for
+                      this exact term. It does not confirm that no recalls exist.
+                    </p>
+                  </div>
+                ) : null}
+                {!searching &&
+                  results.map((recall) => {
+                    const isSelected = selectedRecall?.id === recall.id;
+
+                    return (
+                      <article
+                        key={recall.id}
+                        className={`rounded-xl border bg-white p-4 shadow-sm ${
+                          isSelected ? "border-brand-green" : "border-brand-gray200"
+                        }`}
+                      >
+                        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                          <div>
+                            <h3 className="text-base font-extrabold leading-6 text-brand-charcoal">
+                              {recall.title}
+                            </h3>
+                            <p className="mt-1 text-sm font-semibold text-brand-gray700">
+                              {recall.manufacturer} | {formatDate(recall.recallDate)}
+                            </p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSelectedRecall(isSelected ? null : recall);
+                              setGuidance(null);
+                              setSummaryError("");
+                              setSummarySource("");
+                            }}
+                            className={`rounded-xl px-3 py-2 text-sm font-extrabold transition ${
+                              isSelected
+                                ? "border border-brand-gray200 bg-white text-brand-charcoal hover:bg-brand-gray100"
+                                : "bg-brand-green text-white hover:bg-brand-greenDark"
+                            }`}
+                          >
+                            {isSelected ? "Clear recall" : "Select recall"}
+                          </button>
+                        </div>
+                        <div className="mt-3 grid gap-3 text-sm leading-6 md:grid-cols-2">
+                          <div>
+                            <p className="font-extrabold text-brand-charcoal">Hazard</p>
+                            <p className="text-brand-gray700">{recall.hazard}</p>
+                          </div>
+                          <div>
+                            <p className="font-extrabold text-brand-charcoal">Remedy</p>
+                            <p className="text-brand-gray700">{recall.remedy}</p>
+                          </div>
+                        </div>
+                        {recall.url ? (
+                          <a
+                            href={recall.url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="mt-3 inline-flex text-sm font-extrabold text-brand-green underline-offset-4 hover:underline"
+                          >
+                            Official CPSC source
+                          </a>
+                        ) : null}
+                      </article>
+                    );
+                  })}
+              </div>
+            </div>
+          ) : null}
           <div className="mt-4">
-            <StepLabel>Generate</StepLabel>
             <button
               type="button"
               onClick={() => void generateSummary(selectedRecall, briefAction)}
@@ -2440,7 +2531,7 @@ export default function Home() {
               </div>
             )}
           </div>
-          <details className="mt-3 rounded-xl border border-brand-gray200 bg-white p-3 text-sm leading-6 text-brand-gray700">
+          <details className="hidden mt-3 rounded-xl border border-brand-gray200 bg-white p-3 text-sm leading-6 text-brand-gray700">
             <summary className="cursor-pointer font-extrabold text-brand-charcoal">
               View equipment details
             </summary>
@@ -2466,7 +2557,7 @@ export default function Home() {
               )}
             </div>
           </details>
-          <details className="mt-3 rounded-xl border border-brand-gray200 bg-white p-3">
+          <details className="hidden mt-3 rounded-xl border border-brand-gray200 bg-white p-3">
             <summary className="cursor-pointer text-sm font-extrabold text-brand-charcoal">
               View site/source details
             </summary>
@@ -2533,7 +2624,7 @@ export default function Home() {
               </div>
             </div>
           </details>
-          <details className="mt-4 rounded-xl border border-brand-gray200 bg-white p-3">
+          <details className="hidden mt-4 rounded-xl border border-brand-gray200 bg-white p-3">
             <summary className="cursor-pointer text-sm font-extrabold text-brand-charcoal">
               View prep details
             </summary>
@@ -2592,7 +2683,7 @@ export default function Home() {
                 </div>
               </div>
           </details>
-          <details className="mt-4 rounded-xl border border-brand-gray200 bg-white p-3">
+          <details className="hidden mt-4 rounded-xl border border-brand-gray200 bg-white p-3">
             <summary className="cursor-pointer text-sm font-extrabold text-brand-charcoal">
               View safety review details
             </summary>
@@ -2756,7 +2847,7 @@ export default function Home() {
               )}
             </div>
           </details>
-            <details className="mt-4 rounded-xl border border-brand-gray200 bg-white p-3">
+            <details className="hidden mt-4 rounded-xl border border-brand-gray200 bg-white p-3">
               <summary className="cursor-pointer text-sm font-extrabold text-brand-charcoal">
                 Product Recall Check
               </summary>
@@ -2991,7 +3082,7 @@ export default function Home() {
               </div>
               </div>
             </details>
-          <details className="mt-4 rounded-xl border border-brand-gray200 bg-white p-3">
+          <details className="hidden mt-4 rounded-xl border border-brand-gray200 bg-white p-3">
             <summary className="cursor-pointer text-sm font-extrabold text-brand-charcoal">
               Add notes
             </summary>
@@ -3010,7 +3101,7 @@ export default function Home() {
           </details>
         </section>
 
-        <details className="mt-5 rounded-2xl border border-brand-gray200 bg-white p-4 text-sm leading-6 text-brand-gray700 shadow-panel">
+        <details className="hidden mt-5 rounded-2xl border border-brand-gray200 bg-white p-4 text-sm leading-6 text-brand-gray700 shadow-panel">
           <summary className="cursor-pointer font-extrabold text-brand-charcoal">
             How it works
           </summary>
@@ -3024,7 +3115,7 @@ export default function Home() {
           </ol>
         </details>
 
-        <section className="mt-5 rounded-2xl border border-brand-gray200 bg-white p-4 shadow-panel sm:p-5">
+        <section className="hidden mt-5 rounded-2xl border border-brand-gray200 bg-white p-4 shadow-panel sm:p-5">
           <SectionBand
             icon="alert"
             title="Verification Required"
