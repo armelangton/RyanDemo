@@ -238,6 +238,43 @@ const objectListValue = (value: unknown): Record<string, unknown>[] =>
       ) as Record<string, unknown>[])
     : [];
 
+const extractResponseText = (payload: unknown) => {
+  const response = objectValue(payload);
+  if (typeof response.output_text === "string") {
+    return response.output_text;
+  }
+
+  const output = Array.isArray(response.output) ? response.output : [];
+  for (const item of output) {
+    const content = objectValue(item).content;
+    if (!Array.isArray(content)) continue;
+
+    for (const part of content) {
+      const partObject = objectValue(part);
+      if (
+        partObject.type === "output_text" &&
+        typeof partObject.text === "string"
+      ) {
+        return partObject.text;
+      }
+    }
+  }
+
+  return "";
+};
+
+const logOpenAiError = (error: unknown) => {
+  if (error instanceof Error) {
+    console.error("OpenAI summarize failed", {
+      name: error.name,
+      message: error.message,
+    });
+    return;
+  }
+
+  console.error("OpenAI summarize failed", { error: String(error) });
+};
+
 const actionLabel = (briefAction: string) => {
   switch (briefAction) {
     case "training_prep":
@@ -770,14 +807,14 @@ export async function POST(request: Request) {
     }
 
     const payload = await response.json();
-    const text = payload.output_text;
-    if (typeof text !== "string") {
-      throw new Error("OpenAI response did not include output_text.");
+    const text = extractResponseText(payload);
+    if (!text) {
+      throw new Error("OpenAI response did not include output text.");
     }
 
     return NextResponse.json({ guidance: JSON.parse(text), source: "openai" });
   } catch (error) {
-    console.error(error);
+    logOpenAiError(error);
     if (recall) {
       return NextResponse.json({
         guidance: fallbackPacket({
