@@ -6,13 +6,13 @@ This is not official Ryan Fire Protection software. It is a concept prototype cr
 
 ## Purpose
 
-Fire protection employees often need to prepare using information from multiple sources: public safety notices, product information, manufacturer documentation to verify, training resources, customer-friendly explanations, related service considerations, and follow-up topics. This app demonstrates how public recall data and AI-assisted guidance could help employees quickly organize that information, explain technical issues in plain language, and prepare for more informed customer engagements.
+Fire protection employees often need to prepare using information from multiple sources: site context, installed equipment, service reminders, documentation needs, product safety notices, manufacturer documentation to verify, training resources, customer-friendly explanations, related service considerations, and follow-up topics. This app demonstrates how AI-assisted guidance and public recall data could help employees quickly organize that information, explain technical issues in plain language, and prepare for more informed customer engagements.
 
 The project is intentionally framed as an AI implementation concept rather than a software engineering showcase. It uses a practical public-data workflow to show how an internal employee could combine recall information, service context, audience needs, and responsible review boundaries before taking action.
 
 ## What This App Does
 
-The app lets a Ryan Fire Protection-style internal user search public CPSC product recall data, select a relevant recall, choose an engagement type, choose an audience, select a sample site profile, and apply a Ryan Service Lens. It then generates an AI Engagement Readiness Packet that organizes the recall and context into practical preparation guidance.
+The app lets a Ryan Fire Protection-style internal user choose an engagement type, audience, sample site profile, and Ryan Service Lens. The selected site profile includes installed equipment/products, known systems, service reminders, training needs, and documentation needs. The app automatically checks public CPSC recall data for possible product safety context from that installed equipment, while still allowing an optional manual product safety search. It then generates an AI Engagement Readiness Packet around the customer/site engagement.
 
 The packet is designed to help employees understand what to verify, what to discuss, what questions may come up, what related service considerations may matter, what customer-friendly explanations may be useful, and what information still needs official or internal review.
 
@@ -32,9 +32,13 @@ This proof of concept is intended for internal fire protection employees such as
 
 It is not a customer portal, CRM, LMS, inspection authority, or compliance decision system.
 
-## Live Data Source
+## Product Safety / Recall Context
 
-The primary working feature is **Product Safety Lookup**, which searches public CPSC recall data through the existing `/api/recalls` route.
+The primary feature is the **AI Engagement Readiness Packet**. Product safety context is supporting information, not the center of the workflow.
+
+The app performs an automatic product safety review by creating CPSC search terms from installed equipment in the selected site profile, including manufacturer, product name, category, and model when known. Possible recall matches are labeled cautiously and require verification against official CPSC notices, manufacturer instructions, exact model/date ranges, and site records.
+
+The manual product safety search remains available as an optional override for checking an additional product, manufacturer, model, hazard, or keyword not already included in the selected site profile.
 
 The CPSC recall search does not require an account or API key.
 
@@ -50,7 +54,7 @@ Users can search by:
 
 ## AI Engagement Readiness Packet
 
-The app uses `/api/summarize` to turn a selected recall into an **AI Engagement Readiness Packet**. The request includes the selected recall, engagement type, audience, sample site profile, Ryan Service Lens, equipment/systems, upcoming reminder, documentation need, related service consideration, and requested preparation action.
+The app uses `/api/summarize` to generate an **AI Engagement Readiness Packet**. The request includes engagement type, audience, sample site profile, installed equipment/products, Ryan Service Lens, instructor/event prep resources, service reminders, documentation/deficiency context, automatic product safety review results, optional manual product safety search result, additional notes, and requested preparation action.
 
 Available brief actions:
 
@@ -66,6 +70,7 @@ Supported engagement types:
 - Customer Training
 - Fire Department / Recruit Training
 - Municipality / Public Safety Event
+- Convention / Trade Show
 - Customer Meeting
 - Continuing Education Prep
 
@@ -78,9 +83,12 @@ The readiness packet includes:
 - Readiness Score
 - Key Attention Flags
 - Internal Field Brief
-- Audience-Specific Talking Points
-- Equipment / Product Checklist
-- Training or Event Prep Notes
+- Customer / Audience Talking Points
+- Installed Equipment Review
+- Product Safety / Recall Review
+- Instructor / Event Prep Notes
+- Protect / Prevent / Preserve Lens
+- Deficiency / Documentation Follow-Up
 - Related Service Considerations
 - Recommended Next Best Actions
 - Follow-Up Note Draft

@@ -9,9 +9,11 @@ Use the selected preparation context and optional recall/product safety informat
 - engagement type
 - audience
 - sample site profile
+- installed equipment/products from the selected site profile
 - selected Ryan Service Lens
 - additional manual/site/training notes
-- selected recall data, if present
+- automatic product safety review results
+- optional manual recall data, if present
 - equipment/systems from the sample site
 - upcoming reminder
 - training/education need
@@ -23,23 +25,25 @@ Use the selected preparation context and optional recall/product safety informat
 - instructor/event prep resources
 - additional manual/site/training notes
 
-This is an internal customer engagement preparation workspace. Do not produce a generic recall summary. Help the employee prepare for inspections, customer training, fire department/recruit training, municipality/public safety events, customer meetings, and continuing education prep.
-Recall data is optional. If no recall is selected, say: "No product safety recall selected. Packet is based on engagement, site, service, and prep context." If a recall is selected, include it under Product Safety / Recall Context.
+This is an internal customer engagement preparation workspace. Do not produce a generic recall summary. Help the employee prepare for inspections, customer training, fire department/recruit training, municipality/public safety events, conventions/trade shows, customer meetings, and continuing education prep.
+Manual recall data is optional. If no manual recall is selected, say: "No manual product safety recall selected. Packet is based on engagement, site, service, prep context, and automatic product safety review." If a manual recall is selected, include it as optional manual product safety context.
 
 The packet must include:
-1. Readiness Score
-2. Key Attention Flags
-3. Internal Field Brief
-4. Audience-Specific Talking Points
-5. Equipment / Product Checklist
-6. Training or Event Prep Notes
-7. Protect / Prevent / Preserve Lens
-8. Deficiency / Documentation Follow-Up
-9. Related Service Considerations
-10. Recommended Next Best Actions
-11. Follow-Up Note Draft
-12. Missing Information to Verify
-13. Official Source Reminder
+1. Source Context Used
+2. Readiness Score
+3. Key Attention Flags
+4. Internal Field Brief
+5. Customer / Audience Talking Points
+6. Installed Equipment Review
+7. Product Safety / Recall Review
+8. Instructor / Event Prep Notes
+9. Protect / Prevent / Preserve Lens
+10. Deficiency / Documentation Follow-Up
+11. Related Service Considerations
+12. Recommended Next Best Actions
+13. Follow-Up Note Draft
+14. Missing Information to Verify
+15. Official Source Reminder
 
 Readiness score:
 - Return a number from 0 to 100.
@@ -73,6 +77,7 @@ Engagement guidance:
 - Customer Training: focus on customer-friendly explanations, materials to bring, likely questions, safe escalation language, and follow-up reminders.
 - Fire Department / Recruit Training: focus on response awareness, scene safety, system behavior, recruit questions, and what crews should recognize or report.
 - Municipality / Public Safety Event: focus on public safety, documentation, inspection timing, risk prioritization, and community/facility impact.
+- Convention / Trade Show: focus on concise talking points, attendee questions, product awareness, service follow-up, lead notes, and routing technical questions to qualified review.
 - Customer Meeting: focus on customer confidence, maintenance planning, documentation, service timing, risk reduction, and clear next steps.
 - Continuing Education Prep: focus on instructor preparation, teaching points, discussion prompts, practical examples, standards/manuals to verify, and follow-up reminders.
 
@@ -124,6 +129,14 @@ const responseSchema = {
       },
       internalFieldBrief: { type: "string" },
       audienceSpecificTalkingPoints: {
+        type: "array",
+        items: { type: "string" },
+      },
+      installedEquipmentReview: {
+        type: "array",
+        items: { type: "string" },
+      },
+      productSafetyRecallReview: {
         type: "array",
         items: { type: "string" },
       },
@@ -186,6 +199,8 @@ const responseSchema = {
       "keyAttentionFlags",
       "internalFieldBrief",
       "audienceSpecificTalkingPoints",
+      "installedEquipmentReview",
+      "productSafetyRecallReview",
       "equipmentProductChecklist",
       "trainingOrEventPrepNotes",
       "protectPreventPreserveLens",
@@ -215,6 +230,13 @@ const objectValue = (value: unknown): Record<string, unknown> =>
   value && typeof value === "object" && !Array.isArray(value)
     ? (value as Record<string, unknown>)
     : {};
+
+const objectListValue = (value: unknown): Record<string, unknown>[] =>
+  Array.isArray(value)
+    ? (value.filter(
+        (item) => item && typeof item === "object" && !Array.isArray(item),
+      ) as Record<string, unknown>[])
+    : [];
 
 const actionLabel = (briefAction: string) => {
   switch (briefAction) {
@@ -351,6 +373,8 @@ const fallbackPacket = ({
   prepResources,
   additionalNotes,
   briefAction,
+  installedEquipment,
+  automaticSafetyReview,
 }: {
   recall: Record<string, unknown>;
   engagementType: string;
@@ -367,6 +391,8 @@ const fallbackPacket = ({
   prepResources: Record<string, unknown>;
   additionalNotes: string;
   briefAction: string;
+  installedEquipment: Record<string, unknown>[];
+  automaticSafetyReview: Record<string, unknown>;
 }) => {
   const title = textValue(recall.title);
   const manufacturer = textValue(recall.manufacturer);
@@ -383,6 +409,48 @@ const fallbackPacket = ({
   const prepTopics = listValue(prepResources.topics);
   const prepQuestions = listValue(prepResources.questions);
   const audienceContext = audienceGuidance(audience);
+  const safetyMatches = objectListValue(automaticSafetyReview.possibleMatches);
+  const safetyTerms = listValue(automaticSafetyReview.searchTermsUsed);
+  const noMatchTerms = listValue(automaticSafetyReview.noObviousMatchTerms);
+  const autoNeedsVerification = listValue(automaticSafetyReview.needsVerification);
+  const equipmentReview = installedEquipment.length
+    ? installedEquipment.map((item) => {
+        const category = textValue(item.category);
+        const productName = textValue(item.productName);
+        const itemManufacturer = textValue(item.manufacturer);
+        const model = textValue(item.model);
+        const location = textValue(item.locationContext);
+        const status = textValue(item.serviceStatus);
+        const note = textValue(item.documentationNote);
+        const training = textValue(item.trainingRelevance);
+        return `Provided by user/demo profile: ${category} - ${productName}; manufacturer ${itemManufacturer}; model ${model}; location/context ${location}; service status ${status}; documentation note ${note}; training relevance ${training}.`;
+      })
+    : ["No installed equipment/products were provided in the selected site profile."];
+  const productSafetyReview = [
+    safetyTerms.length
+      ? `Automatic Product Safety Review searched these terms: ${safetyTerms.join(", ")}.`
+      : "Automatic Product Safety Review did not have search terms available.",
+    safetyMatches.length
+      ? `Possible recall matches found: ${safetyMatches
+          .slice(0, 5)
+          .map((match) => {
+            const recall = objectValue(match.recall);
+            return `${textValue(match.searchTerm)} -> ${textValue(recall.title)}`;
+          })
+          .join("; ")}.`
+      : "No obvious recall match found in this automatic search.",
+    noMatchTerms.length
+      ? `No obvious match found for: ${noMatchTerms.slice(0, 8).join(", ")}.`
+      : "All automatic search terms returned at least one possible match, but applicability still needs verification.",
+    ...(autoNeedsVerification.length
+      ? autoNeedsVerification.map((item) => `Needs verification: ${item}`)
+      : [
+          "Needs verification: verify model, manufacturer, date range, installed equipment, and official source before action.",
+        ]),
+    hasRecall
+      ? `Optional manual product safety search result selected: ${title}. Treat this as additional context only until verified.`
+      : "No manual product safety recall selected. Packet is based on engagement, site, service, prep context, and automatic product safety review.",
+  ];
   const score = calculateReadinessScore({
     recall,
     engagementType,
@@ -402,9 +470,10 @@ const fallbackPacket = ({
     sourceContextUsed: sourceContextUsed.length
       ? sourceContextUsed
       : [
+          "Automatic product safety review based on installed equipment",
           hasRecall
-            ? `Product Safety / Recall Context: ${title}`
-            : "No product safety recall selected. Packet is based on engagement, site, service, and prep context.",
+            ? `Optional manual product safety search result: ${title}`
+            : "No manual product safety recall selected. Packet is based on engagement, site, service, prep context, and automatic product safety review.",
           `Sample site profile: ${sampleSite}`,
           `Ryan Service Lens: ${serviceLensLabel}`,
           `Engagement type: ${engagementType}`,
@@ -420,12 +489,13 @@ const fallbackPacket = ({
           `Known from source: listed remedy is ${remedy}.`,
         ]
       : [
-          "No product safety recall selected. Packet is based on engagement, site, service, and prep context.",
+          "No manual product safety recall selected. Packet is based on engagement, site, service, prep context, and automatic product safety review.",
         ],
     providedDemoProfileContext: [
       `Provided by user/demo profile: selected site profile is ${sampleSite} (${siteType}).`,
       `Provided by user/demo profile: primary audience is ${primaryAudience}.`,
       `Provided by user/demo profile: known systems are ${systemsText}.`,
+      ...equipmentReview,
       `Provided by user/demo profile: upcoming reminder is ${upcomingReminder}.`,
       `Provided by user/demo profile: training or education need is ${trainingNeed}.`,
       `Provided by user/demo profile: documentation need is ${documentationNeed}.`,
@@ -436,8 +506,8 @@ const fallbackPacket = ({
     aiInterpretation: [
       `AI interpretation: use the ${serviceLensLabel} lens to prepare ${actionLabel(briefAction)} for ${engagementType}.`,
       hasRecall
-        ? "AI interpretation: compare recall product details with site equipment before making any customer-facing statement."
-        : "AI interpretation: prepare the engagement packet from site, audience, service lens, prep resources, and manual notes because no recall was selected.",
+        ? "AI interpretation: compare optional manual recall product details with installed site equipment before making any customer-facing statement."
+        : "AI interpretation: prepare the engagement packet from site, installed equipment, audience, service lens, automatic product safety review, prep resources, and manual notes because no manual recall was selected.",
       "AI interpretation: connect related service considerations to safety, documentation, prevention, customer confidence, and risk reduction.",
       "Human review required: route any safety, code, compliance, inspection, engineering, or customer communication decision through qualified internal review.",
     ],
@@ -456,7 +526,7 @@ const fallbackPacket = ({
         ? "Training or education opportunity"
         : "Missing training context",
     ],
-    internalFieldBrief: `For ${engagementType}, prepare ${actionLabel(briefAction)} for ${audience} using the ${serviceLensLabel} service lens. ${hasRecall ? `Product Safety / Recall Context: "${title}" lists manufacturer/company as ${manufacturer}, product context as ${product}, hazard as ${hazard}, and remedy as ${remedy}.` : "No product safety recall selected. Packet is based on engagement, site, service, and prep context."} Provided demo profile context: ${sampleSite} includes ${systemsText}, with reminder "${upcomingReminder}" and documentation need "${documentationNeed}". Additional notes: ${additionalNotes || "none provided"}.`,
+    internalFieldBrief: `For ${engagementType}, prepare ${actionLabel(briefAction)} for ${audience} using the ${serviceLensLabel} service lens. Start from the selected site/customer profile, installed equipment, service reminder, training need, and documentation context. ${hasRecall ? `Optional manual product safety context: "${title}" lists manufacturer/company as ${manufacturer}, product context as ${product}, hazard as ${hazard}, and remedy as ${remedy}.` : "No manual product safety recall selected. Packet is based on engagement, site, service, prep context, and automatic product safety review."} Provided demo profile context: ${sampleSite} includes ${systemsText}, with reminder "${upcomingReminder}" and documentation need "${documentationNeed}". Additional notes: ${additionalNotes || "none provided"}.`,
     audienceSpecificTalkingPoints: [
       audienceContext.talkingPoint,
       hasRecall
@@ -467,10 +537,12 @@ const fallbackPacket = ({
         : "Ask what equipment, documentation, training history, or site details should be reviewed before the engagement.",
       "Emphasize that official CPSC and manufacturer documentation must be checked before action.",
     ],
+    installedEquipmentReview: equipmentReview,
+    productSafetyRecallReview: productSafetyReview,
     equipmentProductChecklist: [
       hasRecall
         ? `Verify manufacturer/company: ${manufacturer}.`
-        : "No recall selected; verify any product or manufacturer details from manual/site/training notes.",
+        : "No manual recall selected; verify product and manufacturer details from installed equipment, automatic review, and manual/site/training notes.",
       hasRecall
         ? `Verify product or description: ${product}.`
         : "Confirm relevant equipment, systems, or customer details before using the packet.",
@@ -550,7 +622,7 @@ const fallbackPacket = ({
         : "Verify manufacturer documentation, applicable standards, and company procedures for any product-specific discussion.",
       "Review related service considerations with a qualified internal employee.",
     ],
-    followUpNoteDraft: `${hasRecall ? `Reviewed public recall information for ${title}` : "Prepared engagement readiness packet without a selected product safety recall"} while preparing for ${engagementType} with ${audience}. Need to verify product/equipment details, site equipment match, manufacturer instructions, service history, training context, and open documentation questions. Related service considerations include ${relatedServiceConsideration || "documentation review and preventive maintenance"}. Next step: route findings through qualified internal review before customer or operational action.`,
+    followUpNoteDraft: `${hasRecall ? `Reviewed optional manual public recall information for ${title}` : "Prepared engagement readiness packet without a selected manual product safety recall"} while preparing for ${engagementType} with ${audience}. Need to verify product/equipment details, site equipment match, manufacturer instructions, service history, training context, automatic product safety review results, and open documentation questions. Related service considerations include ${relatedServiceConsideration || "documentation review and preventive maintenance"}. Next step: route findings through qualified internal review before customer or operational action.`,
     missingInformationToVerify: [
       "Exact product model",
       "Manufacturer documentation",
@@ -586,6 +658,8 @@ export async function POST(request: Request) {
   let prepResources: Record<string, unknown> = {};
   let additionalNotes = "";
   let briefAction = "inspection_prep";
+  let installedEquipment: Record<string, unknown>[] = [];
+  let automaticSafetyReview: Record<string, unknown> = {};
 
   try {
     const body = await request.json();
@@ -621,6 +695,8 @@ export async function POST(request: Request) {
       typeof body?.additionalNotes === "string" ? body.additionalNotes.trim() : "";
     briefAction =
       typeof body?.briefAction === "string" ? body.briefAction : briefAction;
+    installedEquipment = objectListValue(body?.installedEquipment);
+    automaticSafetyReview = objectValue(body?.automaticSafetyReview);
 
     const fallback = fallbackPacket({
       recall,
@@ -638,6 +714,8 @@ export async function POST(request: Request) {
       prepResources,
       additionalNotes,
       briefAction,
+      installedEquipment,
+      automaticSafetyReview,
     });
 
     const apiKey = process.env.OPENAI_API_KEY;
@@ -672,6 +750,8 @@ export async function POST(request: Request) {
                 sourceContext,
                 prepResources,
                 additionalNotes,
+                installedEquipment,
+                automaticSafetyReview,
                 briefAction,
                 recall,
               },
@@ -716,6 +796,8 @@ export async function POST(request: Request) {
           prepResources,
           additionalNotes,
           briefAction,
+          installedEquipment,
+          automaticSafetyReview,
         }),
         source: "fallback",
       });

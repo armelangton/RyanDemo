@@ -1,14 +1,20 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import knowledgeBase from "../data/source-docs/sampleKnowledgeBase.json";
-import type { AiGuidance, RecallResult } from "./types";
+import type {
+  AiGuidance,
+  AutomaticSafetyReview,
+  InstalledEquipment,
+  RecallResult,
+} from "./types";
 
 type EngagementType =
   | "Inspection"
   | "Customer Training"
   | "Fire Department / Recruit Training"
   | "Municipality / Public Safety Event"
+  | "Convention / Trade Show"
   | "Customer Meeting"
   | "Continuing Education Prep";
 
@@ -38,6 +44,7 @@ type SiteProfile = {
   type: string;
   primaryAudience: string;
   systems: string[];
+  installedEquipment: InstalledEquipment[];
   reminder: string;
   trainingNeed: string;
   documentationNeed: string;
@@ -50,6 +57,7 @@ const engagementTypes: EngagementType[] = [
   "Customer Training",
   "Fire Department / Recruit Training",
   "Municipality / Public Safety Event",
+  "Convention / Trade Show",
   "Customer Meeting",
   "Continuing Education Prep",
 ];
@@ -71,6 +79,7 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
     type: "No demo profile selected",
     primaryAudience: "Not selected",
     systems: [],
+    installedEquipment: [],
     reminder: "No reminder selected",
     trainingNeed: "No training need selected",
     documentationNeed: "No documentation need selected",
@@ -87,6 +96,38 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
       "Emergency lighting",
       "Sprinkler system",
       "Hydrants near public buildings",
+    ],
+    installedEquipment: [
+      {
+        category: "fire extinguisher",
+        productName: "Commercial fire extinguishers",
+        manufacturer: "Kidde",
+        model: "Model/date range to verify",
+        locationContext: "Municipal facilities and public buildings",
+        serviceStatus: "Annual inspection cycle due in 28 days",
+        documentationNote: "Verify extinguisher tags, model/date codes, and inspection status.",
+        trainingRelevance: "Facilities refresher on monthly visual checks and escalation.",
+      },
+      {
+        category: "emergency light",
+        productName: "Emergency lighting units",
+        manufacturer: "Manufacturer to verify",
+        model: "Model to verify",
+        locationContext: "Public building egress paths",
+        serviceStatus: "Documentation review due with annual inspection cycle",
+        documentationNote: "Confirm test records and open deficiency notes.",
+        trainingRelevance: "Explain visual checks and documentation expectations.",
+      },
+      {
+        category: "hydrant",
+        productName: "Public building hydrants",
+        manufacturer: "Manufacturer to verify",
+        model: "Model to verify",
+        locationContext: "Hydrants near municipal public buildings",
+        serviceStatus: "Inspection / flow testing discussion recommended",
+        documentationNote: "Confirm hydrant inspection or flow testing history.",
+        trainingRelevance: "Useful for public safety and municipal planning conversations.",
+      },
     ],
     reminder: "Annual inspection cycle due in 28 days",
     trainingNeed:
@@ -114,6 +155,38 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
       "Alarm response awareness",
       "Valve/control assembly examples",
     ],
+    installedEquipment: [
+      {
+        category: "sprinkler",
+        productName: "Sprinkler demonstration components",
+        manufacturer: "Manufacturer to verify",
+        model: "Model to verify",
+        locationContext: "Recruit training demonstration materials",
+        serviceStatus: "Training session next month",
+        documentationNote: "Confirm demo component source and instructor notes.",
+        trainingRelevance: "Supports system behavior and response-awareness discussion.",
+      },
+      {
+        category: "fire pump",
+        productName: "Fire pump overview equipment",
+        manufacturer: "Manufacturer to verify",
+        model: "Model to verify",
+        locationContext: "Recruit training discussion",
+        serviceStatus: "Training prep",
+        documentationNote: "Verify manufacturer manuals or approved diagrams before teaching.",
+        trainingRelevance: "Helps recruits understand system behavior during response.",
+      },
+      {
+        category: "alarm panel",
+        productName: "Fire alarm panel / detection examples",
+        manufacturer: "Manufacturer to verify",
+        model: "Model to verify",
+        locationContext: "Alarm response awareness segment",
+        serviceStatus: "Training prep",
+        documentationNote: "Use approved photos or diagrams.",
+        trainingRelevance: "Supports what crews should recognize, avoid, report, or escalate.",
+      },
+    ],
     reminder: "Recruit training session next month",
     trainingNeed:
       "Explain how fire protection systems behave during response and what crews should recognize, avoid, report, or escalate",
@@ -138,6 +211,38 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
       "Emergency lighting",
       "Fire extinguishers",
       "Special hazard areas where applicable",
+    ],
+    installedEquipment: [
+      {
+        category: "fire alarm",
+        productName: "Fire alarm and detection system",
+        manufacturer: "Manufacturer to verify",
+        model: "Panel/model to verify",
+        locationContext: "Healthcare facility life-safety system",
+        serviceStatus: "Semiannual service review and documentation check",
+        documentationNote: "Review alarm test records and service history.",
+        trainingRelevance: "Facilities refresher on documentation and escalation.",
+      },
+      {
+        category: "sprinkler",
+        productName: "Sprinkler system",
+        manufacturer: "Manufacturer to verify",
+        model: "Model/components to verify",
+        locationContext: "Healthcare facility",
+        serviceStatus: "Semiannual ITM review",
+        documentationNote: "Review inspection notes and deficiency list.",
+        trainingRelevance: "Supports facility manager discussion on readiness and records.",
+      },
+      {
+        category: "emergency light",
+        productName: "Emergency lighting",
+        manufacturer: "Manufacturer to verify",
+        model: "Model to verify",
+        locationContext: "Egress paths and patient/public areas",
+        serviceStatus: "Documentation check",
+        documentationNote: "Confirm emergency lighting test records.",
+        trainingRelevance: "Useful for facilities team documentation refresher.",
+      },
     ],
     reminder: "Semiannual service review and documentation check",
     trainingNeed:
@@ -164,6 +269,28 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
       "Emergency response equipment",
       "Possible foam-related equipment depending on site",
     ],
+    installedEquipment: [
+      {
+        category: "special hazard",
+        productName: "Special hazard suppression system",
+        manufacturer: "Manufacturer to verify",
+        model: "System/model to verify",
+        locationContext: "Industrial special hazard area",
+        serviceStatus: "System review due this quarter",
+        documentationNote: "Verify manufacturer manuals, service records, and qualified review needs.",
+        trainingRelevance: "Internal prep for system-specific customer communication.",
+      },
+      {
+        category: "fire extinguisher",
+        productName: "Industrial fire extinguishers",
+        manufacturer: "Manufacturer to verify",
+        model: "Model/date range to verify",
+        locationContext: "Industrial production or hazard areas",
+        serviceStatus: "Preventive maintenance review",
+        documentationNote: "Confirm inspection tags, locations, and service history.",
+        trainingRelevance: "Supports customer education around readiness and escalation.",
+      },
+    ],
     reminder: "Special hazards system review due this quarter",
     trainingNeed:
       "Internal prep around system-specific documentation, qualified review, and customer communication",
@@ -188,6 +315,38 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
       "Sprinkler systems",
       "Emergency lighting",
       "Exit signs",
+    ],
+    installedEquipment: [
+      {
+        category: "fire extinguisher",
+        productName: "Campus fire extinguishers",
+        manufacturer: "Kidde",
+        model: "Model/date range to verify",
+        locationContext: "Campus facilities and common areas",
+        serviceStatus: "Facilities refresher before semester start",
+        documentationNote: "Verify tags, placement, and service calendar.",
+        trainingRelevance: "Supports monthly visual check and extinguisher awareness training.",
+      },
+      {
+        category: "alarm panel",
+        productName: "Alarm panels",
+        manufacturer: "Manufacturer to verify",
+        model: "Panel model to verify",
+        locationContext: "Campus buildings",
+        serviceStatus: "Service calendar review",
+        documentationNote: "Confirm alarm testing records and contacts.",
+        trainingRelevance: "Useful for facilities escalation steps.",
+      },
+      {
+        category: "exit sign",
+        productName: "Exit signs and emergency lighting",
+        manufacturer: "Manufacturer to verify",
+        model: "Model to verify",
+        locationContext: "Egress routes",
+        serviceStatus: "Pre-semester readiness review",
+        documentationNote: "Confirm inspection and testing documentation.",
+        trainingRelevance: "Supports visual check training.",
+      },
     ],
     reminder: "Facilities refresher before semester start",
     trainingNeed:
@@ -214,6 +373,38 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
       "Fire alarm and detection",
       "Emergency lighting",
       "Possible special hazard areas",
+    ],
+    installedEquipment: [
+      {
+        category: "fire extinguisher",
+        productName: "Warehouse fire extinguishers",
+        manufacturer: "Kidde",
+        model: "Model/date range to verify",
+        locationContext: "Warehouse floor and loading areas",
+        serviceStatus: "Annual inspection and extinguisher training review",
+        documentationNote: "Verify tags, location list, and training records.",
+        trainingRelevance: "Warehouse team refresher on extinguisher use and reporting issues.",
+      },
+      {
+        category: "sprinkler",
+        productName: "Warehouse sprinkler system",
+        manufacturer: "Manufacturer to verify",
+        model: "Components to verify",
+        locationContext: "Warehouse storage areas",
+        serviceStatus: "Annual inspection prep",
+        documentationNote: "Review inspection notes and open deficiencies.",
+        trainingRelevance: "Supports facility manager discussion on storage and readiness.",
+      },
+      {
+        category: "emergency light",
+        productName: "Emergency lighting",
+        manufacturer: "Manufacturer to verify",
+        model: "Model to verify",
+        locationContext: "Warehouse egress paths",
+        serviceStatus: "Annual inspection prep",
+        documentationNote: "Confirm emergency lighting test documentation.",
+        trainingRelevance: "Supports evacuation basics and maintenance awareness.",
+      },
     ],
     reminder: "Annual inspection and extinguisher training review",
     trainingNeed:
@@ -328,6 +519,32 @@ const prepByEngagement: Record<
     followUp: "Document public safety questions and route them to the right internal owner.",
     notes: "Keep guidance educational and avoid final code or compliance determinations.",
   },
+  "Convention / Trade Show": {
+    materials: [
+      "Approved service literature",
+      "Product safety talking points",
+      "Lead or follow-up note template",
+    ],
+    checklist: [
+      "Confirm booth/event objective",
+      "Prepare concise customer-friendly explanations",
+      "Route technical questions to qualified internal review",
+    ],
+    questions: [
+      "What systems are attendees asking about?",
+      "Are they preparing for inspections, training, or documentation reviews?",
+      "Who should receive follow-up after the event?",
+    ],
+    topics: [
+      "Customer education",
+      "Inspection and documentation awareness",
+      "Related service considerations",
+    ],
+    followUp:
+      "Capture attendee questions, related service interests, and any items needing technical or service-leadership follow-up.",
+    notes:
+      "Use this for event preparation only; do not make final product, compliance, or service commitments from AI guidance.",
+  },
   "Customer Meeting": {
     materials: ["Account notes", "Open service items", "Relevant recall summaries"],
     checklist: [
@@ -370,6 +587,46 @@ const formatDate = (date: string) => {
     year: "numeric",
   }).format(parsed);
 };
+
+const equipmentLabel = (item: InstalledEquipment) =>
+  [item.manufacturer, item.productName, item.model]
+    .filter((part) => part && !part.toLowerCase().includes("to verify"))
+    .join(" ") || item.category;
+
+const searchTermsForEquipment = (equipment: InstalledEquipment[]) =>
+  Array.from(
+    new Set(
+      equipment.flatMap((item) => {
+        const terms = [
+          `${item.manufacturer} ${item.productName}`,
+          `${item.manufacturer} ${item.category}`,
+          item.model && !item.model.toLowerCase().includes("to verify")
+            ? `${item.manufacturer} ${item.model}`
+            : "",
+          item.productName,
+          item.category,
+        ];
+        return terms
+          .map((term) => term.replace(/\s+/g, " ").trim())
+          .filter(
+            (term) =>
+              term &&
+              !term.toLowerCase().startsWith("manufacturer to verify") &&
+              !term.toLowerCase().includes("model to verify"),
+          );
+      }),
+    ),
+  ).slice(0, 10);
+
+const emptySafetyReview = (equipment: InstalledEquipment[] = []): AutomaticSafetyReview => ({
+  equipmentChecked: equipment,
+  searchTermsUsed: [],
+  possibleMatches: [],
+  noObviousMatchTerms: [],
+  needsVerification: [
+    "Verify exact product model, manufacturer, date range, and installed equipment before action.",
+  ],
+});
 
 const SectionTitle = ({
   eyebrow,
@@ -445,6 +702,7 @@ const ReadinessPacket = ({
   serviceLens,
   summarySource,
   briefAction,
+  automaticSafetyReview,
 }: {
   guidance: AiGuidance | null;
   selectedRecall: RecallResult | null;
@@ -454,6 +712,7 @@ const ReadinessPacket = ({
   serviceLens: ServiceLens;
   summarySource: string;
   briefAction: BriefAction;
+  automaticSafetyReview: AutomaticSafetyReview;
 }) => {
   if (!guidance) return null;
 
@@ -552,9 +811,19 @@ const ReadinessPacket = ({
         <PacketSection title="Internal Field Brief" defaultOpen>
           {guidance.internalFieldBrief}
         </PacketSection>
-        <PacketSection title="Audience-Specific Talking Points">
+        <PacketSection title="Customer / Audience Talking Points">
           <ul className="space-y-2">
             {guidance.audienceSpecificTalkingPoints.map((item) => (
+              <li key={item} className="flex gap-2">
+                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-green" />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </PacketSection>
+        <PacketSection title="Installed Equipment Review">
+          <ul className="space-y-2">
+            {guidance.installedEquipmentReview.map((item) => (
               <li key={item} className="flex gap-2">
                 <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-green" />
                 <span>{item}</span>
@@ -572,7 +841,17 @@ const ReadinessPacket = ({
             ))}
           </ul>
         </PacketSection>
-        <PacketSection title="Training or Event Prep Notes">
+        <PacketSection title="Product Safety / Recall Review">
+          <ul className="space-y-2">
+            {guidance.productSafetyRecallReview.map((item) => (
+              <li key={item} className="flex gap-2">
+                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-warning" />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </PacketSection>
+        <PacketSection title="Instructor / Event Prep Notes">
           <ul className="space-y-2">
             {guidance.trainingOrEventPrepNotes.map((item) => (
               <li key={item} className="flex gap-2">
@@ -581,6 +860,52 @@ const ReadinessPacket = ({
               </li>
             ))}
           </ul>
+        </PacketSection>
+        <PacketSection title="Optional Manual Product Safety Search Result">
+          {selectedRecall ? (
+            <div className="space-y-3">
+              <p>
+                <strong className="text-brand-charcoal">Selected recall:</strong>{" "}
+                {selectedRecall.title}
+              </p>
+              <ul className="space-y-2">
+                {guidance.knownSourceFacts.map((item) => (
+                  <li key={item} className="flex gap-2">
+                    <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-green" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : (
+            <p>
+              No manual product safety recall selected. Packet uses the
+              automatic product safety review from installed site equipment.
+            </p>
+          )}
+        </PacketSection>
+        <PacketSection title="Automatic Review Details">
+          <div className="space-y-3">
+            <div>
+              <p className="font-extrabold text-brand-charcoal">Equipment checked</p>
+              <ul className="mt-1 space-y-1">
+                {automaticSafetyReview.equipmentChecked.map((item) => (
+                  <li key={`${item.category}-${item.productName}`}>
+                    {equipmentLabel(item)} - {item.locationContext}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <p className="font-extrabold text-brand-charcoal">Search terms used</p>
+              <p>{automaticSafetyReview.searchTermsUsed.join(", ") || "No automatic search terms available."}</p>
+            </div>
+            <p>
+              Possible matches are not applicability decisions. Verify model,
+              date range, manufacturer documentation, site equipment, and the
+              official source before action.
+            </p>
+          </div>
         </PacketSection>
         <PacketSection title="Protect / Prevent / Preserve Lens">
           <ul className="space-y-2">
@@ -691,15 +1016,19 @@ export default function Home() {
   const [summarizingId, setSummarizingId] = useState("");
   const [summaryError, setSummaryError] = useState("");
   const [additionalNotes, setAdditionalNotes] = useState("");
+  const [automaticSafetyReview, setAutomaticSafetyReview] =
+    useState<AutomaticSafetyReview>(() => emptySafetyReview(sampleSiteDetails[sampleSites[0]].installedEquipment));
+  const [autoReviewLoading, setAutoReviewLoading] = useState(false);
 
   const prep = prepByEngagement[engagementType];
   const selectedSiteDetails = sampleSiteDetails[selectedSampleSite];
   const selectedServiceLens =
     serviceLenses.find((lens) => lens.id === selectedServiceLensId) ?? serviceLenses[0];
   const sourceContextUsed = [
+    "Automatic product safety review based on selected site equipment",
     selectedRecall
-      ? `CPSC recall result: ${selectedRecall.title}`
-      : "No product safety recall selected. Packet is based on engagement, site, service, and prep context.",
+      ? `Optional manual CPSC recall result: ${selectedRecall.title}`
+      : "No manual product safety recall selected. Packet is based on engagement, site, service, prep context, and automatic product safety review.",
     `Sample site profile: ${selectedSiteDetails.label}`,
     `Ryan Service Lens: ${selectedServiceLens.label}`,
     `Engagement type: ${engagementType}`,
@@ -711,6 +1040,95 @@ export default function Home() {
     if (!hasSearched || searching) return "";
     return `${results.length} ${results.length === 1 ? "result" : "results"} found`;
   }, [hasSearched, results.length, searching]);
+
+  useEffect(() => {
+    let ignore = false;
+
+    const runAutomaticReview = async () => {
+      const equipment = selectedSiteDetails.installedEquipment;
+      const terms = searchTermsForEquipment(equipment);
+      setAutoReviewLoading(true);
+      setAutomaticSafetyReview({
+        ...emptySafetyReview(equipment),
+        searchTermsUsed: terms,
+        noObviousMatchTerms: terms,
+      });
+
+      if (!terms.length) {
+        setAutoReviewLoading(false);
+        return;
+      }
+
+      try {
+        const responses = await Promise.allSettled(
+          terms.map(async (term) => {
+            const response = await fetch(`/api/recalls?q=${encodeURIComponent(term)}`);
+            const payload = await response.json();
+            if (!response.ok) {
+              throw new Error(payload.error || "Unable to retrieve recall data.");
+            }
+            return {
+              term,
+              results: (payload.results || []) as RecallResult[],
+            };
+          }),
+        );
+
+        if (ignore) return;
+
+        const possibleMatches = responses.flatMap((result) => {
+          if (result.status !== "fulfilled") return [];
+          const equipmentForTerm =
+            equipment.find((item) => {
+              const term = result.value.term.toLowerCase();
+              return (
+                term.includes(item.category.toLowerCase()) ||
+                term.includes(item.productName.toLowerCase()) ||
+                term.includes(item.manufacturer.toLowerCase())
+              );
+            }) ?? equipment[0];
+          return result.value.results.slice(0, 2).map((recall) => ({
+            searchTerm: result.value.term,
+            equipmentLabel: equipmentForTerm ? equipmentLabel(equipmentForTerm) : result.value.term,
+            recall,
+          }));
+        });
+
+        const matchedTerms = new Set(possibleMatches.map((match) => match.searchTerm));
+        setAutomaticSafetyReview({
+          equipmentChecked: equipment,
+          searchTermsUsed: terms,
+          possibleMatches: possibleMatches.slice(0, 8),
+          noObviousMatchTerms: terms.filter((term) => !matchedTerms.has(term)),
+          needsVerification: [
+            "Possible matches require model, manufacturer, date range, and installed-equipment verification.",
+            "No obvious recall match found in this search is not proof that no recall exists.",
+            "Verify official CPSC notices, manufacturer instructions, site records, and company procedures before action.",
+          ],
+        });
+      } catch {
+        if (!ignore) {
+          setAutomaticSafetyReview({
+            ...emptySafetyReview(equipment),
+            searchTermsUsed: terms,
+            noObviousMatchTerms: terms,
+            needsVerification: [
+              "Automatic product safety review could not retrieve all CPSC results.",
+              "Verify product safety context manually against official CPSC and manufacturer sources.",
+            ],
+          });
+        }
+      } finally {
+        if (!ignore) setAutoReviewLoading(false);
+      }
+    };
+
+    void runAutomaticReview();
+
+    return () => {
+      ignore = true;
+    };
+  }, [selectedSiteDetails]);
 
   const searchRecalls = async (term = query) => {
     const cleanTerm = term.trim();
@@ -775,6 +1193,8 @@ export default function Home() {
           relatedServiceConsideration: selectedSiteDetails.relatedService,
           prepResources: prep,
           additionalNotes,
+          automaticSafetyReview,
+          installedEquipment: selectedSiteDetails.installedEquipment,
           sourceContext: {
             sourceContextUsed,
             responsibleAiLabels: knowledgeBase.responsibleAiLabels,
@@ -834,7 +1254,7 @@ export default function Home() {
               </p>
             </div>
             <span className="w-fit rounded-full border border-brand-gray200 bg-brand-gray100 px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-[0.1em] text-brand-gray700 sm:text-xs">
-              Not an official Ryan product
+              Internal Field Assistant Concept
             </span>
           </div>
 
@@ -844,13 +1264,14 @@ export default function Home() {
                 Fire Protection Field Assistant
               </p>
               <h1 className="mt-2 max-w-3xl text-[22px] font-black leading-tight text-brand-charcoal sm:text-[34px]">
-                Prepare for a field, training, or public safety engagement
+                Fire Protection Field Assistant
               </h1>
               <p className="mt-3 max-w-3xl text-sm leading-6 text-brand-gray700 sm:text-base">
-                Use Ryan-style service context, sample site details, optional
-                public recall data, and AI-assisted reasoning to prepare
-                internal readiness packets for inspections, training, customer
-                meetings, public safety events, and continuing education prep.
+                Prepare internal readiness packets for inspections, customer
+                training, fire department events, conventions, customer
+                meetings, and continuing education work using service context,
+                sample site details, optional public recall data, and
+                AI-assisted reasoning.
               </p>
             </div>
             <div className="mt-3 flex flex-wrap gap-2">
@@ -872,7 +1293,7 @@ export default function Home() {
         <section className="rounded-2xl border border-brand-gray200 bg-white p-4 shadow-panel sm:p-5">
           <SectionTitle
             eyebrow="Primary Workflow"
-            title="Build an Engagement Readiness Packet"
+            title="Build an AI Engagement Readiness Packet"
             description="Start with the engagement context. Add product safety or manual context only if it is relevant."
           />
           <div className="mt-5">
@@ -962,13 +1383,36 @@ export default function Home() {
               {selectedSampleSite} | Service Lens: {selectedServiceLens.label}
             </p>
             <p className="mt-1">
-              Product Safety / Recall Context:{" "}
+              Optional Manual Search Result:{" "}
               {selectedRecall ? selectedRecall.title : "None selected"}
             </p>
           </div>
+          <div className="mt-3 rounded-xl border border-brand-gray200 bg-white p-3 text-sm leading-6 text-brand-gray700">
+            <p className="font-extrabold text-brand-charcoal">
+              Installed Equipment / Products
+            </p>
+            <div className="mt-2 grid gap-2 md:grid-cols-3">
+              {selectedSiteDetails.installedEquipment.length ? (
+                selectedSiteDetails.installedEquipment.map((item) => (
+                  <div
+                    key={`${item.category}-${item.productName}-summary`}
+                    className="rounded-lg border border-brand-gray200 bg-brand-gray100 p-3"
+                  >
+                    <p className="font-extrabold text-brand-charcoal">
+                      {equipmentLabel(item)}
+                    </p>
+                    <p className="mt-1">Category: {item.category}</p>
+                    <p>Context: {item.locationContext}</p>
+                  </div>
+                ))
+              ) : (
+                <p>No installed equipment selected.</p>
+              )}
+            </div>
+          </div>
           <details className="mt-3 rounded-xl border border-brand-gray200 bg-white p-3">
             <summary className="cursor-pointer text-sm font-extrabold text-brand-charcoal">
-              View site and source details
+              View site/source details
             </summary>
             <div className="mt-3 grid gap-3 text-sm leading-6 text-brand-gray700 md:grid-cols-2">
               <div>
@@ -993,7 +1437,7 @@ export default function Home() {
               </div>
               <div>
                 <p className="font-extrabold text-brand-charcoal">
-                  Documentation Need
+                  Documentation / Deficiency Context
                 </p>
                 <p>{selectedSiteDetails.documentationNeed}</p>
               </div>
@@ -1009,10 +1453,46 @@ export default function Home() {
                 </p>
                 <p>{selectedSiteDetails.relatedService}</p>
               </div>
+              <div className="md:col-span-2">
+                <p className="font-extrabold text-brand-charcoal">
+                  Installed Equipment / Products
+                </p>
+                <div className="mt-2 grid gap-2">
+                  {selectedSiteDetails.installedEquipment.length ? (
+                    selectedSiteDetails.installedEquipment.map((item) => (
+                      <div
+                        key={`${item.category}-${item.productName}`}
+                        className="rounded-lg border border-brand-gray200 bg-brand-gray100 p-3"
+                      >
+                        <p className="font-extrabold text-brand-charcoal">
+                          {equipmentLabel(item)}
+                        </p>
+                        <p>Category: {item.category}</p>
+                        <p>Location/context: {item.locationContext}</p>
+                        <p>Service status: {item.serviceStatus}</p>
+                        <p>Documentation note: {item.documentationNote}</p>
+                        <p>Training relevance: {item.trainingRelevance}</p>
+                      </div>
+                    ))
+                  ) : (
+                    <p>No installed equipment selected.</p>
+                  )}
+                </div>
+              </div>
+              <div className="md:col-span-2">
+                <p className="font-extrabold text-brand-charcoal">
+                  Source Context Used
+                </p>
+                <ul className="mt-1 space-y-1">
+                  {sourceContextUsed.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </div>
             </div>
           </details>
           <div className="mt-4 rounded-xl border border-brand-gray200 bg-white p-3">
-            <StepLabel>Step 3: Review instructor / event prep resources</StepLabel>
+            <StepLabel>Step 3: Engagement Prep Resources</StepLabel>
             <div className="grid gap-3 text-sm leading-6 text-brand-gray700 md:grid-cols-3">
               <div>
                 <p className="font-extrabold text-brand-charcoal">
@@ -1026,7 +1506,7 @@ export default function Home() {
               </div>
               <div>
                 <p className="font-extrabold text-brand-charcoal">
-                  Suggested agenda / topics
+                  Discussion Topics
                 </p>
                 <ul className="mt-1 space-y-1">
                   {prep.topics.map((item) => (
@@ -1073,19 +1553,319 @@ export default function Home() {
               </div>
             </details>
           </div>
+          <div className="mt-4 rounded-xl border border-brand-gray200 bg-white p-3">
+            <StepLabel>Step 4: Automatic Product Safety Review</StepLabel>
+            <div className="rounded-xl border border-brand-gray200 bg-brand-gray100 p-3">
+              <p className="text-sm font-extrabold uppercase tracking-[0.08em] text-brand-charcoal">
+                Automatic Product Safety Review
+              </p>
+              <p className="mt-2 text-sm leading-6 text-brand-gray700">
+                The app checks public CPSC recall data using installed equipment
+                from the selected site profile. Possible matches need
+                verification; the app does not decide whether a recall applies.
+              </p>
+              {autoReviewLoading ? (
+                <p className="mt-3 text-sm font-extrabold text-brand-charcoal">
+                  Checking installed equipment against public recall data...
+                </p>
+              ) : (
+                <div className="mt-3 grid gap-3 text-sm leading-6 text-brand-gray700 md:grid-cols-2">
+                  <div>
+                    <p className="font-extrabold text-brand-charcoal">
+                      Equipment checked
+                    </p>
+                    <ul className="mt-1 space-y-1">
+                      {automaticSafetyReview.equipmentChecked.map((item) => (
+                        <li key={`${item.category}-${item.productName}`}>
+                          {equipmentLabel(item)}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <p className="font-extrabold text-brand-charcoal">
+                      Search terms used
+                    </p>
+                    <p>
+                      {automaticSafetyReview.searchTermsUsed.join(", ") ||
+                        "No automatic search terms available."}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="font-extrabold text-brand-charcoal">
+                      Possible recall matches
+                    </p>
+                    {automaticSafetyReview.possibleMatches.length ? (
+                      <ul className="mt-1 space-y-2">
+                        {automaticSafetyReview.possibleMatches.slice(0, 4).map((match) => (
+                          <li key={`${match.searchTerm}-${match.recall.id}`}>
+                            Possible match for {match.equipmentLabel}:{" "}
+                            <span className="font-semibold text-brand-charcoal">
+                              {match.recall.title}
+                            </span>
+                            {match.recall.url ? (
+                              <>
+                                {" "}
+                                <a
+                                  href={match.recall.url}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="font-extrabold text-brand-green underline-offset-4 hover:underline"
+                                >
+                                  Official source
+                                </a>
+                              </>
+                            ) : null}
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p>No obvious recall match found in this search.</p>
+                    )}
+                  </div>
+                  <div>
+                    <p className="font-extrabold text-brand-charcoal">
+                      Needs verification
+                    </p>
+                    <ul className="mt-1 space-y-1">
+                      {automaticSafetyReview.needsVerification.map((item) => (
+                        <li key={item}>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              )}
+            </div>
+            <details className="mt-4 rounded-xl border border-brand-gray200 bg-white p-3">
+              <summary className="cursor-pointer text-sm font-extrabold text-brand-charcoal">
+                Optional Manual Product Safety Search
+              </summary>
+              <p className="mt-2 text-sm leading-6 text-brand-gray700">
+                Use this only to check an additional product, manufacturer,
+                model, hazard, or keyword that is not already included in the
+                selected site profile.
+              </p>
+              {resultCountLabel ? (
+                <p className="mt-3 w-fit rounded-full bg-brand-gray100 px-3 py-1 text-sm font-bold text-brand-gray700">
+                  {resultCountLabel}
+                </p>
+              ) : null}
+
+              <form onSubmit={handleSubmit} className="mt-4 grid gap-3 lg:grid-cols-[1fr_auto]">
+                <input
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
+                  placeholder="Search product, manufacturer, model, keyword, hazard, remedy..."
+                  className="min-h-12 rounded-xl border border-brand-gray200 bg-white px-4 text-base text-brand-charcoal shadow-sm placeholder:text-brand-gray500"
+                />
+                <button
+                  type="submit"
+                  disabled={searching || !query.trim()}
+                  className="min-h-12 rounded-xl bg-brand-green px-6 font-extrabold text-white shadow-sm transition hover:bg-brand-greenDark disabled:cursor-not-allowed disabled:bg-brand-gray500"
+                >
+                  {searching ? "Searching..." : "Search Recalls"}
+                </button>
+              </form>
+
+              <div className="mt-4 flex flex-wrap gap-2">
+                {quickSearches.map((term) => (
+                  <button
+                    key={term}
+                    type="button"
+                    onClick={() => void searchRecalls(term)}
+                    className="rounded-full border border-brand-gray200 bg-brand-gray100 px-3 py-2 text-sm font-bold text-brand-charcoal transition hover:border-brand-green hover:text-brand-green"
+                  >
+                    {term}
+                  </button>
+                ))}
+              </div>
+              <div className="mt-5">
+              <p className="mb-2 text-xs font-extrabold uppercase tracking-[0.14em] text-brand-green">
+                Recall Results
+              </p>
+              <div className="space-y-3">
+                {searching ? (
+                  <div className="rounded-2xl border border-brand-gray200 bg-white p-6 shadow-panel">
+                    <div className="h-2 w-full overflow-hidden rounded-full bg-brand-gray100">
+                      <div className="h-full w-2/5 animate-pulse rounded-full bg-brand-green" />
+                    </div>
+                    <p className="mt-4 font-extrabold text-brand-charcoal">
+                      Searching public recall data...
+                    </p>
+                  </div>
+                ) : null}
+
+                {!searching && searchError ? (
+                  <div className="rounded-2xl border border-red-200 bg-red-50 p-5 text-sm font-bold text-brand-red">
+                    {searchError}
+                  </div>
+                ) : null}
+
+                {!searching && !hasSearched ? (
+                  <div className="rounded-2xl border border-dashed border-brand-gray200 bg-white p-6 shadow-panel">
+                    <p className="text-lg font-extrabold text-brand-charcoal">
+                      Search to review optional public product safety information.
+                    </p>
+                    <p className="mt-2 text-sm leading-6 text-brand-gray700">
+                      Results will show recall title, manufacturer, date,
+                      product, hazard, remedy, and official source link.
+                    </p>
+                  </div>
+                ) : null}
+
+                {!searching && hasSearched && !searchError && results.length === 0 ? (
+                  <div className="rounded-2xl border border-brand-gray200 bg-white p-6 shadow-panel">
+                    <p className="text-lg font-extrabold text-brand-charcoal">
+                      No matching CPSC results for &quot;{query}&quot;.
+                    </p>
+                    <p className="mt-2 text-sm leading-6 text-brand-gray700">
+                      This means the public CPSC API did not return matches for
+                      this exact term. It does not confirm that no recalls exist.
+                      Try a broader product type, alternate spelling, parent
+                      company, model number, or manufacturer name.
+                    </p>
+                  </div>
+                ) : null}
+
+                {!searching &&
+                  results.map((recall) => {
+                    const isSelected = selectedRecall?.id === recall.id;
+
+                    return (
+                      <article
+                        key={recall.id}
+                        className={`rounded-2xl border bg-white p-4 shadow-sm ${
+                          isSelected ? "border-brand-green" : "border-brand-gray200"
+                        }`}
+                      >
+                        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                          <div>
+                            <div className="flex flex-wrap gap-2">
+                              <span className="rounded-full bg-brand-green px-3 py-1 text-xs font-extrabold uppercase tracking-[0.1em] text-white">
+                                Product Safety
+                              </span>
+                              {recall.recallNumber ? (
+                                <span className="rounded-full bg-brand-gray100 px-3 py-1 text-xs font-bold text-brand-gray700">
+                                  Recall {recall.recallNumber}
+                                </span>
+                              ) : null}
+                            </div>
+                            <h3 className="mt-3 text-lg font-extrabold leading-7 text-brand-charcoal">
+                              {recall.title}
+                            </h3>
+                            <p className="mt-1 text-sm font-semibold text-brand-gray700">
+                              {recall.manufacturer} | {formatDate(recall.recallDate)}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="mt-4 grid gap-3 text-sm leading-6 md:grid-cols-2">
+                          <div>
+                            <p className="font-extrabold text-brand-charcoal">Product</p>
+                            <p className="mt-1 text-brand-gray700">
+                              {recall.productDescription}
+                            </p>
+                          </div>
+                          <div className="rounded-xl border-l-4 border-brand-red bg-red-50 p-3">
+                            <p className="font-extrabold text-brand-charcoal">Hazard</p>
+                            <p className="mt-1 text-brand-gray700">{recall.hazard}</p>
+                          </div>
+                          <div className="md:col-span-2">
+                            <p className="font-extrabold text-brand-charcoal">Remedy</p>
+                            <p className="mt-1 text-brand-gray700">{recall.remedy}</p>
+                          </div>
+                        </div>
+
+                        {recall.url ? (
+                          <a
+                            href={recall.url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="mt-4 inline-flex text-sm font-extrabold text-brand-green underline-offset-4 hover:underline"
+                          >
+                            Official CPSC source
+                          </a>
+                        ) : null}
+                        <div className="mt-4 border-t border-brand-gray200 pt-4">
+                          {!isSelected ? (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setSelectedRecall(recall);
+                                setGuidance(null);
+                                setSummaryError("");
+                                setSummarySource("");
+                              }}
+                              className="w-full rounded-xl bg-brand-green px-4 py-3 text-left text-sm font-extrabold text-white transition hover:bg-brand-greenDark sm:w-auto"
+                            >
+                              Select recall
+                            </button>
+                          ) : (
+                            <div className="rounded-xl border border-brand-green bg-brand-gray100 p-4">
+                              <div className="flex flex-wrap gap-2">
+                                <span className="rounded-full bg-brand-green px-3 py-1 text-xs font-extrabold uppercase tracking-[0.1em] text-white">
+                                  Selected Recall
+                                </span>
+                                <span className="rounded-full border border-brand-warning px-3 py-1 text-xs font-extrabold uppercase tracking-[0.1em] text-brand-warning">
+                                  Optional Product Safety Context
+                                </span>
+                              </div>
+                              <p className="mt-3 text-sm leading-6 text-brand-gray700">
+                                This recall will be included as Product Safety /
+                                Recall Context in the AI Engagement Readiness
+                                Packet. Adjust audience, site, service lens, prep
+                                resources, or manual notes as needed before
+                                generating.
+                              </p>
+                              <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+                                <button
+                                  type="button"
+                                  onClick={() => void generateSummary(recall, briefAction)}
+                                  disabled={Boolean(summarizingId)}
+                                  className="rounded-xl bg-brand-green px-3 py-2 text-sm font-extrabold text-white transition hover:bg-brand-greenDark disabled:cursor-not-allowed disabled:bg-brand-gray500"
+                                >
+                                  Generate AI Engagement Readiness Packet
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setSelectedRecall(null);
+                                    setGuidance(null);
+                                    setSummaryError("");
+                                    setSummarySource("");
+                                  }}
+                                  className="rounded-xl border border-brand-gray200 bg-white px-3 py-2 text-sm font-extrabold text-brand-charcoal transition hover:bg-brand-gray100"
+                                >
+                                  Clear selected recall
+                                </button>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </article>
+                    );
+                  })}
+              </div>
+              </div>
+            </details>
+          </div>
           <label className="mt-4 block text-sm font-bold text-brand-charcoal">
-            Optional: Additional Manual / Site / Training Notes
+            Step 5: Optional Manual / Site / Training Notes
+            <span className="mt-1 block font-extrabold text-brand-charcoal">
+              Additional Manual / Site Notes
+            </span>
             <textarea
               value={additionalNotes}
               onChange={(event) => {
                 setAdditionalNotes(event.target.value);
                 setGuidance(null);
               }}
-              placeholder="Paste manual excerpts, service notes, customer details, training context, product notes, or event details here."
+              placeholder="Paste manual excerpts, service notes, site-specific equipment details, customer training history, or internal prep notes here."
               className="mt-2 min-h-28 w-full rounded-xl border border-brand-gray200 bg-white px-3 py-3 text-sm leading-6 text-brand-charcoal shadow-sm placeholder:text-brand-gray500"
             />
           </label>
           <div className="mt-4">
+            <StepLabel>Step 6: Generate</StepLabel>
             <button
               type="button"
               onClick={() => void generateSummary(selectedRecall, briefAction)}
@@ -1112,231 +1892,34 @@ export default function Home() {
               {summaryError}
             </div>
           ) : null}
-          <div className="mt-4">
-            <ReadinessPacket
-              guidance={guidance}
-              selectedRecall={selectedRecall}
-              engagementType={engagementType}
-              audience={audience}
-              sampleSite={selectedSampleSite}
-              serviceLens={selectedServiceLens}
-              summarySource={summarySource}
-              briefAction={briefAction}
-            />
-          </div>
         </section>
+        <div className="mt-5">
+          <ReadinessPacket
+            guidance={guidance}
+            selectedRecall={selectedRecall}
+            engagementType={engagementType}
+            audience={audience}
+            sampleSite={selectedSampleSite}
+            serviceLens={selectedServiceLens}
+            summarySource={summarySource}
+            briefAction={briefAction}
+            automaticSafetyReview={automaticSafetyReview}
+          />
+        </div>
 
-        <section className="mt-4 rounded-2xl border border-brand-gray200 bg-white p-4 shadow-panel sm:p-6">
-          <StepLabel>Step 5: Optional Product Safety / Recall Context</StepLabel>
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-            <SectionTitle
-              eyebrow="Optional External Data"
-              title="Optional Product Safety / Recall Context"
-              description="Search public CPSC recall data when product safety information may be relevant to the engagement."
-            />
-            {resultCountLabel ? (
-              <p className="rounded-full bg-brand-gray100 px-3 py-1 text-sm font-bold text-brand-gray700">
-                {resultCountLabel}
-              </p>
-            ) : null}
-          </div>
-
-          <form onSubmit={handleSubmit} className="mt-5 grid gap-3 lg:grid-cols-[1fr_auto]">
-            <input
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder="Search product, manufacturer, model, keyword, hazard, remedy..."
-              className="min-h-12 rounded-xl border border-brand-gray200 bg-white px-4 text-base text-brand-charcoal shadow-sm placeholder:text-brand-gray500"
-            />
-            <button
-              type="submit"
-              disabled={searching || !query.trim()}
-              className="min-h-12 rounded-xl bg-brand-green px-6 font-extrabold text-white shadow-sm transition hover:bg-brand-greenDark disabled:cursor-not-allowed disabled:bg-brand-gray500"
-            >
-              {searching ? "Searching..." : "Search Recalls"}
-            </button>
-          </form>
-
-          <div className="mt-4 flex flex-wrap gap-2">
-            {quickSearches.map((term) => (
-              <button
-                key={term}
-                type="button"
-                onClick={() => void searchRecalls(term)}
-                className="rounded-full border border-brand-gray200 bg-brand-gray100 px-3 py-2 text-sm font-bold text-brand-charcoal transition hover:border-brand-green hover:text-brand-green"
-              >
-                {term}
-              </button>
-            ))}
-          </div>
-          <details className="mt-4 rounded-xl border border-brand-gray200 bg-brand-gray100 p-3">
-            <summary className="cursor-pointer text-sm font-extrabold text-brand-charcoal">
-              How it works
-            </summary>
-            <ol className="mt-3 space-y-1 text-sm leading-6 text-brand-gray700">
-              <li>1. Choose the engagement.</li>
-              <li>2. Search product safety data.</li>
-              <li>3. Select a recall.</li>
-              <li>4. Confirm audience, site, and service context.</li>
-              <li>5. Generate an AI readiness packet.</li>
-            </ol>
-          </details>
-        </section>
-
-        <section className="mt-4">
-          <p className="mb-2 text-xs font-extrabold uppercase tracking-[0.14em] text-brand-green">
-            Recall Results
-          </p>
-          <div className="space-y-3">
-            {searching ? (
-              <div className="rounded-2xl border border-brand-gray200 bg-white p-6 shadow-panel">
-                <div className="h-2 w-full overflow-hidden rounded-full bg-brand-gray100">
-                  <div className="h-full w-2/5 animate-pulse rounded-full bg-brand-green" />
-                </div>
-                <p className="mt-4 font-extrabold text-brand-charcoal">
-                  Searching public recall data...
-                </p>
-              </div>
-            ) : null}
-
-            {!searching && searchError ? (
-              <div className="rounded-2xl border border-red-200 bg-red-50 p-5 text-sm font-bold text-brand-red">
-                {searchError}
-              </div>
-            ) : null}
-
-            {!searching && !hasSearched ? (
-              <div className="rounded-2xl border border-dashed border-brand-gray200 bg-white p-6 shadow-panel">
-                <p className="text-lg font-extrabold text-brand-charcoal">
-                  Search to review public product safety information.
-                </p>
-                <p className="mt-2 text-sm leading-6 text-brand-gray700">
-                  Results will show recall title, manufacturer, date, product,
-                  hazard, remedy, and official source link.
-                </p>
-              </div>
-            ) : null}
-
-            {!searching && hasSearched && !searchError && results.length === 0 ? (
-              <div className="rounded-2xl border border-brand-gray200 bg-white p-6 shadow-panel">
-                <p className="text-lg font-extrabold text-brand-charcoal">
-                  No matching CPSC results for &quot;{query}&quot;.
-                </p>
-                <p className="mt-2 text-sm leading-6 text-brand-gray700">
-                  This means the public CPSC API did not return matches for this
-                  exact term. It does not confirm that no recalls exist. Try a
-                  broader product type, alternate spelling, parent company, model
-                  number, or manufacturer name.
-                </p>
-              </div>
-            ) : null}
-
-            {!searching &&
-              results.map((recall) => {
-                const isSelected = selectedRecall?.id === recall.id;
-
-                return (
-                  <article
-                    key={recall.id}
-                    className={`rounded-2xl border bg-white p-4 shadow-sm ${
-                      isSelected ? "border-brand-green" : "border-brand-gray200"
-                    }`}
-                  >
-                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                    <div>
-                      <div className="flex flex-wrap gap-2">
-                        <span className="rounded-full bg-brand-green px-3 py-1 text-xs font-extrabold uppercase tracking-[0.1em] text-white">
-                          Product Safety
-                        </span>
-                        {recall.recallNumber ? (
-                          <span className="rounded-full bg-brand-gray100 px-3 py-1 text-xs font-bold text-brand-gray700">
-                            Recall {recall.recallNumber}
-                          </span>
-                        ) : null}
-                      </div>
-                      <h3 className="mt-3 text-lg font-extrabold leading-7 text-brand-charcoal">
-                        {recall.title}
-                      </h3>
-                      <p className="mt-1 text-sm font-semibold text-brand-gray700">
-                        {recall.manufacturer} | {formatDate(recall.recallDate)}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="mt-4 grid gap-3 text-sm leading-6 md:grid-cols-2">
-                    <div>
-                      <p className="font-extrabold text-brand-charcoal">Product</p>
-                      <p className="mt-1 text-brand-gray700">
-                        {recall.productDescription}
-                      </p>
-                    </div>
-                    <div className="rounded-xl border-l-4 border-brand-red bg-red-50 p-3">
-                      <p className="font-extrabold text-brand-charcoal">Hazard</p>
-                      <p className="mt-1 text-brand-gray700">{recall.hazard}</p>
-                    </div>
-                    <div className="md:col-span-2">
-                      <p className="font-extrabold text-brand-charcoal">Remedy</p>
-                      <p className="mt-1 text-brand-gray700">{recall.remedy}</p>
-                    </div>
-                  </div>
-
-                  {recall.url ? (
-                    <a
-                      href={recall.url}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="mt-4 inline-flex text-sm font-extrabold text-brand-green underline-offset-4 hover:underline"
-                    >
-                      Official CPSC source
-                    </a>
-                  ) : null}
-                  <div className="mt-4 border-t border-brand-gray200 pt-4">
-                    {!isSelected ? (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setSelectedRecall(recall);
-                          setGuidance(null);
-                          setSummaryError("");
-                          setSummarySource("");
-                        }}
-                        className="w-full rounded-xl bg-brand-green px-4 py-3 text-left text-sm font-extrabold text-white transition hover:bg-brand-greenDark sm:w-auto"
-                      >
-                        Select recall
-                      </button>
-                    ) : (
-                      <div className="rounded-xl border border-brand-green bg-brand-gray100 p-4">
-                        <div className="flex flex-wrap gap-2">
-                          <span className="rounded-full bg-brand-green px-3 py-1 text-xs font-extrabold uppercase tracking-[0.1em] text-white">
-                            Selected Recall
-                          </span>
-                          <span className="rounded-full border border-brand-warning px-3 py-1 text-xs font-extrabold uppercase tracking-[0.1em] text-brand-warning">
-                            Optional Product Safety Context
-                          </span>
-                        </div>
-                        <p className="mt-3 text-sm leading-6 text-brand-gray700">
-                          This recall will be included as Product Safety / Recall Context in the AI Engagement Readiness Packet. Adjust audience, site, service lens, prep resources, or manual notes in the main workflow card above, then generate the packet there.
-                        </p>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setSelectedRecall(null);
-                            setGuidance(null);
-                            setSummaryError("");
-                            setSummarySource("");
-                          }}
-                          className="mt-3 rounded-xl border border-brand-gray200 bg-white px-3 py-2 text-sm font-extrabold text-brand-charcoal transition hover:bg-brand-gray100"
-                        >
-                          Clear selected recall
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </article>
-                );
-              })}
-          </div>
-        </section>
+        <details className="mt-5 rounded-2xl border border-brand-gray200 bg-white p-4 text-sm leading-6 text-brand-gray700 shadow-panel">
+          <summary className="cursor-pointer font-extrabold text-brand-charcoal">
+            How it works
+          </summary>
+          <ol className="mt-3 space-y-1">
+            <li>1. Choose the engagement.</li>
+            <li>2. Choose audience, site, and service context.</li>
+            <li>3. Review the auto-filled prep resources.</li>
+            <li>4. Add product safety or recall context only if relevant.</li>
+            <li>5. Add manual, site, or training notes if helpful.</li>
+            <li>6. Generate an AI Engagement Readiness Packet.</li>
+          </ol>
+        </details>
 
         <section className="mt-5 rounded-2xl border-l-4 border-brand-warning bg-[#fff8e8] p-4 text-sm leading-6 text-brand-gray700 shadow-sm sm:p-5">
           <strong className="text-brand-charcoal">Responsible AI:</strong>{" "}
@@ -1348,8 +1931,7 @@ export default function Home() {
       </div>
 
       <footer className="mt-2 bg-brand-green px-5 py-5 text-center text-xs leading-6 text-white">
-        Concept prototype created for demonstration purposes. Not affiliated
-        with or endorsed by Ryan Fire Protection, Inc.
+        Concept prototype for demonstration purposes.
       </footer>
     </main>
   );

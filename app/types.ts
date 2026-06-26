@@ -11,6 +11,29 @@ export type RecallResult = {
   raw: Record<string, unknown>;
 };
 
+export type InstalledEquipment = {
+  category: string;
+  productName: string;
+  manufacturer: string;
+  model: string;
+  locationContext: string;
+  serviceStatus: string;
+  documentationNote: string;
+  trainingRelevance: string;
+};
+
+export type AutomaticSafetyReview = {
+  equipmentChecked: InstalledEquipment[];
+  searchTermsUsed: string[];
+  possibleMatches: Array<{
+    searchTerm: string;
+    equipmentLabel: string;
+    recall: RecallResult;
+  }>;
+  noObviousMatchTerms: string[];
+  needsVerification: string[];
+};
+
 export type AiGuidance = {
   sourceContextUsed: string[];
   knownSourceFacts: string[];
@@ -21,6 +44,8 @@ export type AiGuidance = {
   keyAttentionFlags: string[];
   internalFieldBrief: string;
   audienceSpecificTalkingPoints: string[];
+  installedEquipmentReview: string[];
+  productSafetyRecallReview: string[];
   equipmentProductChecklist: string[];
   trainingOrEventPrepNotes: string[];
   protectPreventPreserveLens: string[];
