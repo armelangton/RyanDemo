@@ -8,7 +8,7 @@ const systemPrompt = `You are generating an internal AI Engagement Readiness Pac
 Use the selected preparation context and optional recall/product safety information to create practical internal guidance. You must use available context in this order:
 - role
 - role-specific engagement
-- selected topics
+- selected services
 - engagement type
 - audience
 - sample site profile
@@ -31,7 +31,30 @@ Use the selected preparation context and optional recall/product safety informat
 This is an internal customer engagement preparation workspace. Do not produce a generic recall summary. Help the employee prepare for inspections, customer training, fire department/recruit training, municipality/public safety events, conventions/trade shows, customer meetings, and continuing education prep.
 Manual recall data is optional. If no manual recall is selected, say: "No manual product safety recall selected. Packet is based on engagement, site, service, prep context, and automatic product safety review." If a manual recall is selected, include it as optional manual product safety context.
 
-The packet must include:
+The packet should support the existing UI packet structure.
+
+For Inspector role, prioritize these user-facing sections:
+1. Onsite Priorities
+2. Systems / Equipment to Review
+3. Items to Verify
+4. Product Safety / Recall Check
+5. Customer Talking Points
+6. Related Service Considerations
+7. Documentation / Follow-Up
+8. Official Source Reminder
+
+For Instructor role, prioritize these user-facing sections:
+1. Session Priorities
+2. Lesson Flow
+3. Materials / Equipment Needed
+4. Standards / Objective Alignment
+5. Safety Points to Emphasize
+6. Attendance / Certification Reminders
+7. Related Service Considerations
+8. Documentation / Follow-Up
+9. Official Source Reminder
+
+The JSON response must include:
 1. Source Context Used
 2. Key Attention Flags
 3. Internal Field Brief
@@ -48,8 +71,8 @@ The packet must include:
 14. Official Source Reminder
 
 Role-specific output:
-- If role is "Inspector", create a jobsite readiness packet. Do not include lesson plans. Focus on jobsite/site context, equipment/product context, product safety/recall review, items to verify, talking points, related service considerations, follow-up notes, missing information, and official source reminder.
-- If role is "Instructor", create a training readiness packet. Include standards/objective alignment, a simple lesson plan, materials/equipment needed, certification or attendance reminders, talking points, related service considerations, follow-up notes, missing information, and official source reminder. Use demo-safe language and do not claim official certification approval.
+- If role is "Inspector", create onsite field guidance. Do not include lesson plans or curriculum language. Focus on what to check, verify, discuss, document, and follow up on while onsite.
+- If role is "Instructor", create session guidance. Include lesson flow, materials/equipment needed, standards/objective alignment, safety points to emphasize, attendance/certification reminders, related service considerations, documentation/follow-up, and official source reminder. Use demo-safe language and do not claim official certification approval.
 - For instructor Standards / Objective Alignment, include draft measurable learning objectives, brief alignment notes, a simple check-for-understanding method, and this caution: "Draft alignment for planning purposes. Verify against current Indiana, Pro Board/IFSAC, NFPA, department, company, and AHJ requirements before using for credit or certification."
 - Do not invent official standard numbers unless source text is provided.
 
@@ -81,7 +104,7 @@ Audience guidance:
 
 Engagement guidance:
 - Inspect / service: focus on inspections, service visits, ITM review, deficiencies, documentation, installed equipment, model/date range checks, service history, access issues, customer talking points, and product safety review.
-- Teach / train: focus on customer training, instructor prep, recruit training, continuing education, certificates, attendance, training topics, likely questions, materials to bring, product safety examples to verify, and follow-up items.
+- Teach / train: focus on customer training, instructor prep, recruit training, continuing education, certificates, attendance, selected services, likely questions, materials to bring, product safety examples to verify, and follow-up items.
 - Meet / discuss: focus on talking points, customer concerns, related service considerations, product safety examples to verify, and follow-up capture.
 - Present / attend event: focus on event logistics, booth/materials, speakers/presenters, demo equipment, sales/marketing collateral, lead capture, likely questions, and follow-up plan.
 - Follow up / document: focus on open items, missing records, training completion, deficiency follow-up, product safety verification, and next actions.
@@ -102,7 +125,8 @@ Concise output rules:
 - Do not repeat the same verification disclaimer in every section.
 - Keep Official Source Reminder as the final verification reminder.
 - Keep Related Service Considerations grouped but concise.
-- The packet should feel like an internal readiness summary, not a long generated report.
+- Do not include readiness scores, percentages, dashboard metrics, or raw search-term dumps.
+- The packet should feel like onsite or session guidance, not a long generated report.
 
 Source hierarchy:
 1. Official CPSC recall notices
@@ -510,7 +534,6 @@ const fallbackPacket = ({
   const prepQuestions = listValue(prepResources.questions);
   const audienceContext = audienceGuidance(audience);
   const safetyMatches = objectListValue(automaticSafetyReview.possibleMatches);
-  const safetyTerms = listValue(automaticSafetyReview.searchTermsUsed);
   const noMatchTerms = listValue(automaticSafetyReview.noObviousMatchTerms);
   const autoNeedsVerification = listValue(automaticSafetyReview.needsVerification);
   const equipmentReview = installedEquipment.length
@@ -527,9 +550,9 @@ const fallbackPacket = ({
       })
     : ["No installed equipment/products were provided in the selected site profile."];
   const productSafetyReview = [
-    safetyTerms.length
-      ? `Automatic Product Safety Review searched these terms: ${safetyTerms.join(", ")}.`
-      : "Automatic Product Safety Review did not have search terms available.",
+    installedEquipment.length
+      ? `Automatic Product Safety Review checked ${installedEquipment.length} installed equipment item${installedEquipment.length === 1 ? "" : "s"} from the selected site profile.`
+      : "Automatic Product Safety Review needs installed equipment details before it can provide useful context.",
     safetyMatches.length
       ? `Possible recall matches found: ${safetyMatches
           .slice(0, 5)
@@ -540,8 +563,8 @@ const fallbackPacket = ({
           .join("; ")}.`
       : "No obvious recall match found in this automatic search.",
     noMatchTerms.length
-      ? `No obvious match found for: ${noMatchTerms.slice(0, 8).join(", ")}.`
-      : "All automatic search terms returned at least one possible match, but applicability still needs verification.",
+      ? `${noMatchTerms.length} equipment review item${noMatchTerms.length === 1 ? "" : "s"} had no obvious public recall match, but official source verification is still required.`
+      : "Automatic review found possible product safety context that still needs human verification.",
     ...(autoNeedsVerification.length
       ? autoNeedsVerification.map((item) => `Needs verification: ${item}`)
       : [
@@ -614,11 +637,11 @@ const fallbackPacket = ({
         ? "Training or education opportunity"
         : "Missing training context",
     ],
-    internalFieldBrief: `For ${role || "employee"} ${roleEngagement || engagementType}, prepare for ${sampleSite} using topics ${selectedTopics.join(", ") || "not specified"} and the ${serviceLensLabel} service lens. Start from the selected site/customer profile, installed equipment, service reminder, training need, and documentation context. ${hasRecall ? `Optional manual product safety context: "${title}" lists manufacturer/company as ${manufacturer}, product context as ${product}, hazard as ${hazard}, and remedy as ${remedy}.` : "No manual product safety recall selected. Packet is based on engagement, site, service, prep context, and automatic product safety review."} Additional notes: ${additionalNotes || "none provided"}.`,
+    internalFieldBrief: `For ${role || "employee"} ${roleEngagement || engagementType}, prepare for ${sampleSite} using services ${selectedTopics.join(", ") || "not specified"} and the ${serviceLensLabel} service lens. Start from the selected site/customer profile, installed equipment, service reminder, training need, and documentation context. ${hasRecall ? `Optional manual product safety context: "${title}" lists manufacturer/company as ${manufacturer}, product context as ${product}, hazard as ${hazard}, and remedy as ${remedy}.` : "No manual product safety recall selected. Packet is based on engagement, site, service, prep context, and automatic product safety review."} Additional notes: ${additionalNotes || "none provided"}.`,
     standardsObjectiveAlignment:
       role === "Instructor"
         ? [
-            `Draft objective: attendees can explain practical field awareness for ${selectedTopics.join(", ") || "the selected topics"}.`,
+            `Draft objective: attendees can explain practical field awareness for ${selectedTopics.join(", ") || "the selected services"}.`,
             `Alignment note: connect ${roleEngagement || "the training session"} to approved department, company, and manufacturer materials before delivery.`,
             "Check for understanding: ask attendees to identify one field condition, one documentation item, and one issue to escalate.",
             "Draft alignment for planning purposes. Verify against current Indiana, Pro Board/IFSAC, NFPA, department, company, and AHJ requirements before using for credit or certification.",
@@ -628,7 +651,7 @@ const fallbackPacket = ({
       role === "Instructor"
         ? [
             "Open with the training objective, audience expectations, and safety boundaries.",
-            `Teach the selected topics: ${selectedTopics.join(", ") || "not specified"}.`,
+            `Teach the selected services: ${selectedTopics.join(", ") || "not specified"}.`,
             "Use site equipment, demo materials, or approved examples to connect concepts to field conditions.",
             "Close with check-for-understanding questions, attendance documentation, and follow-up items.",
           ]
@@ -708,12 +731,12 @@ const fallbackPacket = ({
       "Preventive maintenance",
       "Documentation review",
       "Recurring inspection reminders",
-      "Continuing education topic follow-up",
+      "Continuing education service follow-up",
     ].filter((item, index, array) => item && array.indexOf(item) === index),
     relatedServiceGroups: {
       safetyRiskReduction: [
         "Review safety-sensitive issues with a qualified internal employee.",
-        "Use the service lens to identify risk reduction and prevention topics.",
+        "Use the service lens to identify risk reduction and prevention service considerations.",
       ],
       maintenanceTesting: [
         "Review inspection, testing, maintenance, and preventive maintenance needs.",

@@ -40,14 +40,14 @@ type RoleEngagement =
   | "Customer Education Session";
 
 type Topic =
-  | "Sprinkler Systems"
+  | "Fire Sprinklers"
   | "Fire Alarm / Detection"
-  | "Extinguishers"
+  | "Fire Extinguishers"
   | "Emergency Lighting"
-  | "Hydrants"
+  | "Fire Hydrants"
   | "Special Hazards"
-  | "Tool Safety"
-  | "NFPA 13 Basics";
+  | "Design"
+  | "Training";
 
 type BriefAction =
   | "inspection_prep"
@@ -138,22 +138,22 @@ const roleEngagementOptions: Record<UserRole, RoleEngagement[]> = {
 };
 
 const inspectorDefaultTopics: Topic[] = [
-  "Sprinkler Systems",
-  "Extinguishers",
+  "Fire Sprinklers",
+  "Fire Extinguishers",
   "Emergency Lighting",
 ];
 
-const instructorDefaultTopics: Topic[] = ["NFPA 13 Basics", "Tool Safety"];
+const instructorDefaultTopics: Topic[] = ["Fire Sprinklers", "Training"];
 
 const topicOptions: Topic[] = [
-  "Sprinkler Systems",
+  "Fire Sprinklers",
   "Fire Alarm / Detection",
-  "Extinguishers",
+  "Fire Extinguishers",
   "Emergency Lighting",
-  "Hydrants",
+  "Fire Hydrants",
   "Special Hazards",
-  "Tool Safety",
-  "NFPA 13 Basics",
+  "Design",
+  "Training",
 ];
 
 const sampleSiteDetails: Record<string, SiteProfile> = {
@@ -920,7 +920,7 @@ const prepByEngagement: Record<
     topics: ["Fire extinguisher use", "Alarm response basics", "Maintenance awareness"],
     followUp: "Document attendance and send unresolved product questions for internal review.",
     notes:
-      "Use this for customer training, recruit training, continuing education, certificates, attendance, training topics, and likely questions.",
+      "Use this for customer training, recruit training, continuing education, certificates, attendance, selected services, and likely questions.",
   },
   "Meet / discuss": {
     materials: ["Account notes", "Open service items", "Product safety examples to verify"],
@@ -1156,12 +1156,12 @@ const ReadinessPacket = ({
           "Prior deficiencies",
           "Internal review owner",
         ];
-  const topicText = selectedTopics.join(", ") || "None selected";
+  const serviceText = selectedTopics.join(", ") || "None selected";
   const standardsObjectiveAlignment =
     guidance.standardsObjectiveAlignment?.length
       ? guidance.standardsObjectiveAlignment
       : [
-          `Draft objective: participants can explain ${selectedTopics.join(", ") || "the selected topics"} in practical jobsite language.`,
+          `Draft objective: participants can explain ${selectedTopics.join(", ") || "the selected services"} in practical jobsite language.`,
           "Alignment note: use this as planning support only, not as approved certification language.",
           "Check for understanding: ask attendees to describe one field condition to verify and one question to escalate.",
           "Draft alignment for planning purposes. Verify against current Indiana, Pro Board/IFSAC, NFPA, department, company, and AHJ requirements before using for credit or certification.",
@@ -1171,7 +1171,7 @@ const ReadinessPacket = ({
       ? guidance.simpleLessonPlan
       : [
           "0-5 min: Introduction, audience expectations, and safety boundaries.",
-          `5-15 min: Core concept review for ${topicText}.`,
+          `5-15 min: Core concept review for ${serviceText}.`,
           "15-25 min: Demonstration or scenario discussion using approved examples.",
           "25-35 min: Guided practice or Q&A.",
           "35-42 min: Knowledge check.",
@@ -1222,13 +1222,13 @@ const ReadinessPacket = ({
   const siteSnapshot = [
     `Site/profile: ${sampleSite}.`,
     `Role and engagement: ${role} for ${roleEngagement}.`,
-    `Topics: ${topicText}.`,
+    `Services: ${serviceText}.`,
     ...guidance.installedEquipmentReview,
   ].slice(0, 5);
   const trainingSnapshot = [
     `Training profile: ${sampleSite}.`,
     `Session type: ${roleEngagement}.`,
-    `Training focus: ${topicText}.`,
+    `Training services: ${serviceText}.`,
     ...guidance.trainingOrEventPrepNotes,
   ].slice(0, 5);
   const relatedServiceItems = [
@@ -1246,43 +1246,46 @@ const ReadinessPacket = ({
   const packetText = [
     "AI Engagement Readiness Packet",
     `${sampleSite} - ${role} - ${roleEngagement}`,
-    `Topics: ${topicText}`,
+    `Services: ${serviceText}`,
     "",
-    "Start Here",
+    role === "Instructor" ? "Session Priorities" : "Onsite Priorities",
     ...(role === "Instructor" ? instructorStartHere : inspectorStartHere).map((item) => `- ${item}`),
-    "",
-    role === "Instructor" ? "Training Session Snapshot" : "Site Snapshot",
-    ...(role === "Instructor" ? trainingSnapshot : siteSnapshot).map((item) => `- ${item}`),
     "",
     ...(role === "Instructor"
       ? [
-          "Standards / Objective Alignment",
-          ...standardsObjectiveAlignment.map((item) => `- ${item}`),
-          "",
-          "Simple Lesson Plan",
+          "Lesson Flow",
           ...simpleLessonPlan.map((item) => `- ${item}`),
           "",
           "Materials / Equipment Needed",
           ...materialsEquipmentNeeded.map((item) => `- ${item}`),
           "",
+          "Standards / Objective Alignment",
+          ...standardsObjectiveAlignment.map((item) => `- ${item}`),
+          "",
+          "Safety Points to Emphasize",
+          ...[...trainingSnapshot, ...guidance.audienceSpecificTalkingPoints].slice(0, 5).map((item) => `- ${item}`),
+          "",
           "Certification / Attendance Reminders",
           ...certificationAttendanceReminders.map((item) => `- ${item}`),
         ]
       : [
-          "Items to Verify Onsite",
+          "Systems / Equipment to Review",
+          ...siteSnapshot.map((item) => `- ${item}`),
+          "",
+          "Items to Verify",
           ...missingInformation.slice(0, 6).map((item) => `- ${item}`),
           "",
           "Product Safety / Recall Check",
           ...productSafetyItems.map((item) => `- ${item}`),
         ]),
     "",
-    "Talking Points",
+    role === "Instructor" ? "Safety Points to Emphasize" : "Customer Talking Points",
     ...guidance.audienceSpecificTalkingPoints.slice(0, 5).map((item) => `- ${item}`),
     "",
     "Related Service Considerations",
     ...relatedServiceItems.map((item) => `- ${item}`),
     "",
-    "Follow-Up Notes",
+    "Documentation / Follow-Up",
     ...followUpItems.map((item) => `- ${item}`),
     "",
     "Official Source Reminder",
@@ -1306,7 +1309,7 @@ const ReadinessPacket = ({
               {sampleSite} · {role} · {roleEngagement}
             </p>
             <p className="mt-1 text-sm font-bold text-brand-gray700">
-              Topics: {topicText}
+              Services: {serviceText}
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -1340,40 +1343,13 @@ const ReadinessPacket = ({
             </button>
           </div>
         </div>
-        <div className="mt-5 grid gap-3 md:grid-cols-3">
-          <div className="rounded-xl border border-brand-gray200 bg-brand-gray100 p-3">
-            <p className="text-sm font-black text-brand-charcoal">Action needed</p>
-            <p className="mt-1 text-sm leading-6 text-brand-gray700">
-              {role === "Instructor"
-                ? "Confirm attendance/certification documentation"
-                : "Verify product model numbers"}
-            </p>
-          </div>
-          <div className="rounded-xl border border-brand-gray200 bg-brand-gray100 p-3">
-            <p className="text-sm font-black text-brand-charcoal">
-              {role === "Instructor" ? "Training focus" : "Safety check"}
-            </p>
-            <p className="mt-1 text-sm leading-6 text-brand-gray700">
-              {role === "Instructor"
-                ? topicText
-                : hasPossibleMatches
-                  ? "Possible product matches need review"
-                  : "Product context still needs verification"}
-            </p>
-          </div>
-          <div className="rounded-xl border border-brand-gray200 bg-brand-gray100 p-3">
-            <p className="text-sm font-black text-brand-charcoal">Verification</p>
-            <p className="mt-1 text-sm leading-6 text-brand-gray700">
-              {role === "Instructor"
-                ? "Standards alignment requires instructor review"
-                : "Confirm documents, dates, and onsite conditions"}
-            </p>
-          </div>
-        </div>
       </div>
 
       <div className="mt-6 space-y-5">
-        <PrepBriefSection title="Start Here" tone="green">
+        <PrepBriefSection
+          title={role === "Instructor" ? "Session Priorities" : "Onsite Priorities"}
+          tone="green"
+        >
           <PacketList
             items={role === "Instructor" ? instructorStartHere : inspectorStartHere}
             tone="green"
@@ -1382,25 +1358,28 @@ const ReadinessPacket = ({
 
         {role === "Instructor" ? (
           <>
-            <PrepBriefSection title="Training Session Snapshot" tone="green">
-              <PacketList items={trainingSnapshot} tone="green" />
-            </PrepBriefSection>
-            <PrepBriefSection title="Standards / Objective Alignment" tone="amber">
-              <PacketList items={standardsObjectiveAlignment} tone="amber" />
-            </PrepBriefSection>
-            <PrepBriefSection title="Simple Lesson Plan" tone="green">
+            <PrepBriefSection title="Lesson Flow" tone="green">
               <PacketList items={simpleLessonPlan} tone="green" />
             </PrepBriefSection>
             <PrepBriefSection title="Materials / Equipment Needed" tone="green">
               <PacketList items={materialsEquipmentNeeded} tone="green" />
             </PrepBriefSection>
+            <PrepBriefSection title="Standards / Objective Alignment" tone="amber">
+              <PacketList items={standardsObjectiveAlignment} tone="amber" />
+            </PrepBriefSection>
+            <PrepBriefSection title="Safety Points to Emphasize" tone="green">
+              <PacketList
+                items={[...trainingSnapshot, ...guidance.audienceSpecificTalkingPoints].slice(0, 5)}
+                tone="green"
+              />
+            </PrepBriefSection>
           </>
         ) : (
           <>
-            <PrepBriefSection title="Site Snapshot" tone="green">
+            <PrepBriefSection title="Systems / Equipment to Review" tone="green">
               <PacketList items={siteSnapshot} tone="green" />
             </PrepBriefSection>
-            <PrepBriefSection title="Items to Verify Onsite" tone="red">
+            <PrepBriefSection title="Items to Verify" tone="red">
               <PacketList items={missingInformation.slice(0, 6)} tone="red" />
             </PrepBriefSection>
             <PrepBriefSection title="Product Safety / Recall Check" tone="amber">
@@ -1409,12 +1388,14 @@ const ReadinessPacket = ({
           </>
         )}
 
-        <PrepBriefSection title="Talking Points" tone="green">
-          <PacketList
-            items={guidance.audienceSpecificTalkingPoints.slice(0, 5)}
-            tone="green"
-          />
-        </PrepBriefSection>
+        {role === "Inspector" ? (
+          <PrepBriefSection title="Customer Talking Points" tone="green">
+            <PacketList
+              items={guidance.audienceSpecificTalkingPoints.slice(0, 5)}
+              tone="green"
+            />
+          </PrepBriefSection>
+        ) : null}
 
         {role === "Instructor" ? (
           <PrepBriefSection title="Certification / Attendance Reminders" tone="amber">
@@ -1517,7 +1498,7 @@ export default function Home() {
     "Automatic product safety review based on selected site equipment",
     `Role: ${role}`,
     `Engagement: ${roleEngagement}`,
-    `Topics: ${selectedTopics.join(", ") || "None selected"}`,
+    `Services: ${selectedTopics.join(", ") || "None selected"}`,
     selectedRecall
       ? `Optional manual CPSC recall result: ${selectedRecall.title}`
       : "No manual product safety recall selected. Packet is based on engagement, site, service, prep context, and automatic product safety review.",
@@ -1791,16 +1772,12 @@ export default function Home() {
 
       <header className="bg-white/95">
         <div className="mx-auto max-w-[1180px] px-4 py-4 lg:px-6">
-          <div className="flex flex-col gap-3 border-b border-brand-gray200 pb-4 sm:flex-row sm:items-end sm:justify-between">
+          <div className="border-b border-brand-gray200 pb-4">
             <div>
               <p className="text-lg font-black uppercase tracking-[0.035em] text-brand-green sm:text-2xl">
                 RYAN FIRE PROTECTION, INC.
               </p>
-              <div className="mt-2 h-1 w-24 rounded-full bg-brand-red" />
             </div>
-            <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-brand-gray500">
-              Field readiness
-            </p>
           </div>
 
           <section className="py-4 text-center sm:py-5">
@@ -1822,8 +1799,9 @@ export default function Home() {
           <div className="absolute bottom-0 left-0 top-0 hidden w-1.5 bg-brand-green/90 sm:block" />
 
           <div className="grid gap-6">
-            <div aria-label="Site" className="pt-2">
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="pt-2">
+              <h2 className="text-lg font-black text-brand-charcoal">Site</h2>
+              <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                 {visibleSiteOptions.map((item) => {
                   const selected = selectedSampleSite === item.value;
                   return (
@@ -1931,7 +1909,7 @@ export default function Home() {
                 <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-white text-brand-green shadow-sm">
                   <UiIcon name="tag" />
                 </span>
-                Topics
+                Services
               </h2>
               <div className="mt-3 flex flex-wrap gap-2">
                 {topicOptions.map((topic) => {
@@ -1955,7 +1933,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="mt-6 flex justify-center rounded-2xl border border-brand-gray200 bg-[linear-gradient(90deg,#f7faf7,#ffffff)] p-3 sm:justify-end sm:p-4">
+          <div className="mt-6 flex justify-center sm:justify-end">
             <button
               type="button"
               onClick={() => void generateSummary(selectedRecall, briefAction)}
