@@ -1789,10 +1789,10 @@ export default function Home() {
                       setSelectedSampleSite(item.value);
                       setGuidance(null);
                     }}
-                    className={`min-h-12 rounded-xl border px-3 py-2 text-left text-sm font-extrabold transition ${
+                    className={`min-h-12 rounded-xl border px-4 py-3 text-left text-sm font-extrabold shadow-sm transition ${
                       selectedSampleSite === item.value
-                        ? "border-brand-green bg-brand-green text-white"
-                        : "border-brand-gray200 bg-white text-brand-charcoal hover:bg-brand-gray100"
+                        ? "border-brand-green bg-brand-green text-white shadow-md"
+                        : "border-brand-gray200 bg-white text-brand-charcoal hover:border-brand-green hover:bg-green-50"
                     }`}
                   >
                     {item.label}
@@ -1809,10 +1809,10 @@ export default function Home() {
                     key={item}
                     type="button"
                     onClick={() => applyRole(item)}
-                    className={`min-h-12 rounded-xl border px-4 text-left text-sm font-extrabold transition ${
+                    className={`min-h-12 rounded-xl border px-4 py-3 text-left text-sm font-extrabold shadow-sm transition ${
                       role === item
-                        ? "border-brand-green bg-brand-green text-white"
-                        : "border-brand-gray200 bg-white text-brand-charcoal hover:bg-brand-gray100"
+                        ? "border-brand-green bg-brand-green text-white shadow-md"
+                        : "border-brand-gray200 bg-white text-brand-charcoal hover:border-brand-green hover:bg-green-50"
                     }`}
                   >
                     {item}
@@ -1832,10 +1832,10 @@ export default function Home() {
                       setRoleEngagement(item);
                       setGuidance(null);
                     }}
-                    className={`min-h-12 rounded-xl border px-3 py-2 text-left text-sm font-extrabold transition ${
+                    className={`min-h-12 rounded-xl border px-4 py-3 text-left text-sm font-extrabold shadow-sm transition ${
                       roleEngagement === item
-                        ? "border-brand-green bg-brand-green text-white"
-                        : "border-brand-gray200 bg-white text-brand-charcoal hover:bg-brand-gray100"
+                        ? "border-brand-green bg-brand-green text-white shadow-md"
+                        : "border-brand-gray200 bg-white text-brand-charcoal hover:border-brand-green hover:bg-green-50"
                     }`}
                   >
                     {item}
@@ -1854,10 +1854,10 @@ export default function Home() {
                       key={topic}
                       type="button"
                       onClick={() => toggleTopic(topic)}
-                      className={`rounded-full border px-3 py-2 text-sm font-extrabold transition ${
+                      className={`rounded-full border px-3 py-2 text-sm font-extrabold shadow-sm transition ${
                         selected
-                          ? "border-brand-green bg-brand-green text-white"
-                          : "border-brand-gray200 bg-white text-brand-charcoal hover:bg-brand-gray100"
+                          ? "border-brand-green bg-brand-green text-white shadow-md"
+                          : "border-brand-gray200 bg-white text-brand-charcoal hover:border-brand-green hover:bg-green-50"
                       }`}
                     >
                       {topic}
@@ -1868,16 +1868,21 @@ export default function Home() {
             </div>
           </div>
 
-          <button
-            type="button"
-            onClick={() => void generateSummary(selectedRecall, briefAction)}
-            disabled={Boolean(summarizingId)}
-            className="mt-6 w-full rounded-xl bg-brand-green px-5 py-4 text-left text-base font-black text-white shadow-sm transition hover:bg-brand-greenDark disabled:cursor-not-allowed disabled:bg-brand-gray500 sm:w-auto"
-          >
-            {summarizingId
-              ? "Generating AI Engagement Readiness Packet..."
-              : "Generate AI Engagement Readiness Packet"}
-          </button>
+          <div className="mt-6 flex flex-col gap-3 border-t border-brand-gray200 pt-5 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-sm font-extrabold text-brand-charcoal">
+              Ready to generate packet
+            </p>
+            <button
+              type="button"
+              onClick={() => void generateSummary(selectedRecall, briefAction)}
+              disabled={Boolean(summarizingId)}
+              className="w-full rounded-xl bg-brand-green px-5 py-4 text-left text-base font-black text-white shadow-sm transition hover:bg-brand-greenDark disabled:cursor-not-allowed disabled:bg-brand-gray500 sm:w-auto"
+            >
+              {summarizingId
+                ? "Generating AI Engagement Readiness Packet..."
+                : "Generate AI Engagement Readiness Packet"}
+            </button>
+          </div>
 
           {summarizingId === "engagement-packet" ? (
             <div className="mt-5 rounded-xl border border-brand-gray200 bg-white p-4">
@@ -1923,17 +1928,7 @@ export default function Home() {
                 onRegenerate={() => void generateSummary(selectedRecall, briefAction)}
                 onStartNew={startNewPacket}
               />
-            ) : (
-              <div className="rounded-xl border border-brand-gray200 bg-brand-gray100 p-5 text-sm leading-6 text-brand-gray700">
-                <p className="text-lg font-black text-brand-charcoal">
-                  Packet Preview
-                </p>
-                <p className="mt-1">
-                  Choose a site, role, engagement, and topics, then generate an
-                  AI Engagement Readiness Packet.
-                </p>
-              </div>
-            )}
+            ) : null}
           </div>
         </section>
 
