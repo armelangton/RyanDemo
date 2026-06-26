@@ -10,13 +10,11 @@ import type {
 } from "./types";
 
 type EngagementType =
-  | "Inspection"
-  | "Customer Training"
-  | "Fire Department / Recruit Training"
-  | "Municipality / Public Safety Event"
-  | "Convention / Trade Show"
-  | "Customer Meeting"
-  | "Continuing Education Prep";
+  | "Inspect / service"
+  | "Teach / train"
+  | "Meet / discuss"
+  | "Present / attend event"
+  | "Follow up / document";
 
 type Audience =
   | "Facility Manager"
@@ -24,7 +22,12 @@ type Audience =
   | "Municipality"
   | "Building Owner"
   | "Internal Inspector"
-  | "Instructor / Trainer";
+  | "Instructor / Trainer"
+  | "Recruit Class"
+  | "Safety Coordinator"
+  | "Convention Attendee"
+  | "Internal Sales / Marketing Team"
+  | "Prospective Customer";
 
 type BriefAction =
   | "inspection_prep"
@@ -65,13 +68,11 @@ type SiteProfile = {
 };
 
 const engagementTypes: EngagementType[] = [
-  "Inspection",
-  "Customer Training",
-  "Fire Department / Recruit Training",
-  "Municipality / Public Safety Event",
-  "Convention / Trade Show",
-  "Customer Meeting",
-  "Continuing Education Prep",
+  "Inspect / service",
+  "Teach / train",
+  "Meet / discuss",
+  "Present / attend event",
+  "Follow up / document",
 ];
 
 const audiences: Audience[] = [
@@ -81,6 +82,11 @@ const audiences: Audience[] = [
   "Building Owner",
   "Internal Inspector",
   "Instructor / Trainer",
+  "Recruit Class",
+  "Safety Coordinator",
+  "Convention Attendee",
+  "Internal Sales / Marketing Team",
+  "Prospective Customer",
 ];
 
 const serviceLenses = knowledgeBase.serviceLenses as ServiceLens[];
@@ -828,7 +834,7 @@ const prepByEngagement: Record<
     notes: string;
   }
 > = {
-  Inspection: {
+  "Inspect / service": {
     materials: ["Tablet or inspection forms", "Customer asset list", "Recent service notes"],
     checklist: [
       "Confirm site address and contact",
@@ -843,7 +849,7 @@ const prepByEngagement: Record<
     followUp: "Send findings and any recall-related notes to the service manager for review.",
     notes: "Use company inspection procedures and applicable code requirements as the authority.",
   },
-  "Customer Training": {
+  "Teach / train": {
     materials: ["Training outline", "Sign-in sheet", "Device examples or photos"],
     checklist: [
       "Confirm audience and training objective",
@@ -856,93 +862,56 @@ const prepByEngagement: Record<
     ],
     topics: ["Fire extinguisher use", "Alarm response basics", "Maintenance awareness"],
     followUp: "Document attendance and send unresolved product questions for internal review.",
-    notes: "This is instructor prep, not a certification or LMS workflow.",
-  },
-  "Fire Department / Recruit Training": {
-    materials: ["Demo talking points", "Business cards", "Approved service literature"],
-    checklist: [
-      "Review common public safety questions",
-      "Prepare examples of recall-aware service conversations",
-      "Confirm booth or presentation logistics",
-    ],
-    questions: [
-      "What systems are local departments asking about?",
-      "Are attendees focused on inspections, training, or modernization?",
-    ],
-    topics: ["Public safety education", "System readiness", "Preventive maintenance"],
-    followUp: "Capture questions that need a technical or service-leadership response.",
-    notes: "Focus on response awareness, scene safety, and what firefighters should recognize or report.",
-  },
-  "Municipality / Public Safety Event": {
-    materials: ["Public safety talking points", "Inspection schedule notes", "Approved service literature"],
-    checklist: [
-      "Review public safety priorities",
-      "Prepare documentation and inspection timing notes",
-      "Identify questions that need qualified technical follow-up",
-    ],
-    questions: [
-      "How should facilities prioritize documentation?",
-      "What safety issues should be escalated after an event?",
-    ],
-    topics: ["Inspection timing", "Risk prioritization", "Community or facility impact"],
-    followUp: "Document public safety questions and route them to the right internal owner.",
-    notes: "Keep guidance educational and avoid final code or compliance determinations.",
-  },
-  "Convention / Trade Show": {
-    materials: [
-      "Approved service literature",
-      "Product safety talking points",
-      "Lead or follow-up note template",
-    ],
-    checklist: [
-      "Confirm booth/event objective",
-      "Prepare concise customer-friendly explanations",
-      "Route technical questions to qualified internal review",
-    ],
-    questions: [
-      "What systems are attendees asking about?",
-      "Are they preparing for inspections, training, or documentation reviews?",
-      "Who should receive follow-up after the event?",
-    ],
-    topics: [
-      "Customer education",
-      "Inspection and documentation awareness",
-      "Related service considerations",
-    ],
-    followUp:
-      "Capture attendee questions, related service interests, and any items needing technical or service-leadership follow-up.",
     notes:
-      "Use this for event preparation only; do not make final product, compliance, or service commitments from AI guidance.",
+      "Use this for customer training, recruit training, continuing education, certificates, attendance, training topics, and likely questions.",
   },
-  "Customer Meeting": {
-    materials: ["Account notes", "Open service items", "Relevant recall summaries"],
+  "Meet / discuss": {
+    materials: ["Account notes", "Open service items", "Product safety examples to verify"],
     checklist: [
-      "Confirm meeting goal",
+      "Confirm meeting goal and audience",
       "Review known equipment and recent work",
       "Prepare safety-focused talking points",
     ],
     questions: [
-      "Are there upcoming inspections or capital projects?",
-      "Has the customer asked about equipment age or reliability?",
+      "What customer concerns or questions should be addressed?",
+      "Which follow-up items need an owner?",
     ],
-    topics: ["Risk reduction", "Maintenance planning", "Customer confidence"],
-    followUp: "Send action items to the account or service owner before customer outreach.",
-    notes: "Use AI output as preparation only; customer messaging still needs approval.",
+    topics: ["Customer concerns", "Related service considerations", "Follow-up capture"],
+    followUp: "Capture customer questions, product safety examples to verify, and related service follow-up.",
+    notes:
+      "Use this for customer meetings, facility manager conversations, municipality discussions, and customer-facing talking points.",
   },
-  "Continuing Education Prep": {
-    materials: ["Lesson outline", "Discussion prompts", "Relevant standards/manuals to verify"],
+  "Present / attend event": {
+    materials: ["Public safety talking points", "Inspection schedule notes", "Approved service literature"],
     checklist: [
-      "Confirm learning objective",
-      "Prepare practical examples",
-      "Flag standards, manuals, or manufacturer documents to verify",
+      "Confirm event objective, booth, or presentation plan",
+      "Prepare concise customer-friendly explanations",
+      "Confirm follow-up capture plan",
     ],
     questions: [
-      "What should attendees know how to recognize?",
-      "Which details require official documentation?",
+      "What are attendees likely to ask?",
+      "Which product safety examples need verification before use?",
     ],
-    topics: ["Teaching points", "Practical examples", "Follow-up reminders"],
-    followUp: "Capture questions that should become future continuing education topics.",
-    notes: "Use this as instructor preparation, not as the final training authority.",
+    topics: ["Event talking points", "Demo equipment", "Lead or follow-up capture"],
+    followUp: "Capture attendee questions, related service interest, and verification items.",
+    notes:
+      "Use this for conventions, trade shows, public safety events, presentations, and outreach conversations.",
+  },
+  "Follow up / document": {
+    materials: ["Account notes", "Open service items", "Training records or handouts"],
+    checklist: [
+      "Review open deficiencies and documentation gaps",
+      "Confirm training completion or attendance records",
+      "Identify next actions and internal owners",
+    ],
+    questions: [
+      "What needs customer follow-up?",
+      "What records, certificates, handouts, or notes are missing?",
+    ],
+    topics: ["Open deficiencies", "Documentation gaps", "Next steps"],
+    followUp: "Send action items to the account or service owner before customer outreach.",
+    notes:
+      "Use this for post-inspection follow-up, open deficiencies, training records, notes, handouts, certificates, and next steps.",
   },
 };
 
@@ -1445,7 +1414,7 @@ const ReadinessPacket = ({
             Sources used
           </h3>
           <div className="mt-3 flex flex-wrap gap-2">
-            <PacketBadge tone="neutral">Sample Customer/Site Profile</PacketBadge>
+            <PacketBadge tone="neutral">Sample customer/site profile</PacketBadge>
             <PacketBadge tone="neutral">Ryan Service Lens</PacketBadge>
             <PacketBadge tone="neutral">Prep Resources</PacketBadge>
             <PacketBadge tone="neutral">Automatic Safety Review</PacketBadge>
@@ -1780,7 +1749,7 @@ const ReadinessPacket = ({
 
 export default function Home() {
   const [engagementType, setEngagementType] =
-    useState<EngagementType>("Inspection");
+    useState<EngagementType>("Inspect / service");
   const [audience, setAudience] = useState<Audience>("Facility Manager");
   const [selectedSampleSite, setSelectedSampleSite] = useState(sampleSites[0]);
   const [selectedServiceLensId, setSelectedServiceLensId] = useState(serviceLenses[0].id);
@@ -1829,6 +1798,14 @@ export default function Home() {
       : automaticSafetyReview.searchTermsUsed.length
         ? "Auto-checked; verify sources"
         : "Not checked";
+  const showTrainingReadiness =
+    engagementType === "Teach / train" ||
+    audience === "Instructor / Trainer" ||
+    audience === "Recruit Class" ||
+    Boolean(selectedSiteDetails.trainingEducationNeed);
+  const showEventReadiness =
+    selectedSampleSite === "Convention / Trade Show Demo Booth" ||
+    engagementType === "Present / attend event";
   const installedEquipmentSummary = selectedSiteDetails.installedEquipment
     .map((item) => item.category)
     .filter((category, index, list) => list.indexOf(category) === index)
@@ -2044,7 +2021,7 @@ export default function Home() {
   };
 
   const startNewPacket = () => {
-    setEngagementType("Inspection");
+    setEngagementType("Inspect / service");
     setAudience("Facility Manager");
     setSelectedSampleSite(sampleSites[0]);
     setSelectedServiceLensId(serviceLenses[0].id);
@@ -2078,11 +2055,10 @@ export default function Home() {
                 Fire Protection Field Assistant
               </h1>
               <p className="mt-3 text-sm leading-6 text-brand-gray700 sm:text-base">
-                Prepare internal readiness packets for inspections, customer
-                training, fire department events, conventions, customer
-                meetings, and continuing education work using service context,
-                customer/site details, product safety review, and
-                AI-assisted reasoning.
+                Prepare internal readiness packets for inspections, training,
+                customer meetings, events, and follow-up work using
+                customer/site context, equipment data, product safety review,
+                and AI-assisted reasoning.
               </p>
             </div>
           </section>
@@ -2095,14 +2071,16 @@ export default function Home() {
             <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
               <div>
                 <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-brand-green">
-                  Current Packet
+                  Current Prep
                 </p>
                 <h3 className="mt-1 text-lg font-black text-brand-charcoal">
-                  {engagementType} readiness for {audience}
+                  {selectedSampleSite} | {engagementType} | {audience}
                 </h3>
               </div>
               <div className="flex flex-wrap gap-2">
-                <PacketBadge tone="green">{currentEquipmentCount} equipment items</PacketBadge>
+                <PacketBadge tone="green">
+                  {currentEquipmentCount} demo equipment items
+                </PacketBadge>
                 <PacketBadge tone={automaticSafetyReview.possibleMatches.length ? "amber" : "neutral"}>
                   {currentProductSafetyStatus}
                 </PacketBadge>
@@ -2110,7 +2088,7 @@ export default function Home() {
             </div>
             <div className="mt-3 grid gap-2 text-sm leading-6 text-brand-gray700 sm:grid-cols-2 lg:grid-cols-4">
               <div>
-                <p className="font-extrabold text-brand-charcoal">Engagement</p>
+                <p className="font-extrabold text-brand-charcoal">Job to be done</p>
                 <p>{engagementType}</p>
               </div>
               <div>
@@ -2119,7 +2097,7 @@ export default function Home() {
               </div>
               <div>
                 <p className="font-extrabold text-brand-charcoal">
-                  Sample Customer/Site Profile
+                  Sample customer/site profile
                 </p>
                 <p>{selectedSampleSite}</p>
               </div>
@@ -2130,12 +2108,43 @@ export default function Home() {
             </div>
           </div>
           <div className="mt-5">
-            <StepLabel>Step 1: Engagement</StepLabel>
+            <StepLabel>Step 1: Where are you going?</StepLabel>
           </div>
           <SectionTitle
-            eyebrow="Engagement"
-            title="Choose engagement type"
-            description="Pick the type of work you are preparing for."
+            eyebrow="Destination"
+            title="Where are you going?"
+            description="Choose the customer, site, event, or training profile so the app can load the right equipment, records, materials, and prep context."
+          />
+          <label className="mt-4 block text-sm font-bold text-brand-charcoal">
+            Customer/Site Profile
+            <select
+              value={selectedSampleSite}
+              onChange={(event) => {
+                setSelectedSampleSite(event.target.value);
+                setGuidance(null);
+              }}
+              className="mt-2 min-h-11 w-full rounded-xl border border-brand-gray200 bg-white px-3 text-brand-charcoal"
+            >
+              {sampleSites.map((item) => (
+                <option key={item}>{item}</option>
+              ))}
+            </select>
+            <span className="mt-2 block text-xs font-medium leading-5 text-brand-gray700">
+              Demo profile simulates equipment, service, training, and event data
+              that could come from SAP, ERP, service records, training logs, CRM,
+              or an asset database.
+            </span>
+            <span className="mt-1 block text-xs font-extrabold uppercase tracking-[0.08em] text-brand-gray700">
+              Simulated asset data for proof-of-concept
+            </span>
+          </label>
+          <div className="mt-5">
+            <StepLabel>Step 2: What are you doing there?</StepLabel>
+          </div>
+          <SectionTitle
+            eyebrow="Job to be done"
+            title="What are you doing there?"
+            description="Choose the job you need to be ready for."
           />
           <div className="mt-4 grid grid-cols-2 gap-2 lg:grid-cols-3">
             {engagementTypes.map((type) => (
@@ -2162,10 +2171,15 @@ export default function Home() {
           <SectionBand
             icon="building"
             title="Site Equipment"
-            description="Demo site data appears here as the selected sample customer/site profile."
+            description="Seeded demo data simulates the customer/site asset context a production version could pull from SAP, ERP, service records, or an equipment database."
           />
-          <StepLabel>Step 2: Audience, Site, and Service Context</StepLabel>
-          <div className="grid gap-3 md:grid-cols-3">
+          <StepLabel>Step 3: Who is this for?</StepLabel>
+          <SectionTitle
+            eyebrow="Audience and Context"
+            title="Who is this for?"
+            description="Choose the audience so the packet uses the right level of detail, talking points, and follow-up guidance."
+          />
+          <div className="mt-4 grid gap-3 md:grid-cols-2">
             <label className="text-sm font-bold text-brand-charcoal">
               Audience
               <select
@@ -2182,22 +2196,7 @@ export default function Home() {
               </select>
             </label>
             <label className="text-sm font-bold text-brand-charcoal">
-              Sample Customer/Site Profile
-              <select
-                value={selectedSampleSite}
-                onChange={(event) => {
-                  setSelectedSampleSite(event.target.value);
-                  setGuidance(null);
-                }}
-                className="mt-2 min-h-11 w-full rounded-xl border border-brand-gray200 bg-white px-3 text-brand-charcoal"
-              >
-                {sampleSites.map((item) => (
-                  <option key={item}>{item}</option>
-                ))}
-              </select>
-            </label>
-            <label className="text-sm font-bold text-brand-charcoal">
-              Ryan Service Lens
+              Step 4: Service Lens
               <select
                 value={selectedServiceLensId}
                 onChange={(event) => {
@@ -2212,6 +2211,9 @@ export default function Home() {
                   </option>
                 ))}
               </select>
+              <span className="mt-2 block text-xs font-medium leading-5 text-brand-gray700">
+                Choose the service area or system focus for this packet.
+              </span>
             </label>
           </div>
           <div className="mt-4 rounded-xl border border-brand-gray200 bg-brand-gray100 p-3 text-sm leading-6 text-brand-gray700">
@@ -2227,7 +2229,7 @@ export default function Home() {
               {selectedSiteDetails.shortSummary}
             </p>
             <p className="mt-1">
-              Optional Manual Search Result:{" "}
+              Product Recall Check Result:{" "}
               {selectedRecall ? selectedRecall.title : "None selected"}
             </p>
           </div>
@@ -2235,14 +2237,14 @@ export default function Home() {
             <div className="rounded-xl border border-brand-gray200 bg-white p-3 text-sm leading-6 text-brand-gray700">
               <div className="flex flex-wrap items-center gap-2">
                 <p className="font-extrabold text-brand-charcoal">
-                  Installed Equipment
+                  Demo Equipment Profile
                 </p>
                 <PacketBadge tone="neutral">Sample profile</PacketBadge>
               </div>
               <p className="mt-2">
-                {currentEquipmentCount} items:{" "}
-                {installedEquipmentSummary ||
-                  "Select a customer/site profile to load known systems, installed equipment, and automatic product safety review."}
+                {installedEquipmentSummary
+                  ? `${currentEquipmentCount} equipment items from sample profile.`
+                  : "Select a customer/site profile to load known systems, installed equipment, and automatic product safety review."}
               </p>
             </div>
             <div className="rounded-xl border border-brand-gray200 bg-white p-3 text-sm leading-6 text-brand-gray700">
@@ -2250,6 +2252,18 @@ export default function Home() {
                 Automatic Product Safety Review
               </p>
               <p className="mt-2">
+                {automaticSafetyReview.equipmentChecked.length} equipment items
+                checked {" | "} {automaticSafetyReview.searchTermsUsed.length} search
+                terms generated {" | "} {possibleMatchCount} possible matches{" "}
+                {" | "} Needs verification
+              </p>
+              <p className="hidden">
+                {automaticSafetyReview.equipmentChecked.length} equipment items
+                checked {" · "} {automaticSafetyReview.searchTermsUsed.length} search
+                terms generated {" · "} {possibleMatchCount} possible matches{" "}
+                {" · "} Needs verification
+              </p>
+              <p className="hidden">
                 {automaticSafetyReview.equipmentChecked.length} equipment items
                 checked · {automaticSafetyReview.searchTermsUsed.length} search
                 terms generated · {possibleMatchCount} possible matches · Needs
@@ -2271,6 +2285,90 @@ export default function Home() {
               </p>
             </div>
           </div>
+          {showTrainingReadiness ? (
+            <details className="mt-4 rounded-xl border border-brand-gray200 bg-white p-3 text-sm leading-6 text-brand-gray700">
+              <summary className="cursor-pointer font-extrabold text-brand-charcoal">
+                Training / CE Readiness
+              </summary>
+              <p className="mt-2">
+                Training audience: {audience}. CE/refresher status:{" "}
+                {selectedSiteDetails.trainingEducationNeed}. Topics and
+                attendance/certificate documentation should be verified before use.
+              </p>
+              <p className="mt-2 text-xs leading-5 text-brand-gray700">
+                Demo training data simulates records that could come from an
+                LMS, training log, CRM, service records, or customer database.
+              </p>
+              <div className="mt-3 grid gap-3 md:grid-cols-2">
+                <div>
+                  <p className="font-extrabold text-brand-charcoal">
+                    Recommended topics
+                  </p>
+                  <p>{prep.topics.join(", ")}</p>
+                </div>
+                <div>
+                  <p className="font-extrabold text-brand-charcoal">
+                    Open training follow-ups
+                  </p>
+                  <p>{prep.followUp}</p>
+                </div>
+                <div>
+                  <p className="font-extrabold text-brand-charcoal">
+                    Prior questions
+                  </p>
+                  <p>{prep.questions.join(", ")}</p>
+                </div>
+                <div>
+                  <p className="font-extrabold text-brand-charcoal">
+                    Records to verify
+                  </p>
+                  <p>
+                    Attendance, certificates, training history, handouts, and
+                    customer-specific completion notes.
+                  </p>
+                </div>
+              </div>
+            </details>
+          ) : null}
+          {showEventReadiness ? (
+            <details className="mt-4 rounded-xl border border-brand-gray200 bg-white p-3 text-sm leading-6 text-brand-gray700">
+              <summary className="cursor-pointer font-extrabold text-brand-charcoal">
+                Event Readiness
+              </summary>
+              <p className="mt-2">
+                Event: {selectedSampleSite}. Date/time:{" "}
+                {selectedSiteDetails.upcomingReminder}. Booth/location:{" "}
+                {selectedSiteDetails.locationType}. Materials/demo equipment and
+                follow-up plan need confirmation.
+              </p>
+              <div className="mt-3 grid gap-3 md:grid-cols-2">
+                <div>
+                  <p className="font-extrabold text-brand-charcoal">
+                    Employees / presenters
+                  </p>
+                  <p>Confirm assigned employees, speakers, or booth coverage.</p>
+                </div>
+                <div>
+                  <p className="font-extrabold text-brand-charcoal">
+                    Materials and demo equipment
+                  </p>
+                  <p>{prep.materials.join(", ")}</p>
+                </div>
+                <div>
+                  <p className="font-extrabold text-brand-charcoal">
+                    Key talking points
+                  </p>
+                  <p>{prep.topics.join(", ")}</p>
+                </div>
+                <div>
+                  <p className="font-extrabold text-brand-charcoal">
+                    Lead / follow-up plan
+                  </p>
+                  <p>{prep.followUp}</p>
+                </div>
+              </div>
+            </details>
+          ) : null}
           <div className="mt-4">
             <StepLabel>Generate</StepLabel>
             <button
@@ -2664,7 +2762,8 @@ export default function Home() {
               </summary>
               <p className="mt-2 text-sm leading-6 text-brand-gray700">
                 Check an additional product by name, model, photo, UPC, barcode,
-                hazard, or keyword.
+                hazard, or keyword. Use this when an employee needs to check an
+                item not already included in the selected site profile.
               </p>
               <p className="mt-2 text-xs leading-5 text-brand-gray700">
                 Photo and barcode capture are concept inputs for identifying
@@ -2681,7 +2780,7 @@ export default function Home() {
                 <input
                   value={query}
                   onChange={(event) => setQuery(event.target.value)}
-                  placeholder="Search product, manufacturer, model, keyword, hazard, remedy..."
+                  placeholder="Search by product, manufacturer, model, hazard, or keyword..."
                   className="min-h-12 rounded-xl border border-brand-gray200 bg-white px-4 text-base text-brand-charcoal shadow-sm placeholder:text-brand-gray500"
                 />
                 <button
@@ -2694,7 +2793,7 @@ export default function Home() {
               </form>
               <div className="mt-3 grid gap-3 md:grid-cols-2">
                 <label className="text-sm font-bold text-brand-charcoal">
-                  Product photo / take photo concept
+                  Upload/take product photo concept input
                   <input
                     type="file"
                     accept="image/*"
@@ -2703,7 +2802,7 @@ export default function Home() {
                   />
                 </label>
                 <label className="text-sm font-bold text-brand-charcoal">
-                  UPC / barcode entry concept
+                  Scan or enter UPC/barcode concept input
                   <input
                     placeholder="Enter or scan UPC/barcode"
                     className="mt-2 min-h-11 w-full rounded-xl border border-brand-gray200 bg-white px-3 text-brand-charcoal"
@@ -2894,7 +2993,7 @@ export default function Home() {
             </details>
           <details className="mt-4 rounded-xl border border-brand-gray200 bg-white p-3">
             <summary className="cursor-pointer text-sm font-extrabold text-brand-charcoal">
-              Additional Manual / Site / Training Notes
+              Add notes
             </summary>
             <p className="mt-2 text-sm leading-6 text-brand-gray700">
               Add manual, site, training, or product notes if helpful.

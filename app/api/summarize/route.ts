@@ -66,20 +66,23 @@ Ryan-aligned service context:
 
 Audience guidance:
 - Fire Department: response awareness, system behavior, scene safety, what crews should recognize/report, and likely recruit questions.
+- Recruit Class: recruit-friendly explanations, response awareness, demo materials, likely questions, and product safety examples that must be verified.
 - Municipality: public safety, facility readiness, documentation, service planning, inspection timing, and risk prioritization.
 - Facility Manager: maintenance, documentation, testing, inspection timing, and follow-up.
 - Building Owner: safety, business continuity, documentation, risk reduction, and customer confidence.
+- Safety Coordinator: site equipment, training records, reporting issues, follow-up, and customer-friendly explanations.
+- Convention Attendee: concise service talking points, product safety examples to verify, related service considerations, and follow-up capture.
+- Internal Sales / Marketing Team: event readiness, talking points, materials, demo equipment, lead capture, related service discussion prompts, and follow-up routing.
+- Prospective Customer: concise customer-friendly explanations, service fit, safety-focused talking points, product safety examples to verify, and follow-up capture.
 - Internal Inspector: what to verify, field checks, missing information, equipment details, and follow-up.
 - Instructor / Trainer: teaching points, examples, likely questions, materials to bring, and discussion prompts.
 
 Engagement guidance:
-- Inspection: focus on field verification, model/date range checks, service history, documentation, deficiencies, and follow-up.
-- Customer Training: focus on customer-friendly explanations, materials to bring, likely questions, safe escalation language, and follow-up reminders.
-- Fire Department / Recruit Training: focus on response awareness, scene safety, system behavior, recruit questions, and what crews should recognize or report.
-- Municipality / Public Safety Event: focus on public safety, documentation, inspection timing, risk prioritization, and community/facility impact.
-- Convention / Trade Show: focus on concise talking points, attendee questions, product awareness, service follow-up, lead notes, and routing technical questions to qualified review.
-- Customer Meeting: focus on customer confidence, maintenance planning, documentation, service timing, risk reduction, and clear next steps.
-- Continuing Education Prep: focus on instructor preparation, teaching points, discussion prompts, practical examples, standards/manuals to verify, and follow-up reminders.
+- Inspect / service: focus on inspections, service visits, ITM review, deficiencies, documentation, installed equipment, model/date range checks, service history, access issues, customer talking points, and product safety review.
+- Teach / train: focus on customer training, instructor prep, recruit training, continuing education, certificates, attendance, training topics, likely questions, materials to bring, product safety examples to verify, and follow-up items.
+- Meet / discuss: focus on talking points, customer concerns, related service considerations, product safety examples to verify, and follow-up capture.
+- Present / attend event: focus on event logistics, booth/materials, speakers/presenters, demo equipment, sales/marketing collateral, lead capture, likely questions, and follow-up plan.
+- Follow up / document: focus on open items, missing records, training completion, deficiency follow-up, product safety verification, and next actions.
 
 Do not use the word "upsell." Use "Related Service Considerations." Frame related service considerations as safety, education, maintenance, compliance awareness, documentation, prevention, modernization, customer confidence, or risk reduction.
 Group Related Service Considerations under Safety / Risk Reduction, Maintenance / Testing, Customer Education, Documentation / Follow-Up, and Modernization / Replacement Discussion.
@@ -330,6 +333,16 @@ const audienceGuidance = (audience: string) => {
           "Prepare a response-awareness explanation before the training or event.",
         scoreModifier: -2,
       };
+    case "Recruit Class":
+      return {
+        talkingPoint:
+          "For Recruit Class audiences, focus on recruit-friendly explanations, response awareness, demo materials, likely questions, and product safety examples that must be verified.",
+        trainingNote:
+          "Prepare practical examples and likely recruit questions about system behavior, labels, alarms, hydrants, pumps, and what to report.",
+        nextAction:
+          "Prepare recruit-facing demo notes and verify product safety examples before instruction.",
+        scoreModifier: -2,
+      };
     case "Municipality":
       return {
         talkingPoint:
@@ -348,6 +361,46 @@ const audienceGuidance = (audience: string) => {
           "Prepare plain-language examples that connect safety documentation to business continuity and confidence.",
         nextAction:
           "Prepare a concise owner-facing risk-reduction explanation for internal review.",
+        scoreModifier: -1,
+      };
+    case "Safety Coordinator":
+      return {
+        talkingPoint:
+          "For Safety Coordinator audiences, focus on site equipment, documentation, training records, reporting issues, follow-up, and customer-friendly explanations.",
+        trainingNote:
+          "Prepare practical prompts about recurring checks, reporting channels, training completion, and records that need review.",
+        nextAction:
+          "Prepare a safety-coordinator checklist for equipment, records, and unresolved follow-up items.",
+        scoreModifier: 0,
+      };
+    case "Convention Attendee":
+      return {
+        talkingPoint:
+          "For Convention Attendee audiences, focus on concise service talking points, product safety examples to verify, related service considerations, and follow-up capture.",
+        trainingNote:
+          "Prepare short, customer-friendly explanations and route technical questions to qualified internal review.",
+        nextAction:
+          "Prepare event follow-up notes for questions, related service interest, and verification items.",
+        scoreModifier: -1,
+      };
+    case "Internal Sales / Marketing Team":
+      return {
+        talkingPoint:
+          "For Internal Sales / Marketing Team audiences, focus on event readiness, talking points, materials, demo equipment, lead capture, related service prompts, and follow-up routing.",
+        trainingNote:
+          "Prepare concise booth or event talking points and identify technical questions that need qualified follow-up.",
+        nextAction:
+          "Prepare a lead-capture and follow-up routing plan for the internal team.",
+        scoreModifier: -1,
+      };
+    case "Prospective Customer":
+      return {
+        talkingPoint:
+          "For Prospective Customer audiences, focus on concise customer-friendly explanations, service fit, safety-focused talking points, product safety examples to verify, and follow-up capture.",
+        trainingNote:
+          "Prepare plain-language examples and avoid making final technical, compliance, or safety determinations.",
+        nextAction:
+          "Prepare a prospective-customer follow-up note with verification items and next steps.",
         scoreModifier: -1,
       };
     case "Instructor / Trainer":
@@ -706,13 +759,15 @@ const fallbackPacket = ({
 
 export async function POST(request: Request) {
   let recall: Record<string, unknown> = {};
-  let engagementType = "Inspection";
-  let audience = "Internal Inspector";
-  let sampleSite = "No sample site selected";
+  let engagementType = "Inspect / service";
+  let audience = "Facility Manager";
+  let sampleSite = "Municipal Facilities Account";
   let equipmentSystems: string[] = [];
-  let upcomingReminder = "No reminder selected";
-  let trainingNeed = "No training need selected";
-  let documentationNeed = "No documentation need selected";
+  let upcomingReminder = "Annual inspection cycle due in 28 days.";
+  let trainingNeed =
+    "Facilities team refresher on monthly visual checks, documentation expectations, and when to contact service support.";
+  let documentationNeed =
+    "Inspection reports, emergency lighting test documentation, extinguisher inspection status, alarm testing records, and open deficiency notes.";
   let relatedServiceConsideration = "Documentation review";
   let serviceLens: Record<string, unknown> = (
     knowledgeBase.serviceLenses as Record<string, unknown>[]
