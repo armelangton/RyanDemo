@@ -6,6 +6,9 @@ export const dynamic = "force-dynamic";
 const systemPrompt = `You are generating an internal AI Engagement Readiness Packet for a fire protection employee.
 
 Use the selected preparation context and optional recall/product safety information to create practical internal guidance. You must use available context in this order:
+- role
+- role-specific engagement
+- selected topics
 - engagement type
 - audience
 - sample site profile
@@ -44,6 +47,12 @@ The packet must include:
 13. Follow-Up Note Draft
 14. Missing Information to Verify
 15. Official Source Reminder
+
+Role-specific output:
+- If role is "Inspector", create a jobsite readiness packet. Do not include lesson plans. Focus on jobsite/site context, equipment/product context, product safety/recall review, items to verify, talking points, related service considerations, follow-up notes, missing information, and official source reminder.
+- If role is "Instructor", create a training readiness packet. Include standards/objective alignment, a simple lesson plan, materials/equipment needed, certification or attendance reminders, talking points, related service considerations, follow-up notes, missing information, and official source reminder. Use demo-safe language and do not claim official certification approval.
+- For instructor Standards / Objective Alignment, include draft measurable learning objectives, brief alignment notes, a simple check-for-understanding method, and this caution: "Draft alignment for planning purposes. Verify against current Indiana, Pro Board/IFSAC, NFPA, department, company, and AHJ requirements before using for credit or certification."
+- Do not invent official standard numbers unless source text is provided.
 
 Readiness score:
 - Return a number from 0 to 100.
@@ -134,6 +143,11 @@ const responseSchema = {
         type: "array",
         items: { type: "string" },
       },
+      role: { type: "string" },
+      selectedTopics: {
+        type: "array",
+        items: { type: "string" },
+      },
       readinessScore: { type: "number" },
       readinessScoreReason: { type: "string" },
       keyAttentionFlags: {
@@ -141,6 +155,22 @@ const responseSchema = {
         items: { type: "string" },
       },
       internalFieldBrief: { type: "string" },
+      standardsObjectiveAlignment: {
+        type: "array",
+        items: { type: "string" },
+      },
+      simpleLessonPlan: {
+        type: "array",
+        items: { type: "string" },
+      },
+      materialsEquipmentNeeded: {
+        type: "array",
+        items: { type: "string" },
+      },
+      certificationAttendanceReminders: {
+        type: "array",
+        items: { type: "string" },
+      },
       audienceSpecificTalkingPoints: {
         type: "array",
         items: { type: "string" },
@@ -207,10 +237,16 @@ const responseSchema = {
       "knownSourceFacts",
       "providedDemoProfileContext",
       "aiInterpretation",
+      "role",
+      "selectedTopics",
       "readinessScore",
       "readinessScoreReason",
       "keyAttentionFlags",
       "internalFieldBrief",
+      "standardsObjectiveAlignment",
+      "simpleLessonPlan",
+      "materialsEquipmentNeeded",
+      "certificationAttendanceReminders",
       "audienceSpecificTalkingPoints",
       "installedEquipmentReview",
       "productSafetyRecallReview",
@@ -476,6 +512,9 @@ const calculateReadinessScore = ({
 
 const fallbackPacket = ({
   recall,
+  role,
+  roleEngagement,
+  selectedTopics,
   engagementType,
   audience,
   sampleSite,
@@ -494,6 +533,9 @@ const fallbackPacket = ({
   automaticSafetyReview,
 }: {
   recall: Record<string, unknown>;
+  role: string;
+  roleEngagement: string;
+  selectedTopics: string[];
   engagementType: string;
   audience: string;
   sampleSite: string;
@@ -621,13 +663,15 @@ const fallbackPacket = ({
       `Provided by user/demo profile: additional manual/site/training notes are ${additionalNotes || "not provided"}.`,
     ],
     aiInterpretation: [
-      `AI interpretation: use the ${serviceLensLabel} lens to prepare ${actionLabel(briefAction)} for ${engagementType}.`,
+      `AI interpretation: use the ${serviceLensLabel} lens to prepare ${role} work for ${roleEngagement || engagementType}.`,
       hasRecall
         ? "AI interpretation: compare optional manual recall product details with installed site equipment before making any customer-facing statement."
         : "AI interpretation: prepare the engagement packet from site, installed equipment, audience, service lens, automatic product safety review, prep resources, and manual notes because no manual recall was selected.",
       "AI interpretation: connect related service considerations to safety, documentation, prevention, customer confidence, and risk reduction.",
       "Human review required: route any safety, code, compliance, inspection, engineering, or customer communication decision through qualified internal review.",
     ],
+    role,
+    selectedTopics,
     readinessScore: score,
     readinessScoreReason:
       "Readiness reflects preparation completeness, not code compliance or safety approval. The score is limited because exact model match, site applicability, manufacturer documentation, and service history still need verification.",
@@ -643,7 +687,42 @@ const fallbackPacket = ({
         ? "Training or education opportunity"
         : "Missing training context",
     ],
-    internalFieldBrief: `For ${engagementType}, prepare ${actionLabel(briefAction)} for ${audience} using the ${serviceLensLabel} service lens. Start from the selected site/customer profile, installed equipment, service reminder, training need, and documentation context. ${hasRecall ? `Optional manual product safety context: "${title}" lists manufacturer/company as ${manufacturer}, product context as ${product}, hazard as ${hazard}, and remedy as ${remedy}.` : "No manual product safety recall selected. Packet is based on engagement, site, service, prep context, and automatic product safety review."} Provided demo profile context: ${sampleSite} includes ${systemsText}, with reminder "${upcomingReminder}" and documentation need "${documentationNeed}". Additional notes: ${additionalNotes || "none provided"}.`,
+    internalFieldBrief: `For ${role || "employee"} ${roleEngagement || engagementType}, prepare for ${sampleSite} using topics ${selectedTopics.join(", ") || "not specified"} and the ${serviceLensLabel} service lens. Start from the selected site/customer profile, installed equipment, service reminder, training need, and documentation context. ${hasRecall ? `Optional manual product safety context: "${title}" lists manufacturer/company as ${manufacturer}, product context as ${product}, hazard as ${hazard}, and remedy as ${remedy}.` : "No manual product safety recall selected. Packet is based on engagement, site, service, prep context, and automatic product safety review."} Additional notes: ${additionalNotes || "none provided"}.`,
+    standardsObjectiveAlignment:
+      role === "Instructor"
+        ? [
+            `Draft objective: attendees can explain practical field awareness for ${selectedTopics.join(", ") || "the selected topics"}.`,
+            `Alignment note: connect ${roleEngagement || "the training session"} to approved department, company, and manufacturer materials before delivery.`,
+            "Check for understanding: ask attendees to identify one field condition, one documentation item, and one issue to escalate.",
+            "Draft alignment for planning purposes. Verify against current Indiana, Pro Board/IFSAC, NFPA, department, company, and AHJ requirements before using for credit or certification.",
+          ]
+        : [],
+    simpleLessonPlan:
+      role === "Instructor"
+        ? [
+            "Open with the training objective, audience expectations, and safety boundaries.",
+            `Teach the selected topics: ${selectedTopics.join(", ") || "not specified"}.`,
+            "Use site equipment, demo materials, or approved examples to connect concepts to field conditions.",
+            "Close with check-for-understanding questions, attendance documentation, and follow-up items.",
+          ]
+        : [],
+    materialsEquipmentNeeded:
+      role === "Instructor"
+        ? [
+            "Training outline or agenda",
+            "Attendance/sign-in record",
+            "Approved equipment examples, photos, manuals, or handouts",
+            "Follow-up notes for unresolved technical or standards questions",
+          ]
+        : [],
+    certificationAttendanceReminders:
+      role === "Instructor"
+        ? [
+            "Confirm attendance documentation requirements before the session.",
+            "Verify whether certificate, credit, or standards language is approved before use.",
+            "Route certification, standards, or AHJ questions through qualified review.",
+          ]
+        : [],
     audienceSpecificTalkingPoints: [
       audienceContext.talkingPoint,
       hasRecall
@@ -759,6 +838,13 @@ const fallbackPacket = ({
 
 export async function POST(request: Request) {
   let recall: Record<string, unknown> = {};
+  let role = "Inspector";
+  let roleEngagement = "Inspection / Service Visit";
+  let selectedTopics: string[] = [
+    "Sprinkler Systems",
+    "Extinguishers",
+    "Emergency Lighting",
+  ];
   let engagementType = "Inspect / service";
   let audience = "Facility Manager";
   let sampleSite = "Municipal Facilities Account";
@@ -783,6 +869,16 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     recall = body?.recall && typeof body.recall === "object" ? body.recall : {};
+    role = typeof body?.role === "string" ? body.role : role;
+    roleEngagement =
+      typeof body?.roleEngagement === "string" ? body.roleEngagement : roleEngagement;
+    selectedTopics = listValue(body?.selectedTopics);
+    if (!selectedTopics.length) {
+      selectedTopics =
+        role === "Instructor"
+          ? ["NFPA 13 Basics", "Tool Safety"]
+          : ["Sprinkler Systems", "Extinguishers", "Emergency Lighting"];
+    }
     engagementType =
       typeof body?.engagementType === "string" ? body.engagementType : engagementType;
     audience = typeof body?.audience === "string" ? body.audience : audience;
@@ -819,6 +915,9 @@ export async function POST(request: Request) {
 
     const fallback = fallbackPacket({
       recall,
+      role,
+      roleEngagement,
+      selectedTopics,
       engagementType,
       audience,
       sampleSite,
@@ -861,6 +960,9 @@ export async function POST(request: Request) {
             content: JSON.stringify(
               {
                 engagementType,
+                role,
+                roleEngagement,
+                selectedTopics,
                 audience,
                 sampleSite,
                 equipmentSystems,
@@ -905,6 +1007,9 @@ export async function POST(request: Request) {
       return NextResponse.json({
         guidance: fallbackPacket({
           recall,
+          role,
+          roleEngagement,
+          selectedTopics,
           engagementType,
           audience,
           sampleSite,

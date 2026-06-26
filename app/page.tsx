@@ -29,6 +29,26 @@ type Audience =
   | "Internal Sales / Marketing Team"
   | "Prospective Customer";
 
+type UserRole = "Inspector" | "Instructor";
+
+type RoleEngagement =
+  | "Inspection / Service Visit"
+  | "Site Walkthrough"
+  | "Documentation Review"
+  | "Training Session"
+  | "Fire Department Recruit Training"
+  | "Customer Education Session";
+
+type Topic =
+  | "Sprinkler Systems"
+  | "Fire Alarm / Detection"
+  | "Extinguishers"
+  | "Emergency Lighting"
+  | "Hydrants"
+  | "Special Hazards"
+  | "Tool Safety"
+  | "NFPA 13 Basics";
+
 type BriefAction =
   | "inspection_prep"
   | "training_prep"
@@ -90,6 +110,51 @@ const audiences: Audience[] = [
 ];
 
 const serviceLenses = knowledgeBase.serviceLenses as ServiceLens[];
+
+const visibleSiteOptions = [
+  { label: "Municipal Facilities Account", value: "Municipal Facilities Account" },
+  {
+    label: "Fire Department Recruit Training Site",
+    value: "Fire Department Recruit Training Site",
+  },
+  { label: "Healthcare Facility ITM Review", value: "Healthcare Facility ITM Review" },
+  {
+    label: "Education Campus Training Profile",
+    value: "Education Campus Facilities Training",
+  },
+];
+
+const roleEngagementOptions: Record<UserRole, RoleEngagement[]> = {
+  Inspector: [
+    "Inspection / Service Visit",
+    "Site Walkthrough",
+    "Documentation Review",
+  ],
+  Instructor: [
+    "Training Session",
+    "Fire Department Recruit Training",
+    "Customer Education Session",
+  ],
+};
+
+const inspectorDefaultTopics: Topic[] = [
+  "Sprinkler Systems",
+  "Extinguishers",
+  "Emergency Lighting",
+];
+
+const instructorDefaultTopics: Topic[] = ["NFPA 13 Basics", "Tool Safety"];
+
+const topicOptions: Topic[] = [
+  "Sprinkler Systems",
+  "Fire Alarm / Detection",
+  "Extinguishers",
+  "Emergency Lighting",
+  "Hydrants",
+  "Special Hazards",
+  "Tool Safety",
+  "NFPA 13 Basics",
+];
 
 const sampleSiteDetails: Record<string, SiteProfile> = {
   "Municipal Facilities Account": {
@@ -1216,6 +1281,9 @@ const WorkflowStepHeader = ({
 const ReadinessPacket = ({
   guidance,
   selectedRecall,
+  role,
+  roleEngagement,
+  selectedTopics,
   engagementType,
   audience,
   sampleSite,
@@ -1228,6 +1296,9 @@ const ReadinessPacket = ({
 }: {
   guidance: AiGuidance | null;
   selectedRecall: RecallResult | null;
+  role: UserRole;
+  roleEngagement: RoleEngagement;
+  selectedTopics: Topic[];
   engagementType: EngagementType;
   audience: Audience;
   sampleSite: string;
@@ -1263,10 +1334,46 @@ const ReadinessPacket = ({
           "Prior deficiencies",
           "Internal review owner",
         ];
+  const standardsObjectiveAlignment =
+    guidance.standardsObjectiveAlignment?.length
+      ? guidance.standardsObjectiveAlignment
+      : [
+          `Draft objective: participants can explain ${selectedTopics.join(", ") || "the selected topics"} in practical jobsite language.`,
+          "Alignment note: use this as planning support only, not as approved certification language.",
+          "Check for understanding: ask attendees to describe one field condition to verify and one question to escalate.",
+          "Draft alignment for planning purposes. Verify against current Indiana, Pro Board/IFSAC, NFPA, department, company, and AHJ requirements before using for credit or certification.",
+        ];
+  const simpleLessonPlan =
+    guidance.simpleLessonPlan?.length
+      ? guidance.simpleLessonPlan
+      : [
+          "Open with the training objective and why the topic matters in the field.",
+          `Review practical examples for ${selectedTopics.join(", ") || "the selected topics"}.`,
+          "Use site equipment or demo materials to connect concepts to real work.",
+          "Close with questions, attendance/certification reminders, and follow-up items.",
+        ];
+  const materialsEquipmentNeeded =
+    guidance.materialsEquipmentNeeded?.length
+      ? guidance.materialsEquipmentNeeded
+      : [
+          "Training outline or agenda",
+          "Attendance/sign-in record",
+          "Relevant equipment examples, photos, or approved documentation",
+          "Follow-up notes for unresolved technical questions",
+        ];
+  const certificationAttendanceReminders =
+    guidance.certificationAttendanceReminders?.length
+      ? guidance.certificationAttendanceReminders
+      : [
+          "Confirm attendance documentation requirements before the session.",
+          "Verify whether any certificate or credit language is approved before use.",
+          "Route standards, credit, or certification questions to qualified review.",
+        ];
   const packetText = [
     "AI Engagement Readiness Packet",
-    `Engagement: ${engagementType}`,
-    `Audience: ${audience}`,
+    `Role: ${role}`,
+    `Engagement: ${roleEngagement}`,
+    `Topics: ${selectedTopics.join(", ")}`,
     `Site: ${sampleSite}`,
     `Service Lens: ${serviceLens.label}`,
     "",
@@ -1325,9 +1432,9 @@ const ReadinessPacket = ({
               AI Engagement Readiness Packet
             </h2>
             <p className="mt-2 text-sm leading-6 text-brand-gray700">
-              {engagementType} | {audience} |{" "}
-              {briefActions.find((action) => action.value === briefAction)?.label}.
-              Site context: {sampleSite}. Service lens: {serviceLens.label}.
+              {role} | {roleEngagement} | Topics:{" "}
+              {selectedTopics.join(", ") || "none selected"}. Site context:{" "}
+              {sampleSite}. Service lens: {serviceLens.label}.
               Product safety context:{" "}
               {selectedRecall
                 ? selectedRecall.title
@@ -1411,9 +1518,10 @@ const ReadinessPacket = ({
             Why this packet is tailored to this engagement
           </h3>
           <p className="mt-2 text-[15px] leading-7 text-brand-gray700">
-            This packet uses the selected {engagementType.toLowerCase()} context,
-            the {audience.toLowerCase()} audience, the {sampleSite} customer/site profile,
-            the {serviceLens.label} service lens, {equipmentCount} installed{" "}
+            This packet uses the selected {role.toLowerCase()} role,{" "}
+            {roleEngagement.toLowerCase()} engagement, {sampleSite} customer/site
+            profile, {selectedTopics.join(", ") || "selected topics"}, the{" "}
+            {serviceLens.label} service lens, {equipmentCount} installed{" "}
             {equipmentCount === 1 ? "system" : "systems"}, prep resources, and{" "}
             {selectedRecall ? "selected recall context" : "automatic product safety context"}.
           </p>
@@ -1425,7 +1533,8 @@ const ReadinessPacket = ({
           <ul className="mt-3 space-y-1 text-[15px] leading-7 text-brand-gray700">
             <li>Sample customer/site profile</li>
             <li>Service Lens: {serviceLens.label}</li>
-            <li>Prep resources for {engagementType}</li>
+            <li>Prep resources for {role}: {roleEngagement}</li>
+            <li>Topics: {selectedTopics.join(", ") || "none selected"}</li>
             <li>Automatic product safety review</li>
             {selectedRecall ? <li>Manual recall context: {selectedRecall.title}</li> : null}
           </ul>
@@ -1550,9 +1659,8 @@ const ReadinessPacket = ({
             </div>
           </PrioritySection>
 
-          <PrioritySection
-            title="Installed Equipment Review"
-          >
+          {role === "Inspector" ? (
+          <PrioritySection title="Installed Equipment Review">
             <div id="packet-equipment">
             {automaticSafetyReview.equipmentChecked.length ? (
               <div className="grid gap-3">
@@ -1606,6 +1714,7 @@ const ReadinessPacket = ({
             )}
             </div>
           </PrioritySection>
+          ) : null}
           <PrioritySection title="Related Service Considerations">
             <div className="grid gap-3 md:grid-cols-2">
               {[
@@ -1638,26 +1747,49 @@ const ReadinessPacket = ({
           Supporting Packet Details
         </p>
         <div className="mt-3 grid gap-3 md:grid-cols-2">
-          <PacketSection title="Source Context Used">
-            <PacketList items={guidance.sourceContextUsed} tone="neutral" />
-          </PacketSection>
-          <PacketSection title="Internal Field Brief">
+          <PacketSection
+            title={role === "Instructor" ? "Training Session Context" : "Jobsite / Site Context"}
+          >
             <p className="text-[15px] leading-7">{guidance.internalFieldBrief}</p>
           </PacketSection>
-          <PacketSection title="Customer / Audience Talking Points">
+          {role === "Instructor" ? (
+            <>
+              <PacketSection title="Standards / Objective Alignment">
+                <PacketList items={standardsObjectiveAlignment} tone="amber" />
+              </PacketSection>
+              <PacketSection title="Simple Lesson Plan">
+                <PacketList items={simpleLessonPlan} tone="green" />
+              </PacketSection>
+              <PacketSection title="Materials / Equipment Needed">
+                <PacketList items={materialsEquipmentNeeded} tone="green" />
+              </PacketSection>
+              <PacketSection title="Certification / Attendance Reminders">
+                <PacketList items={certificationAttendanceReminders} tone="amber" />
+              </PacketSection>
+            </>
+          ) : (
+            <>
+              <PacketSection title="Equipment / Product Context">
+                <PacketList items={guidance.installedEquipmentReview} tone="green" />
+              </PacketSection>
+              <PacketSection title="Items to Verify">
+                <PacketList items={guidance.equipmentProductChecklist} tone="amber" />
+              </PacketSection>
+            </>
+          )}
+          <PacketSection title="Talking Points">
             <PacketList items={guidance.audienceSpecificTalkingPoints} tone="green" />
           </PacketSection>
+          {role === "Instructor" ? null : (
           <PacketSection title="Equipment / Product Checklist">
             <PacketList items={guidance.equipmentProductChecklist} tone="amber" />
           </PacketSection>
-          <PacketSection title="Instructor / Event Prep Notes">
-            <div id="packet-prep">
-            <PacketList items={guidance.trainingOrEventPrepNotes} tone="green" />
-            </div>
-          </PacketSection>
+          )}
+          {role === "Instructor" ? null : (
           <PacketSection title="Protect / Prevent / Preserve Lens">
             <PacketList items={guidance.protectPreventPreserveLens} tone="green" />
           </PacketSection>
+          )}
           <PacketSection title="Deficiency / Documentation Follow-Up">
             <PacketList items={guidance.deficiencyDocumentationFollowUp} tone="amber" />
           </PacketSection>
@@ -1736,6 +1868,12 @@ const ReadinessPacket = ({
 export default function Home() {
   const [engagementType, setEngagementType] =
     useState<EngagementType>("Inspect / service");
+  const [role, setRole] = useState<UserRole>("Inspector");
+  const [roleEngagement, setRoleEngagement] = useState<RoleEngagement>(
+    "Inspection / Service Visit",
+  );
+  const [selectedTopics, setSelectedTopics] =
+    useState<Topic[]>(inspectorDefaultTopics);
   const [audience, setAudience] = useState<Audience>("Facility Manager");
   const [selectedSampleSite, setSelectedSampleSite] = useState(sampleSites[0]);
   const [selectedServiceLensId, setSelectedServiceLensId] = useState(serviceLenses[0].id);
@@ -1762,8 +1900,38 @@ export default function Home() {
   const selectedSiteDetails = sampleSiteDetails[selectedSampleSite];
   const selectedServiceLens =
     serviceLenses.find((lens) => lens.id === selectedServiceLensId) ?? serviceLenses[0];
+  const applyRole = (nextRole: UserRole) => {
+    setRole(nextRole);
+    setGuidance(null);
+
+    if (nextRole === "Instructor") {
+      setRoleEngagement("Training Session");
+      setEngagementType("Teach / train");
+      setAudience("Instructor / Trainer");
+      setBriefAction("training_prep");
+      setSelectedTopics(instructorDefaultTopics);
+      return;
+    }
+
+    setRoleEngagement("Inspection / Service Visit");
+    setEngagementType("Inspect / service");
+    setAudience("Internal Inspector");
+    setBriefAction("inspection_prep");
+    setSelectedTopics(inspectorDefaultTopics);
+  };
+  const toggleTopic = (topic: Topic) => {
+    setSelectedTopics((current) =>
+      current.includes(topic)
+        ? current.filter((item) => item !== topic)
+        : [...current, topic],
+    );
+    setGuidance(null);
+  };
   const sourceContextUsed = [
     "Automatic product safety review based on selected site equipment",
+    `Role: ${role}`,
+    `Engagement: ${roleEngagement}`,
+    `Topics: ${selectedTopics.join(", ") || "None selected"}`,
     selectedRecall
       ? `Optional manual CPSC recall result: ${selectedRecall.title}`
       : "No manual product safety recall selected. Packet is based on engagement, site, service, prep context, and automatic product safety review.",
@@ -1951,6 +2119,9 @@ export default function Home() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           recall,
+          role,
+          roleEngagement,
+          selectedTopics,
           engagementType,
           audience,
           sampleSite: selectedSampleSite,
@@ -2010,8 +2181,11 @@ export default function Home() {
 
   const startNewPacket = () => {
     setEngagementType("Inspect / service");
-    setAudience("Facility Manager");
-    setSelectedSampleSite(sampleSites[0]);
+    setRole("Inspector");
+    setRoleEngagement("Inspection / Service Visit");
+    setSelectedTopics(inspectorDefaultTopics);
+    setAudience("Internal Inspector");
+    setSelectedSampleSite("Municipal Facilities Account");
     setSelectedServiceLensId(serviceLenses[0].id);
     setBriefAction("inspection_prep");
     setQuery("");
@@ -2043,10 +2217,8 @@ export default function Home() {
                 Fire Protection Field Assistant
               </h1>
               <p className="mt-3 text-sm leading-6 text-brand-gray700 sm:text-base">
-                Prepare internal readiness packets for inspections, training,
-                customer meetings, events, and follow-up work using
-                customer/site context, equipment data, product safety review,
-                and AI-assisted reasoning.
+                Generate AI Engagement Readiness Packets for inspector jobsite
+                prep and instructor training prep.
               </p>
             </div>
           </section>
@@ -2054,7 +2226,166 @@ export default function Home() {
       </header>
 
       <div className="mx-auto max-w-[1180px] px-4 py-4 lg:px-6">
-        <section className="rounded-2xl border border-brand-gray200 bg-white p-4 shadow-panel sm:p-5">
+        <section className="rounded-2xl border border-brand-gray200 bg-white p-5 shadow-panel sm:p-6">
+          <div className="grid gap-5 lg:grid-cols-2">
+            <div>
+              <h2 className="text-lg font-black text-brand-charcoal">Site</h2>
+              <select
+                value={selectedSampleSite}
+                onChange={(event) => {
+                  setSelectedSampleSite(event.target.value);
+                  setGuidance(null);
+                }}
+                className="mt-3 min-h-12 w-full rounded-xl border border-brand-gray200 bg-white px-3 text-base font-semibold text-brand-charcoal"
+              >
+                {visibleSiteOptions.map((item) => (
+                  <option key={item.value} value={item.value}>
+                    {item.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <h2 className="text-lg font-black text-brand-charcoal">Role</h2>
+              <div className="mt-3 grid grid-cols-2 gap-2">
+                {(["Inspector", "Instructor"] as UserRole[]).map((item) => (
+                  <button
+                    key={item}
+                    type="button"
+                    onClick={() => applyRole(item)}
+                    className={`min-h-12 rounded-xl border px-4 text-left text-sm font-extrabold transition ${
+                      role === item
+                        ? "border-brand-green bg-brand-green text-white"
+                        : "border-brand-gray200 bg-white text-brand-charcoal hover:bg-brand-gray100"
+                    }`}
+                  >
+                    {item}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <h2 className="text-lg font-black text-brand-charcoal">Engagement</h2>
+              <div className="mt-3 grid gap-2 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
+                {roleEngagementOptions[role].map((item) => (
+                  <button
+                    key={item}
+                    type="button"
+                    onClick={() => {
+                      setRoleEngagement(item);
+                      setGuidance(null);
+                    }}
+                    className={`min-h-12 rounded-xl border px-3 py-2 text-left text-sm font-extrabold transition ${
+                      roleEngagement === item
+                        ? "border-brand-green bg-brand-green text-white"
+                        : "border-brand-gray200 bg-white text-brand-charcoal hover:bg-brand-gray100"
+                    }`}
+                  >
+                    {item}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <h2 className="text-lg font-black text-brand-charcoal">Topics</h2>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {topicOptions.map((topic) => {
+                  const selected = selectedTopics.includes(topic);
+                  return (
+                    <button
+                      key={topic}
+                      type="button"
+                      onClick={() => toggleTopic(topic)}
+                      className={`rounded-full border px-3 py-2 text-sm font-extrabold transition ${
+                        selected
+                          ? "border-brand-green bg-brand-green text-white"
+                          : "border-brand-gray200 bg-white text-brand-charcoal hover:bg-brand-gray100"
+                      }`}
+                    >
+                      {topic}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => void generateSummary(selectedRecall, briefAction)}
+            disabled={Boolean(summarizingId)}
+            className="mt-6 w-full rounded-xl bg-brand-green px-5 py-4 text-left text-base font-black text-white shadow-sm transition hover:bg-brand-greenDark disabled:cursor-not-allowed disabled:bg-brand-gray500 sm:w-auto"
+          >
+            {summarizingId
+              ? "Generating AI Engagement Readiness Packet..."
+              : "Generate AI Engagement Readiness Packet"}
+          </button>
+
+          {summarizingId === "engagement-packet" ? (
+            <div className="mt-5 rounded-xl border border-brand-gray200 bg-white p-4">
+              <div className="h-2 w-full overflow-hidden rounded-full bg-brand-gray100">
+                <div className="h-full w-1/2 animate-pulse rounded-full bg-brand-green" />
+              </div>
+              <div className="mt-4 grid gap-2 text-sm md:grid-cols-4">
+                {[
+                  "Reviewing site equipment",
+                  "Checking product safety data",
+                  "Applying engagement context",
+                  "Building readiness packet",
+                ].map((item) => (
+                  <div
+                    key={item}
+                    className="rounded-xl border border-brand-gray200 bg-brand-gray100 p-3 font-extrabold text-brand-charcoal"
+                  >
+                    {item}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : null}
+
+          {summaryError && !selectedRecall ? (
+            <div className="mt-4 rounded-xl border border-red-200 bg-red-50 p-4 text-sm font-bold text-brand-red">
+              {summaryError}
+            </div>
+          ) : null}
+
+          <div className="mt-6">
+            {guidance ? (
+              <ReadinessPacket
+                guidance={guidance}
+                selectedRecall={selectedRecall}
+                role={role}
+                roleEngagement={roleEngagement}
+                selectedTopics={selectedTopics}
+                engagementType={engagementType}
+                audience={audience}
+                sampleSite={selectedSampleSite}
+                serviceLens={selectedServiceLens}
+                summarySource={summarySource}
+                briefAction={briefAction}
+                automaticSafetyReview={automaticSafetyReview}
+                onRegenerate={() => void generateSummary(selectedRecall, briefAction)}
+                onStartNew={startNewPacket}
+              />
+            ) : (
+              <div className="rounded-xl border border-brand-gray200 bg-brand-gray100 p-5 text-sm leading-6 text-brand-gray700">
+                <p className="text-lg font-black text-brand-charcoal">
+                  Packet Preview
+                </p>
+                <p className="mt-1">
+                  Choose a site, role, engagement, and topics, then generate an
+                  AI Engagement Readiness Packet.
+                </p>
+              </div>
+            )}
+          </div>
+        </section>
+
+        <section className="hidden rounded-2xl border border-brand-gray200 bg-white p-4 shadow-panel sm:p-5">
           <WorkflowStepHeader
             step="Step 1"
             title="Where are you going?"
@@ -2102,7 +2433,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="mt-4 rounded-2xl border border-brand-gray200 bg-white p-4 shadow-panel sm:p-5">
+        <section className="hidden mt-4 rounded-2xl border border-brand-gray200 bg-white p-4 shadow-panel sm:p-5">
           <WorkflowStepHeader
             step="Step 3"
             title="Who is this for?"
@@ -2293,7 +2624,7 @@ export default function Home() {
               </div>
             </details>
           ) : null}
-          <div className="mt-4 flex flex-wrap gap-2">
+          <div className="hidden mt-4 flex-wrap gap-2">
             <button
               type="button"
               onClick={() => setShowNotesPanel((value) => !value)}
@@ -2505,6 +2836,9 @@ export default function Home() {
               <ReadinessPacket
                 guidance={guidance}
                 selectedRecall={selectedRecall}
+                role={role}
+                roleEngagement={roleEngagement}
+                selectedTopics={selectedTopics}
                 engagementType={engagementType}
                 audience={audience}
                 sampleSite={selectedSampleSite}

@@ -39,10 +39,16 @@ export type AiGuidance = {
   knownSourceFacts: string[];
   providedDemoProfileContext: string[];
   aiInterpretation: string[];
+  role?: string;
+  selectedTopics?: string[];
   readinessScore: number;
   readinessScoreReason: string;
   keyAttentionFlags: string[];
   internalFieldBrief: string;
+  standardsObjectiveAlignment?: string[];
+  simpleLessonPlan?: string[];
+  materialsEquipmentNeeded?: string[];
+  certificationAttendanceReminders?: string[];
   audienceSpecificTalkingPoints: string[];
   installedEquipmentReview: string[];
   productSafetyRecallReview: string[];
