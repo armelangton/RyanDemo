@@ -1082,41 +1082,6 @@ const PrepBriefSection = ({
   );
 };
 
-const UiIcon = ({
-  name,
-  className = "h-4 w-4",
-}: {
-  name: "building" | "user" | "clipboard" | "tag" | "report" | "check";
-  className?: string;
-}) => {
-  const paths = {
-    building:
-      "M3 21h18M5 21V5a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v16M9 7h1M13 7h1M9 11h1M13 11h1M9 15h1M13 15h1M19 21v-8a2 2 0 0 0-2-2h-1",
-    user: "M20 21a8 8 0 0 0-16 0M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z",
-    clipboard:
-      "M9 5h6M9 3h6v4H9V3ZM7 5H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M8 13h8M8 17h5",
-    tag: "M20 10 12 2H5a3 3 0 0 0-3 3v7l8 8a3 3 0 0 0 4 0l6-6a3 3 0 0 0 0-4ZM7.5 7.5h.01",
-    report:
-      "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6ZM14 2v6h6M8 13h8M8 17h6",
-    check: "m5 12 4 4L19 6",
-  } satisfies Record<string, string>;
-
-  return (
-    <svg
-      aria-hidden="true"
-      className={className}
-      fill="none"
-      stroke="currentColor"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth="2"
-      viewBox="0 0 24 24"
-    >
-      <path d={paths[name]} />
-    </svg>
-  );
-};
-
 const ReadinessPacket = ({
   guidance,
   selectedRecall,
@@ -1767,41 +1732,27 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-[linear-gradient(180deg,#ffffff_0%,#f4f7f4_44%,#f4f5f6_100%)] text-brand-charcoal">
-      <div className="h-1.5 bg-brand-green" />
-
-      <header className="bg-white/95">
-        <div className="mx-auto max-w-[1180px] px-4 py-4 lg:px-6">
-          <div className="border-b border-brand-gray200 pb-4">
-            <div>
-              <p className="text-lg font-black uppercase tracking-[0.035em] text-brand-green sm:text-2xl">
-                RYAN FIRE PROTECTION, INC.
-              </p>
-            </div>
-          </div>
-
-          <section className="py-4 text-center sm:py-5">
-            <div className="mx-auto max-w-4xl">
-              <h1 className="text-[25px] font-black leading-tight text-brand-charcoal sm:text-[36px]">
-                Fire Protection Field Assistant
-              </h1>
-              <p className="mt-2 text-sm leading-6 text-brand-gray700 sm:text-base">
-                Generate focused prep packets for inspectors and instructors.
-              </p>
-            </div>
-          </section>
+    <main className="min-h-screen bg-brand-gray100 text-brand-charcoal">
+      <header className="border-t-4 border-brand-green bg-white">
+        <div className="mx-auto max-w-3xl px-4 py-5 sm:px-6">
+          <p className="text-base font-black uppercase tracking-[0.035em] text-brand-green sm:text-xl">
+            RYAN FIRE PROTECTION, INC.
+          </p>
+          <h1 className="mt-2 text-[24px] font-black leading-tight text-brand-charcoal sm:text-[32px]">
+            Fire Protection Field Assistant
+          </h1>
+          <p className="mt-1 text-sm leading-6 text-brand-gray700 sm:text-base">
+            Generate focused prep packets for inspectors and instructors.
+          </p>
         </div>
       </header>
 
-      <div className="mx-auto max-w-[1180px] px-4 py-4 lg:px-6">
-        <section className="relative overflow-hidden rounded-[28px] border border-brand-gray200 bg-white p-4 shadow-[0_24px_70px_rgba(17,19,21,0.12)] sm:p-6 lg:p-7">
-          <div className="absolute inset-x-0 top-0 h-1.5 bg-brand-green" />
-          <div className="absolute bottom-0 left-0 top-0 hidden w-1.5 bg-brand-green/90 sm:block" />
-
-          <div className="grid gap-6">
-            <div className="pt-2">
+      <div className="mx-auto max-w-3xl px-4 py-4 sm:px-6">
+        <section className="rounded-2xl border border-brand-gray200 bg-white p-4 shadow-sm sm:p-5">
+          <div className="grid gap-5">
+            <div>
               <h2 className="text-lg font-black text-brand-charcoal">Site</h2>
-              <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="mt-2 grid gap-2 sm:grid-cols-2">
                 {visibleSiteOptions.map((item) => {
                   const selected = selectedSampleSite === item.value;
                   return (
@@ -1812,42 +1763,23 @@ export default function Home() {
                         setSelectedSampleSite(item.value);
                         setGuidance(null);
                       }}
-                      className={`group flex min-h-[92px] items-start gap-3 rounded-2xl border px-4 py-4 text-left text-sm font-extrabold leading-5 shadow-sm transition ${
+                      className={`min-h-12 rounded-xl border px-3 py-3 text-left text-sm font-extrabold leading-5 transition ${
                         selected
-                          ? "border-brand-green bg-brand-green text-white shadow-lg shadow-green-900/15"
-                          : "border-brand-gray200 bg-white text-brand-charcoal hover:border-brand-green hover:bg-green-50 hover:shadow-md"
+                          ? "border-brand-green bg-brand-green text-white"
+                          : "border-brand-gray200 bg-white text-brand-charcoal hover:border-brand-green hover:bg-green-50"
                       }`}
                     >
-                      <span
-                        className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${
-                          selected
-                            ? "bg-white/15 text-white"
-                            : "bg-brand-gray100 text-brand-green group-hover:bg-white"
-                        }`}
-                      >
-                        <UiIcon name="building" />
-                      </span>
-                      <span className="flex min-h-12 flex-1 items-center">{item.label}</span>
-                      {selected ? (
-                        <span className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white/20 text-white">
-                          <UiIcon name="check" className="h-3.5 w-3.5" />
-                        </span>
-                      ) : null}
+                      {item.label}
                     </button>
                   );
                 })}
               </div>
             </div>
 
-            <div className="grid gap-5 lg:grid-cols-[0.75fr_1.25fr]">
-              <div className="rounded-2xl bg-brand-gray100/70 p-3 sm:p-4">
-                <h2 className="flex items-center gap-2 text-lg font-black text-brand-charcoal">
-                  <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-white text-brand-green shadow-sm">
-                    <UiIcon name="user" />
-                  </span>
-                  Role
-                </h2>
-                <div className="mt-3 grid grid-cols-2 gap-2">
+            <div className="grid gap-5 md:grid-cols-[0.8fr_1.2fr]">
+              <div>
+                <h2 className="text-lg font-black text-brand-charcoal">Role</h2>
+                <div className="mt-2 grid grid-cols-2 gap-2">
                   {(["Inspector", "Instructor"] as UserRole[]).map((item) => {
                     const selected = role === item;
                     return (
@@ -1855,28 +1787,22 @@ export default function Home() {
                         key={item}
                         type="button"
                         onClick={() => applyRole(item)}
-                        className={`flex min-h-14 items-center justify-between rounded-2xl border px-4 py-3 text-left text-sm font-extrabold shadow-sm transition ${
+                        className={`min-h-12 rounded-xl border px-3 py-3 text-center text-sm font-extrabold transition ${
                           selected
-                            ? "border-brand-green bg-brand-green text-white shadow-lg shadow-green-900/15"
+                            ? "border-brand-green bg-brand-green text-white"
                             : "border-brand-gray200 bg-white text-brand-charcoal hover:border-brand-green hover:bg-green-50"
                         }`}
                       >
-                        <span>{item}</span>
-                        {selected ? <UiIcon name="check" className="h-4 w-4" /> : null}
+                        {item}
                       </button>
                     );
                   })}
                 </div>
               </div>
 
-              <div className="rounded-2xl bg-brand-gray100/70 p-3 sm:p-4">
-                <h2 className="flex items-center gap-2 text-lg font-black text-brand-charcoal">
-                  <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-white text-brand-green shadow-sm">
-                    <UiIcon name="clipboard" />
-                  </span>
-                  Engagement
-                </h2>
-                <div className="mt-3 grid gap-2 sm:grid-cols-3">
+              <div>
+                <h2 className="text-lg font-black text-brand-charcoal">Engagement</h2>
+                <div className="mt-2 grid gap-2 sm:grid-cols-3 md:grid-cols-1 lg:grid-cols-3">
                   {roleEngagementOptions[role].map((item) => {
                     const selected = roleEngagement === item;
                     return (
@@ -1887,16 +1813,13 @@ export default function Home() {
                           setRoleEngagement(item);
                           setGuidance(null);
                         }}
-                        className={`flex min-h-14 items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-left text-sm font-extrabold leading-5 shadow-sm transition ${
+                        className={`min-h-12 rounded-xl border px-3 py-3 text-left text-sm font-extrabold leading-5 transition ${
                           selected
-                            ? "border-brand-green bg-brand-green text-white shadow-lg shadow-green-900/15"
+                            ? "border-brand-green bg-brand-green text-white"
                             : "border-brand-gray200 bg-white text-brand-charcoal hover:border-brand-green hover:bg-green-50"
                         }`}
                       >
-                        <span>{item}</span>
-                        {selected ? (
-                          <UiIcon name="check" className="h-4 w-4 shrink-0" />
-                        ) : null}
+                        {item}
                       </button>
                     );
                   })}
@@ -1904,14 +1827,9 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="rounded-2xl bg-brand-gray100/70 p-3 sm:p-4">
-              <h2 className="flex items-center gap-2 text-lg font-black text-brand-charcoal">
-                <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-white text-brand-green shadow-sm">
-                  <UiIcon name="tag" />
-                </span>
-                Services
-              </h2>
-              <div className="mt-3 flex flex-wrap gap-2">
+            <div>
+              <h2 className="text-lg font-black text-brand-charcoal">Services</h2>
+              <div className="mt-2 flex flex-wrap gap-2">
                 {topicOptions.map((topic) => {
                   const selected = selectedTopics.includes(topic);
                   return (
@@ -1919,9 +1837,9 @@ export default function Home() {
                       key={topic}
                       type="button"
                       onClick={() => toggleTopic(topic)}
-                      className={`rounded-2xl border px-4 py-2.5 text-sm font-extrabold shadow-sm transition ${
+                      className={`rounded-xl border px-3 py-2 text-sm font-extrabold transition ${
                         selected
-                          ? "border-brand-green bg-brand-green text-white shadow-lg shadow-green-900/10"
+                          ? "border-brand-green bg-brand-green text-white"
                           : "border-brand-gray200 bg-white text-brand-charcoal hover:border-brand-green hover:bg-green-50"
                       }`}
                     >
@@ -1933,19 +1851,16 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="mt-6 flex justify-center sm:justify-end">
+          <div className="mt-5 flex justify-center sm:justify-end">
             <button
               type="button"
               onClick={() => void generateSummary(selectedRecall, briefAction)}
               disabled={Boolean(summarizingId)}
-              className="inline-flex w-full items-center justify-center gap-3 rounded-2xl bg-brand-green px-5 py-4 text-center text-base font-black text-white shadow-lg shadow-green-900/15 transition hover:bg-brand-greenDark disabled:cursor-not-allowed disabled:bg-brand-gray500 sm:w-auto"
+              className="w-full rounded-xl bg-brand-green px-5 py-4 text-center text-base font-black text-white transition hover:bg-brand-greenDark disabled:cursor-not-allowed disabled:bg-brand-gray500 sm:w-auto"
             >
-              <UiIcon name="report" className="h-5 w-5" />
-              <span>
-                {summarizingId
-                  ? "Generating AI Engagement Readiness Packet..."
-                  : "Generate AI Engagement Readiness Packet"}
-              </span>
+              {summarizingId
+                ? "Generating AI Engagement Readiness Packet..."
+                : "Generate AI Engagement Readiness Packet"}
             </button>
           </div>
 
@@ -1954,21 +1869,9 @@ export default function Home() {
               <div className="h-2 w-full overflow-hidden rounded-full bg-brand-gray100">
                 <div className="h-full w-1/2 animate-pulse rounded-full bg-brand-green" />
               </div>
-              <div className="mt-4 grid gap-2 text-sm md:grid-cols-4">
-                {[
-                  "Reviewing site equipment",
-                  "Checking product safety data",
-                  "Applying engagement context",
-                  "Building readiness packet",
-                ].map((item) => (
-                  <div
-                    key={item}
-                    className="rounded-xl border border-brand-gray200 bg-brand-gray100 p-3 font-extrabold text-brand-charcoal"
-                  >
-                    {item}
-                  </div>
-                ))}
-              </div>
+              <p className="mt-3 text-sm font-extrabold text-brand-charcoal">
+                Reviewing site equipment, service context, and product safety information.
+              </p>
             </div>
           ) : null}
 
@@ -2000,12 +1903,10 @@ export default function Home() {
 
       </div>
 
-      <footer className="mx-auto mt-2 max-w-[1180px] px-4 pb-6 pt-2 text-center text-xs leading-5 text-brand-gray700 lg:px-6">
-        <div className="rounded-2xl border border-brand-gray200 bg-white/80 px-4 py-3 shadow-sm">
-          Proof-of-concept demo. Verify official sources, manufacturer
-          instructions, applicable codes, NFPA standards, department
-          requirements, company procedures, and AHJ requirements before action.
-        </div>
+      <footer className="mx-auto mt-2 max-w-3xl px-4 pb-6 pt-2 text-center text-xs leading-5 text-brand-gray700 sm:px-6">
+        Proof-of-concept demo. Verify official sources, manufacturer
+        instructions, applicable codes, NFPA standards, department
+        requirements, company procedures, and AHJ requirements before action.
       </footer>
     </main>
   );
