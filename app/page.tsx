@@ -366,9 +366,8 @@ const sampleLessonResources: ClientRecord["resources"] = [
     type: "Sample Lesson Plan",
     purpose: "For fire department recruit training or facility staff education.",
     description:
-      "Sample demo lesson plan for sprinkler purpose, components, activation basics, and field awareness.",
-    sampleNote:
-      "Sample demo content used to show how integrated AI could adapt internal training materials. Final lesson content should be reviewed and completed by the instructor.",
+      "Demo placeholder for sprinkler purpose, components, activation basics, and field awareness.",
+    sampleNote: "Sample content. Instructor review required.",
     action: "Reference",
   },
   {
@@ -376,9 +375,8 @@ const sampleLessonResources: ClientRecord["resources"] = [
     type: "Sample Lesson Plan",
     purpose: "For recruit training, customer education, or facility teams.",
     description:
-      "Sample demo lesson plan covering detection devices, notification basics, documentation reminders, and escalation questions.",
-    sampleNote:
-      "Sample demo content used to show how integrated AI could adapt internal training materials. Final lesson content should be reviewed and completed by the instructor.",
+      "Demo placeholder for detection devices, notification basics, documentation reminders, and escalation questions.",
+    sampleNote: "Sample content. Instructor review required.",
     action: "Reference",
   },
   {
@@ -386,9 +384,8 @@ const sampleLessonResources: ClientRecord["resources"] = [
     type: "Sample Lesson Plan",
     purpose: "For customer education or campus/facility staff.",
     description:
-      "Sample demo lesson plan covering extinguisher types, placement awareness, inspection awareness, and reporting issues.",
-    sampleNote:
-      "Sample demo content used to show how integrated AI could adapt internal training materials. Final lesson content should be reviewed and completed by the instructor.",
+      "Demo placeholder for extinguisher types, placement awareness, inspection awareness, and reporting issues.",
+    sampleNote: "Sample content. Instructor review required.",
     action: "Reference",
   },
   {
@@ -396,9 +393,8 @@ const sampleLessonResources: ClientRecord["resources"] = [
     type: "Sample Lesson Plan",
     purpose: "For facility maintenance, campus teams, or inspection-prep conversations.",
     description:
-      "Sample demo lesson plan covering emergency lighting purpose, visual checks, and follow-up documentation.",
-    sampleNote:
-      "Sample demo content used to show how integrated AI could adapt internal training materials. Final lesson content should be reviewed and completed by the instructor.",
+      "Demo placeholder for emergency lighting purpose, visual checks, and follow-up documentation.",
+    sampleNote: "Sample content. Instructor review required.",
     action: "Reference",
   },
   {
@@ -406,9 +402,8 @@ const sampleLessonResources: ClientRecord["resources"] = [
     type: "Sample Lesson Plan",
     purpose: "For facility, healthcare, education, or compliance staff.",
     description:
-      "Sample demo lesson plan covering records, missing information, service notes, and follow-up ownership.",
-    sampleNote:
-      "Sample demo content used to show how integrated AI could adapt internal training materials. Final lesson content should be reviewed and completed by the instructor.",
+      "Demo placeholder for records, missing information, service notes, and follow-up ownership.",
+    sampleNote: "Sample content. Instructor review required.",
     action: "Reference",
   },
 ];
@@ -1739,18 +1734,6 @@ const trainingStatusSummary = (record: ClientRecord) => {
   } · ${status.rosterRequired ? "roster needed" : "roster not required"}`;
 };
 
-const trainingCertificateNotes = (record: ClientRecord) => {
-  const status = record.trainingStatus;
-  const notes = [];
-  if (status.rosterRequired) notes.push("Prepare roster before session.");
-  if (status.certificateRequired) notes.push("Confirm certificate process.");
-  if (status.dueSoonCount > 0) {
-    notes.push(`${status.dueSoonCount} attendees are due soon.`);
-  }
-  if (status.trainingNotes) notes.push(status.trainingNotes);
-  return notes.slice(0, 4);
-};
-
 const suggestedLessonFocus = (record: ClientRecord, workflow: Workflow) => {
   const lesson = record.resources.find((resource) => {
     const title = resource.title.toLowerCase();
@@ -1771,17 +1754,6 @@ const suggestedLessonFocus = (record: ClientRecord, workflow: Workflow) => {
 
   return lesson?.title.replace("Sample Lesson Plan: ", "") ?? "Lesson plan placeholder";
 };
-
-const productSafetyNotes = (
-  record: ClientRecord,
-  automaticSafetyReview: AutomaticSafetyReview,
-) => [
-  `Search terms came from the site record: ${record.productSafetyTerms.join(", ")}.`,
-  "Verify manufacturer, model, and date code.",
-  automaticSafetyReview.possibleMatches.length
-    ? "Review possible match before discussion."
-    : "Review official source before action.",
-].slice(0, 3);
 
 const recommendationReason = (
   section: PrepSection,
@@ -1857,19 +1829,28 @@ const sortResources = (
   return [...record.resources].sort((a, b) => score(b) - score(a));
 };
 
-const sourceMaterialStatus = (
-  resource: ClientRecord["resources"][number],
-  index: number,
+const defaultIncludedSourceTitles = (
+  record: ClientRecord,
+  workflow: Workflow,
   selectedSections: PrepSection[],
 ) => {
-  const text = `${resource.title} ${resource.type} ${resource.description}`.toLowerCase();
   const productSelected = selectedSections.some((section) =>
     section.toLowerCase().includes("product"),
   );
-  if (text.includes("safety") && !productSelected) return "Optional";
-  if (index < 3) return "Included";
-  return "Optional";
+  return sortResources(record, workflow, selectedSections)
+    .filter((resource, index) => {
+      const text = `${resource.title} ${resource.type} ${resource.description}`.toLowerCase();
+      if (index < 4) return true;
+      return productSelected && text.includes("safety");
+    })
+    .slice(0, 5)
+    .map((resource) => resource.title);
 };
+
+const sourceMaterialStatus = (
+  resource: ClientRecord["resources"][number],
+  includedSourceTitles: string[],
+) => (includedSourceTitles.includes(resource.title) ? "Included" : "Optional");
 
 const sectionContent = ({
   section,
@@ -1997,6 +1978,7 @@ const AiPrepOutput = ({
   guidance,
   workflow,
   selectedSections,
+  includedSourceTitles,
   record,
   sampleSite,
   automaticSafetyReview,
@@ -2005,6 +1987,7 @@ const AiPrepOutput = ({
   guidance: AiGuidance;
   workflow: Workflow;
   selectedSections: PrepSection[];
+  includedSourceTitles: string[];
   record: ClientRecord;
   sampleSite: string;
   automaticSafetyReview: AutomaticSafetyReview;
@@ -2015,23 +1998,27 @@ const AiPrepOutput = ({
   if (!guidance) return null;
 
   const sortedResources = sortResources(record, workflow, selectedSections);
-  const flags = flagsForRecord(workflow, record, automaticSafetyReview);
+  const includedResources = sortedResources.filter((resource) =>
+    includedSourceTitles.includes(resource.title),
+  );
+  const lessonFocus =
+    includedResources.find((resource) => resource.type === "Sample Lesson Plan")?.title.replace(
+      "Sample Lesson Plan: ",
+      "",
+    ) ?? suggestedLessonFocus(record, workflow);
   const snapshot = [
     workflow === "Training / Lesson Plan"
-      ? "Fire department recruit training focused on sprinkler basics."
+      ? `Recruit training focused on ${lessonFocus.toLowerCase()}.`
       : `${sampleSite}: ${record.continuingEducationContext}.`,
     `Sample training record shows ${trainingStatusSummary(record)}.`,
-    record.trainingStatus.certificateRequired
-      ? "Certificates are required after completion."
+    record.productSafetyTerms.length
+      ? "Product safety context should be verified before instruction."
       : `Assets: ${record.equipmentAssets.slice(0, 3).join(", ")}.`,
   ].slice(0, 3);
   const nextStep = recommendedNextStep(workflow, record);
   const packetTitle = workflowConfig[workflow].packetTitle;
-  const lessonFocus = suggestedLessonFocus(record, workflow);
-  const certificateNotes = trainingCertificateNotes(record);
-  const safetyNotes = productSafetyNotes(record, automaticSafetyReview);
-  const sampleMaterialsUsed = sortedResources
-    .slice(0, 5)
+  const sampleMaterialsUsed = includedResources
+    .slice(0, 6)
     .map((resource) => resource.title.replace("Sample Lesson Plan: ", "sample lesson plan: "));
   const packetText = [
     packetTitle,
@@ -2040,17 +2027,16 @@ const AiPrepOutput = ({
     "Snapshot",
     ...snapshot.map((item) => `- ${item}`),
     "",
-    "AI-Flagged Items",
-    ...flags.map((item) => `- ${item}`),
+    "Sections to Expand",
+    ...selectedSections.map((section) => `- ${section}`),
     "",
-    "Suggested Lesson Focus",
-    `- ${lessonFocus}, based on the selected site, equipment, and sample training context.`,
+    "Key Resources",
+    ...includedResources.slice(0, 5).map((resource) => `- ${resource.title}`),
     "",
-    "Training / Certificate Notes",
-    ...certificateNotes.map((item) => `- ${item}`),
+    "Recommended Next Step",
+    `- ${nextStep}`,
     "",
-    "Equipment / Product Safety Notes",
-    ...safetyNotes.map((item) => `- ${item}`),
+    `Sample demo materials used: ${sampleMaterialsUsed.join(", ")}.`,
     "",
     ...selectedSections.flatMap((section) => [
       section,
@@ -2096,25 +2082,6 @@ const AiPrepOutput = ({
         <PrepBriefSection title="Snapshot" tone="green">
           <PacketList items={snapshot} tone="green" />
         </PrepBriefSection>
-        <PrepBriefSection title="Suggested Lesson Focus" tone="green">
-          <p>
-            {lessonFocus}, based on the selected site, equipment, and sample
-            training context.
-          </p>
-          <p className="mt-2 text-xs font-bold text-brand-gray500">
-            Uses sample demo lesson-plan content. Final training materials
-            should be reviewed by the instructor.
-          </p>
-        </PrepBriefSection>
-        <PrepBriefSection title="Training / Certificate Notes" tone="neutral">
-          <PacketList items={certificateNotes} tone="neutral" />
-        </PrepBriefSection>
-        <PrepBriefSection title="Equipment / Product Safety Notes" tone="amber">
-          <PacketList items={safetyNotes} tone="amber" />
-        </PrepBriefSection>
-        <PrepBriefSection title="AI-Flagged Items" tone="red">
-          <PacketList items={flags} tone="red" />
-        </PrepBriefSection>
         <PrepBriefSection title="Sections to Expand" tone="neutral">
           <div className="flex flex-wrap gap-2">
             {selectedSections.map((section) => (
@@ -2129,8 +2096,8 @@ const AiPrepOutput = ({
         </PrepBriefSection>
         <PrepBriefSection title="Key Resources" tone="neutral">
           <PacketList
-            items={sortedResources
-              .slice(0, 3)
+            items={includedResources
+              .slice(0, 5)
               .map((resource) => resource.title)}
             tone="neutral"
           />
@@ -2237,6 +2204,7 @@ const ReadinessPacket = ({
   guidance,
   workflow,
   selectedSections,
+  includedSourceTitles,
   record,
   role,
   roleEngagement,
@@ -2249,6 +2217,7 @@ const ReadinessPacket = ({
   guidance: AiGuidance;
   workflow: Workflow;
   selectedSections: PrepSection[];
+  includedSourceTitles: string[];
   record: ClientRecord;
   role: UserRole;
   roleEngagement: RoleEngagement;
@@ -2268,6 +2237,7 @@ const ReadinessPacket = ({
       guidance={guidance}
       workflow={workflow}
       selectedSections={selectedSections}
+      includedSourceTitles={includedSourceTitles}
       record={record}
       sampleSite={sampleSite}
       automaticSafetyReview={automaticSafetyReview}
@@ -2714,6 +2684,13 @@ export default function Home() {
   const [selectedSections, setSelectedSections] = useState<PrepSection[]>(
     workflowConfig["Training / Lesson Plan"].recommended,
   );
+  const [includedSourceTitles, setIncludedSourceTitles] = useState<string[]>(() =>
+    defaultIncludedSourceTitles(
+      clientRecords["Fire Department Recruit Training Site"],
+      "Training / Lesson Plan",
+      workflowConfig["Training / Lesson Plan"].recommended,
+    ),
+  );
   const [guidance, setGuidance] = useState<AiGuidance | null>(null);
   const [summarizingId, setSummarizingId] = useState("");
   const [summaryError, setSummaryError] = useState("");
@@ -2743,6 +2720,9 @@ export default function Home() {
     setAudience(config.audience);
     setBriefAction(config.briefAction);
     setSelectedSections(config.recommended);
+    setIncludedSourceTitles(
+      defaultIncludedSourceTitles(selectedClientRecord, nextWorkflow, config.recommended),
+    );
     setGuidance(null);
 
     if (config.role === "Instructor") {
@@ -2758,6 +2738,22 @@ export default function Home() {
         ? current.filter((item) => item !== section)
         : [...current, section],
     );
+    setGuidance(null);
+  };
+  const toggleSourceMaterial = (title: string) => {
+    const defaultTitles = defaultIncludedSourceTitles(
+      selectedClientRecord,
+      selectedWorkflow,
+      selectedSections,
+    );
+    setIncludedSourceTitles((current) => {
+      if (current.includes(title)) {
+        return defaultTitles.includes(title)
+          ? current
+          : current.filter((item) => item !== title);
+      }
+      return [...current, title];
+    });
     setGuidance(null);
   };
   const sourceContextUsed = [
@@ -2949,6 +2945,13 @@ export default function Home() {
     setSelectedServiceLensId(serviceLenses[0].id);
     setBriefAction(config.briefAction);
     setSelectedSections(config.recommended);
+    setIncludedSourceTitles(
+      defaultIncludedSourceTitles(
+        clientRecords["Fire Department Recruit Training Site"],
+        "Training / Lesson Plan",
+        config.recommended,
+      ),
+    );
     setGuidance(null);
     setSummaryError("");
     setAdditionalNotes("");
@@ -3015,9 +3018,19 @@ export default function Home() {
                       key={item.value}
                       type="button"
                       onClick={() => {
+                        const nextRecord =
+                          clientRecords[item.value] ??
+                          clientRecords["Fire Department Recruit Training Site"];
                         setSelectedSampleSite(item.value);
                         setSelectedTopics(
                           equipmentAssetsBySite[item.value] ?? instructorDefaultTopics,
+                        );
+                        setIncludedSourceTitles(
+                          defaultIncludedSourceTitles(
+                            nextRecord,
+                            selectedWorkflow,
+                            selectedSections,
+                          ),
                         );
                         setGuidance(null);
                       }}
@@ -3115,8 +3128,8 @@ export default function Home() {
                           )}
                           className={`max-w-full rounded-lg border px-2.5 py-1.5 text-left text-xs leading-5 transition sm:text-sm ${
                             selected
-                              ? "border-brand-green bg-green-50 text-brand-green"
-                              : "border-brand-gray200 bg-white text-brand-charcoal hover:border-brand-green hover:bg-green-50"
+                              ? "border-brand-gray200 bg-brand-gray100 text-brand-charcoal"
+                              : "border-brand-gray200 bg-white text-brand-charcoal hover:border-brand-gray500 hover:bg-brand-gray100"
                           }`}
                         >
                           <span className="block font-extrabold">{section}</span>
@@ -3142,8 +3155,8 @@ export default function Home() {
                           onClick={() => toggleSection(section)}
                           className={`max-w-full rounded-lg border px-2.5 py-1.5 text-xs font-bold leading-5 transition sm:text-sm ${
                             selected
-                              ? "border-brand-green bg-green-50 text-brand-green"
-                              : "border-brand-gray200 bg-white text-brand-charcoal hover:border-brand-green hover:bg-green-50"
+                              ? "border-brand-gray200 bg-brand-gray100 text-brand-charcoal"
+                              : "border-brand-gray200 bg-white text-brand-charcoal hover:border-brand-gray500 hover:bg-brand-gray100"
                           }`}
                         >
                           {section}
@@ -3163,12 +3176,29 @@ export default function Home() {
                 Used by AI to build the preview and expanded sections.
               </p>
               <div className="mt-2 grid gap-2 sm:grid-cols-2">
-                {sortResources(selectedClientRecord, selectedWorkflow, selectedSections).map((resource, index) => {
-                  const status = sourceMaterialStatus(resource, index, selectedSections);
+                {sortResources(selectedClientRecord, selectedWorkflow, selectedSections).map((resource) => {
+                  const status = sourceMaterialStatus(resource, includedSourceTitles);
+                  const defaultTitles = defaultIncludedSourceTitles(
+                    selectedClientRecord,
+                    selectedWorkflow,
+                    selectedSections,
+                  );
+                  const isRequiredDefault = defaultTitles.includes(resource.title);
                   return (
-                    <div
+                    <button
                       key={resource.title}
-                      className="rounded-xl border border-brand-gray200 bg-white px-3 py-2"
+                      type="button"
+                      onClick={() => toggleSourceMaterial(resource.title)}
+                      className={`rounded-xl border px-3 py-2 text-left transition ${
+                        status === "Included"
+                          ? "border-brand-gray200 bg-white"
+                          : "border-brand-gray200 bg-brand-gray100 hover:border-brand-green hover:bg-white"
+                      }`}
+                      title={
+                        isRequiredDefault && status === "Included"
+                          ? "Required default source for this demo"
+                          : "Toggle source material"
+                      }
                     >
                       <div className="flex items-start justify-between gap-2">
                         <div>
@@ -3202,7 +3232,7 @@ export default function Home() {
                           {resource.sampleNote}
                         </p>
                       ) : null}
-                    </div>
+                    </button>
                   );
                 })}
               </div>
@@ -3245,6 +3275,7 @@ export default function Home() {
                 guidance={guidance}
                 workflow={selectedWorkflow}
                 selectedSections={selectedSections}
+                includedSourceTitles={includedSourceTitles}
                 record={selectedClientRecord}
                 role={role}
                 roleEngagement={roleEngagement}
