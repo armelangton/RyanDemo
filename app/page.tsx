@@ -1506,28 +1506,78 @@ const flagsForRecord = (
   record: ClientRecord,
   automaticSafetyReview: AutomaticSafetyReview,
 ) => {
-  const base =
-    workflow === "Training / Lesson Plan" ||
-    workflow === "Continuing Education Prep"
-      ? [
-          ...record.openItems,
-          "Review product safety terms.",
-          "Use site equipment in examples.",
-        ]
-      : workflow === "Product Safety Review"
-        ? [
-            "Verify model and date code.",
-            "Check manufacturer guidance.",
-            "Confirm official source before action.",
-            ...record.missingInformation,
-          ]
-        : [...record.openItems, ...record.missingInformation];
-
-  if (automaticSafetyReview.possibleMatches.length) {
-    base.unshift("Review possible product safety match.");
+  if (workflow === "Training / Lesson Plan") {
+    return [
+      "Confirm recruit training objectives.",
+      "Verify demonstration materials.",
+      "Prepare attendance documentation.",
+    ];
   }
+  if (workflow === "Continuing Education Prep") {
+    return [
+      "Confirm CE objectives.",
+      "Prepare attendance documentation.",
+      "Review product update terms.",
+    ];
+  }
+  if (workflow === "Product Safety Review") {
+    return [
+      "Verify model and date code.",
+      "Check manufacturer guidance.",
+      "Confirm official source before action.",
+    ];
+  }
+  if (workflow === "Inspection Prep") {
+    return [
+      "Review open documentation gap.",
+      "Verify missing asset details.",
+      "Photograph equipment labels.",
+    ];
+  }
+  if (workflow === "Documentation Review") {
+    return [
+      "Review missing records.",
+      "Confirm open documentation items.",
+      "Assign follow-up owner.",
+    ];
+  }
+  if (automaticSafetyReview.possibleMatches.length) {
+    return [
+      "Verify possible product match.",
+      "Confirm model and date code.",
+      "Check manufacturer guidance.",
+    ];
+  }
+  return compactItems(record.openItems).slice(0, 3);
+};
 
-  return compactItems(base).slice(0, 3);
+const whatMattersForRecord = (
+  workflow: Workflow,
+  record: ClientRecord,
+  sampleSite: string,
+) => {
+  if (
+    workflow === "Training / Lesson Plan" &&
+    sampleSite === "Fire Department Recruit Training Site"
+  ) {
+    return "Recruit training needs a sprinkler-focused lesson plan using site equipment and attendance documentation.";
+  }
+  if (workflow === "Training / Lesson Plan") {
+    return "Training prep should connect site equipment, audience needs, materials, and follow-up documentation.";
+  }
+  if (workflow === "Continuing Education Prep") {
+    return "CE prep should focus on audience readiness, training objectives, materials, and documentation.";
+  }
+  if (workflow === "Inspection Prep") {
+    return "Inspection prep should focus on assets, open items, documentation gaps, and verification needs.";
+  }
+  if (workflow === "Documentation Review") {
+    return "Documentation review should focus on missing records, open items, and follow-up ownership.";
+  }
+  if (workflow === "Product Safety Review") {
+    return "Product safety review should focus on model details, manufacturer guidance, and official source verification.";
+  }
+  return `${sampleSite} needs prep around ${record.openItems[0]?.toLowerCase() ?? "open site items"}.`;
 };
 
 const recommendedNextStep = (workflow: Workflow, record: ClientRecord) => {
@@ -1577,6 +1627,20 @@ const sortResources = (
   };
 
   return [...record.resources].sort((a, b) => score(b) - score(a));
+};
+
+const sourceMaterialStatus = (
+  resource: ClientRecord["resources"][number],
+  index: number,
+  selectedSections: PrepSection[],
+) => {
+  const text = `${resource.title} ${resource.type} ${resource.description}`.toLowerCase();
+  const productSelected = selectedSections.some((section) =>
+    section.toLowerCase().includes("product"),
+  );
+  if (text.includes("safety") && !productSelected) return "Optional";
+  if (index < 3) return "Included";
+  return "Optional";
 };
 
 const sectionContent = ({
@@ -1787,7 +1851,7 @@ const AiPrepOutput = ({
         <PrepBriefSection title="AI-Flagged Items" tone="red">
           <PacketList items={flags} tone="red" />
         </PrepBriefSection>
-        <PrepBriefSection title="Recommended Sections Selected" tone="neutral">
+        <PrepBriefSection title="Sections to Expand" tone="neutral">
           <div className="flex flex-wrap gap-2">
             {selectedSections.map((section) => (
               <span
@@ -1803,7 +1867,7 @@ const AiPrepOutput = ({
           <PacketList
             items={sortedResources
               .slice(0, 3)
-              .map((resource) => `${resource.title}: ${resource.description}`)}
+              .map((resource) => resource.title)}
             tone="neutral"
           />
         </PrepBriefSection>
@@ -1822,35 +1886,35 @@ const AiPrepOutput = ({
           <button
             type="button"
             onClick={() => setShowExpanded(true)}
-            className="rounded-xl border border-brand-gray200 bg-white px-3 py-2 text-sm font-extrabold text-brand-charcoal transition hover:bg-brand-gray100"
+            className="rounded-xl border border-brand-gray200 bg-white px-2.5 py-1.5 text-sm font-bold text-brand-charcoal transition hover:bg-brand-gray100"
           >
             View Full Packet
           </button>
           <button
             type="button"
             onClick={() => copyText(packetText)}
-            className="rounded-xl border border-brand-gray200 bg-white px-3 py-2 text-sm font-extrabold text-brand-charcoal transition hover:bg-brand-gray100"
+            className="rounded-xl border border-brand-gray200 bg-white px-2.5 py-1.5 text-sm font-bold text-brand-charcoal transition hover:bg-brand-gray100"
           >
             Copy
           </button>
           <button
             type="button"
             onClick={() => shareText(packetText)}
-            className="rounded-xl border border-brand-gray200 bg-white px-3 py-2 text-sm font-extrabold text-brand-charcoal transition hover:bg-brand-gray100"
+            className="rounded-xl border border-brand-gray200 bg-white px-2.5 py-1.5 text-sm font-bold text-brand-charcoal transition hover:bg-brand-gray100"
           >
             Share
           </button>
           <button
             type="button"
             onClick={() => window.print()}
-            className="rounded-xl border border-brand-gray200 bg-white px-3 py-2 text-sm font-extrabold text-brand-charcoal transition hover:bg-brand-gray100"
+            className="rounded-xl border border-brand-gray200 bg-white px-2.5 py-1.5 text-sm font-bold text-brand-charcoal transition hover:bg-brand-gray100"
           >
             Print
           </button>
           <button
             type="button"
             onClick={onStartNew}
-            className="rounded-xl border border-brand-gray200 bg-white px-3 py-2 text-sm font-extrabold text-brand-gray700 transition hover:bg-brand-gray100"
+            className="rounded-xl border border-brand-gray200 bg-white px-2.5 py-1.5 text-sm font-bold text-brand-gray700 transition hover:bg-brand-gray100"
           >
             Start New
           </button>
@@ -2712,10 +2776,11 @@ export default function Home() {
                   [
                     "What matters",
                     [
-                      selectedWorkflow === "Training / Lesson Plan" ||
-                      selectedWorkflow === "Continuing Education Prep"
-                        ? `${selectedClientRecord.audience} needs ${selectedWorkflow.toLowerCase()} using current site context.`
-                        : `${selectedSampleSite} has open preparation items for ${selectedWorkflow.toLowerCase()}.`,
+                      whatMattersForRecord(
+                        selectedWorkflow,
+                        selectedClientRecord,
+                        selectedSampleSite,
+                      ),
                     ],
                   ],
                   ["Equipment / Assets", selectedClientRecord.equipmentAssets],
@@ -2749,7 +2814,7 @@ export default function Home() {
               <div className="mt-2 space-y-3">
                 <div>
                   <p className="text-xs font-black text-brand-green">Recommended</p>
-                  <div className="mt-1 flex flex-wrap gap-2">
+                  <div className="mt-1 flex max-w-full flex-wrap gap-1.5 overflow-hidden">
                     {workflowConfig[selectedWorkflow].recommended.map((section) => {
                       const selected = selectedSections.includes(section);
                       return (
@@ -2757,7 +2822,7 @@ export default function Home() {
                           key={section}
                           type="button"
                           onClick={() => toggleSection(section)}
-                          className={`rounded-xl border px-3 py-2 text-sm font-extrabold transition ${
+                          className={`max-w-full rounded-lg border px-2.5 py-1.5 text-xs font-extrabold leading-5 transition sm:text-sm ${
                             selected
                               ? "border-brand-green bg-brand-green text-white"
                               : "border-brand-gray200 bg-white text-brand-charcoal hover:border-brand-green hover:bg-green-50"
@@ -2771,7 +2836,7 @@ export default function Home() {
                 </div>
                 <div>
                   <p className="text-xs font-black text-brand-gray500">Optional</p>
-                  <div className="mt-1 flex flex-wrap gap-2">
+                  <div className="mt-1 flex max-w-full flex-wrap gap-1.5 overflow-hidden">
                     {workflowConfig[selectedWorkflow].optional.map((section) => {
                       const selected = selectedSections.includes(section);
                       return (
@@ -2779,7 +2844,7 @@ export default function Home() {
                           key={section}
                           type="button"
                           onClick={() => toggleSection(section)}
-                          className={`rounded-xl border px-3 py-2 text-sm font-extrabold transition ${
+                          className={`max-w-full rounded-lg border px-2.5 py-1.5 text-xs font-bold leading-5 transition sm:text-sm ${
                             selected
                               ? "border-brand-green bg-brand-green text-white"
                               : "border-brand-gray200 bg-white text-brand-charcoal hover:border-brand-green hover:bg-green-50"
@@ -2796,32 +2861,44 @@ export default function Home() {
 
             <div>
               <h2 className="text-lg font-black text-brand-charcoal">
-                5. Relevant Resources
+                5. Source Materials
               </h2>
+              <p className="mt-1 text-xs font-bold leading-5 text-brand-gray500">
+                Used by AI to build the preview and expanded sections.
+              </p>
               <div className="mt-2 grid gap-2 sm:grid-cols-2">
-                {sortResources(selectedClientRecord, selectedWorkflow, selectedSections).map((resource) => (
-                  <div
-                    key={resource.title}
-                    className="rounded-xl border border-brand-gray200 bg-white px-3 py-2"
-                  >
-                    <div className="flex items-start justify-between gap-2">
-                      <div>
-                        <p className="text-sm font-black text-brand-charcoal">
-                          {resource.title}
-                        </p>
-                        <p className="mt-0.5 text-xs font-bold text-brand-green">
-                          {resource.type}
-                        </p>
+                {sortResources(selectedClientRecord, selectedWorkflow, selectedSections).map((resource, index) => {
+                  const status = sourceMaterialStatus(resource, index, selectedSections);
+                  return (
+                    <div
+                      key={resource.title}
+                      className="rounded-xl border border-brand-gray200 bg-white px-3 py-2"
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div>
+                          <p className="text-sm font-black text-brand-charcoal">
+                            {resource.title}
+                          </p>
+                          <p className="mt-0.5 text-xs font-bold text-brand-green">
+                            {resource.type}
+                          </p>
+                        </div>
+                        <span
+                          className={`shrink-0 rounded-lg border px-2 py-1 text-[11px] font-black ${
+                            status === "Included"
+                              ? "border-green-700/20 bg-green-50 text-brand-green"
+                              : "border-brand-gray200 bg-white text-brand-gray700"
+                          }`}
+                        >
+                          {status}
+                        </span>
                       </div>
-                      <span className="shrink-0 rounded-lg border border-brand-gray200 px-2 py-1 text-[11px] font-black text-brand-gray700">
-                        {resource.action}
-                      </span>
+                      <p className="mt-1 text-xs leading-5 text-brand-gray700">
+                        {resource.description}
+                      </p>
                     </div>
-                    <p className="mt-1 text-xs leading-5 text-brand-gray700">
-                      {resource.description}
-                    </p>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </div>
