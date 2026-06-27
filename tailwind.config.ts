@@ -6,8 +6,8 @@ const config: Config = {
     extend: {
       colors: {
         brand: {
-          green: "#1f6b3a",
-          greenDark: "#164f2b",
+          green: "#009a44",
+          greenDark: "#007a36",
           red: "#c41230",
           redDark: "#8f1024",
           charcoal: "#1f3428",
@@ -18,7 +18,7 @@ const config: Config = {
           gray200: "#e7e9eb",
           gray100: "#f4f5f6",
           white: "#ffffff",
-          success: "#2f6f4e",
+          success: "#009a44",
           warning: "#a86612",
         },
       },

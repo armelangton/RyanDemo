@@ -16,7 +16,7 @@ Use the selected preparation context and optional recall/product safety informat
 - installed equipment/products from the selected site profile
 - selected preparation focus, if provided
 - additional manual/site/training notes
-- automatic product safety review results
+- sample equipment/product verification context
 - optional manual recall data, if present
 - equipment/systems from the sample site
 - upcoming reminder
@@ -30,9 +30,9 @@ Use the selected preparation context and optional recall/product safety informat
 - additional manual/site/training notes
 
 This is an internal customer engagement preparation workspace. Do not produce a generic recall summary. Help the employee prepare for inspections, customer training, fire department/recruit training, municipality/public safety events, conventions/trade shows, customer meetings, and continuing education prep.
-Use the user-facing packet name "AI Engagement Packet." Do not use the prior readiness-packet title in generated text.
+Use the user-facing packet name "Engagement Packet." Do not use older packet titles in generated text.
 The packet should make the AI value clear by combining client/site context, equipment/assets, service or training history, open discrepancies, missing information, product safety/recall context, checklist questions, and resources to review.
-Manual recall data is optional. If no manual recall is selected, say: "No manual product safety recall selected. Packet is based on engagement, client/site record, equipment/assets, prep context, and automatic product safety review." If a manual recall is selected, include it as optional manual product safety context.
+If product/manufacturer safety context is available, treat it only as verification context. Do not mention manual recall selection or automatic review mechanics in the user-facing output.
 
 The packet should support this simple user-facing structure:
 1. Engagement Summary
@@ -43,7 +43,7 @@ The packet should support this simple user-facing structure:
 6. What to Say
 7. Recommended Next Steps
 
-Do not create a dense report, lesson library, source-material workflow, recall lookup tool, or generic chatbot output. The AI value should be visible through concise guidance that combines selected client/site, role, engagement type, equipment/assets, open items, relevant resources, and product/manufacturer verification reminders.
+Do not create a dense report, lesson library, source-material workflow, recall lookup tool, or generic chatbot output. The value should be visible through concise guidance that combines selected client/site, role, engagement type, equipment/assets, open items, relevant resources, and product/manufacturer verification reminders.
 
 The JSON response must include:
 1. Source Context Used
@@ -73,7 +73,7 @@ Source-aware output:
 - Separate official recall facts from AI interpretation and internal follow-up where possible.
 - Do not blur official facts with AI suggestions.
 - Use source labels where appropriate: Known from source, Provided by user/demo profile, AI interpretation, Needs verification, Human review required.
-- Treat official CPSC recall facts as source facts. Treat selected site profile and preparation focus as demo/user-provided context. Treat preparation guidance as AI interpretation.
+- Treat official product/manufacturer notices as source facts. Treat selected site profile and preparation focus as demo/user-provided context. Treat preparation guidance as AI interpretation.
 
 Ryan-aligned service context:
 - Protect: identify immediate safety or customer impact.
@@ -108,7 +108,7 @@ Group Related Service Considerations under Safety / Risk Reduction, Maintenance 
 Responsible AI boundaries:
 - Do not make final code, engineering, legal, compliance, fire safety, inspection, or operational determinations.
 - Do not claim a recall applies unless exact model/manufacturer/date range/site details confirm it.
-- Remind the user to verify against official CPSC notices, manufacturer instructions, applicable codes, NFPA standards, company procedures, and qualified internal review.
+- Remind the user to verify against official sources, manufacturer instructions, applicable codes, NFPA standards, company procedures, and qualified internal review.
 
 Concise output rules:
 - Prefer 3 to 5 bullets per array section.
@@ -124,7 +124,7 @@ Concise output rules:
 - The packet should feel like onsite or session guidance, not a long generated report.
 
 Source hierarchy:
-1. Official CPSC recall notices
+1. Official product/manufacturer notices
 2. Manufacturer instructions and product documentation
 3. Applicable codes and NFPA standards
 4. Company procedures and qualified internal review
@@ -546,8 +546,8 @@ const fallbackPacket = ({
     : ["No installed equipment/products were provided in the selected site profile."];
   const productSafetyReview = [
     installedEquipment.length
-      ? `Automatic Product Safety Review checked ${installedEquipment.length} installed equipment item${installedEquipment.length === 1 ? "" : "s"} from the selected site profile.`
-      : "Automatic Product Safety Review needs installed equipment details before it can provide useful context.",
+      ? `Sample equipment context includes ${installedEquipment.length} installed equipment item${installedEquipment.length === 1 ? "" : "s"} for verification.`
+      : "Sample equipment details need verification before they can provide useful context.",
     safetyMatches.length
       ? `Possible recall matches found: ${safetyMatches
           .slice(0, 5)
@@ -556,18 +556,18 @@ const fallbackPacket = ({
             return `${textValue(match.searchTerm)} -> ${textValue(recall.title)}`;
           })
           .join("; ")}.`
-      : "No obvious recall match found in this automatic search.",
+      : "No confirmed safety match is listed in the sample context.",
     noMatchTerms.length
-      ? `${noMatchTerms.length} equipment review item${noMatchTerms.length === 1 ? "" : "s"} had no obvious public recall match, but official source verification is still required.`
-      : "Automatic review found possible product safety context that still needs human verification.",
+      ? `${noMatchTerms.length} equipment review item${noMatchTerms.length === 1 ? "" : "s"} still requires official source verification.`
+      : "Product/manufacturer context still needs human verification.",
     ...(autoNeedsVerification.length
       ? autoNeedsVerification.map((item) => `Needs verification: ${item}`)
       : [
           "Needs verification: verify model, manufacturer, date range, installed equipment, and official source before action.",
         ]),
     hasRecall
-      ? `Optional manual product safety search result selected: ${title}. Treat this as additional context only until verified.`
-      : "No manual product safety recall selected. Packet is based on engagement, site, service, prep context, and automatic product safety review.",
+      ? `Product/manufacturer safety context selected: ${title}. Treat this as additional context only until verified.`
+      : "Packet is based on selected engagement, sample site context, equipment records, documentation needs, and training context.",
   ];
   const systemsText = equipmentSystems.length
     ? equipmentSystems.join(", ")
@@ -577,10 +577,10 @@ const fallbackPacket = ({
     sourceContextUsed: sourceContextUsed.length
       ? sourceContextUsed
       : [
-          "Automatic product safety review based on installed equipment",
+          "Sample product/manufacturer verification context based on equipment records",
           hasRecall
-            ? `Optional manual product safety search result: ${title}`
-            : "No manual product safety recall selected. Packet is based on engagement, site, service, prep context, and automatic product safety review.",
+            ? `Product/manufacturer safety context: ${title}`
+            : "Packet is based on selected engagement, sample site context, equipment records, documentation needs, and training context.",
           `Sample site profile: ${sampleSite}`,
           `Preparation focus: ${serviceLensLabel}`,
           `Engagement type: ${engagementType}`,
@@ -589,14 +589,14 @@ const fallbackPacket = ({
         ],
     knownSourceFacts: hasRecall
       ? [
-          `Known from source: CPSC recall title is "${title}".`,
+          `Known from source: product/manufacturer notice title is "${title}".`,
           `Known from source: manufacturer/company is ${manufacturer}.`,
           `Known from source: product description is ${product}.`,
           `Known from source: listed hazard is ${hazard}.`,
           `Known from source: listed remedy is ${remedy}.`,
         ]
       : [
-          "No manual product safety recall selected. Packet is based on engagement, site, service, prep context, and automatic product safety review.",
+          "Packet is based on selected engagement, sample site context, equipment records, documentation needs, and training context.",
         ],
     providedDemoProfileContext: [
       `Provided by user/demo profile: selected site profile is ${sampleSite} (${siteType}).`,
@@ -614,7 +614,7 @@ const fallbackPacket = ({
       `AI interpretation: use selected preparation context to prepare ${role} work for ${roleEngagement || engagementType}.`,
       hasRecall
         ? "AI interpretation: compare optional manual recall product details with installed site equipment before making any customer-facing statement."
-        : "AI interpretation: prepare the engagement packet from site, installed equipment, audience, automatic product safety review, prep resources, and manual notes because no manual recall was selected.",
+        : "AI interpretation: prepare the engagement packet from sample site context, equipment records, audience, documentation needs, and training context.",
       "AI interpretation: connect related service considerations to safety, documentation, prevention, customer confidence, and risk reduction.",
       "Human review required: route any safety, code, compliance, inspection, engineering, or customer communication decision through qualified internal review.",
     ],
@@ -632,7 +632,7 @@ const fallbackPacket = ({
         ? "Training or education opportunity"
         : "Missing training context",
     ],
-    internalFieldBrief: `For ${role || "employee"} ${roleEngagement || engagementType}, prepare for ${sampleSite} using equipment/assets ${selectedTopics.join(", ") || "not specified"}. Start from the selected client/site profile, installed equipment, service reminder, training need, and documentation context. ${hasRecall ? `Optional manual product safety context: "${title}" lists manufacturer/company as ${manufacturer}, product context as ${product}, hazard as ${hazard}, and remedy as ${remedy}.` : "No manual product safety recall selected. Packet is based on engagement, client/site record, equipment/assets, prep context, and automatic product safety review."} Additional notes: ${additionalNotes || "none provided"}.`,
+    internalFieldBrief: `For ${role || "employee"} ${roleEngagement || engagementType}, prepare for ${sampleSite} using equipment/assets ${selectedTopics.join(", ") || "not specified"}. Use the sample site context, equipment records, service reminders, training needs, and documentation status. ${hasRecall ? `Product/manufacturer context: "${title}" lists manufacturer/company as ${manufacturer}, product context as ${product}, hazard as ${hazard}, and remedy as ${remedy}.` : "Product and manufacturer details need verification before use."}`,
     standardsObjectiveAlignment:
       role === "Instructor"
         ? [
@@ -676,14 +676,14 @@ const fallbackPacket = ({
       hasRecall
         ? "Ask whether the site has matching equipment, model numbers, date ranges, or service history."
         : "Ask what equipment, documentation, training history, or site details should be reviewed before the engagement.",
-      "Emphasize that official CPSC and manufacturer documentation must be checked before action.",
+      "Emphasize that official sources and manufacturer documentation must be checked before action.",
     ],
     installedEquipmentReview: equipmentReview,
     productSafetyRecallReview: productSafetyReview,
     equipmentProductChecklist: [
       hasRecall
         ? `Verify manufacturer/company: ${manufacturer}.`
-        : "No manual recall selected; verify product and manufacturer details from installed equipment, automatic review, and manual/site/training notes.",
+        : "Verify product and manufacturer details from sample equipment records, site notes, and training context.",
       hasRecall
         ? `Verify product or description: ${product}.`
         : "Confirm relevant equipment, systems, or customer details before using the packet.",
@@ -759,11 +759,11 @@ const fallbackPacket = ({
         ? "Confirm whether the product is installed at the selected site."
         : "Review site profile, known systems, prep resources, and additional notes with the appropriate internal owner.",
       hasRecall
-        ? "Review official CPSC notice and manufacturer remedy instructions."
+        ? "Review official source and manufacturer remedy instructions."
         : "Verify manufacturer documentation, applicable standards, and company procedures for any product-specific discussion.",
       "Review related service considerations with a qualified internal employee.",
     ],
-    followUpNoteDraft: `${hasRecall ? `Reviewed optional manual public recall information for ${title}` : "Prepared engagement packet without a selected manual product safety recall"} while preparing for ${engagementType} with ${audience}. Need to verify product/equipment details, site equipment match, manufacturer instructions, service history, training context, automatic product safety review results, and open documentation questions. Related service considerations include ${relatedServiceConsideration || "documentation review and preventive maintenance"}. Next step: route findings through qualified internal review before customer or operational action.`,
+    followUpNoteDraft: `Prepared engagement packet for ${engagementType} with ${audience}. Need to verify product/equipment details, site equipment match, manufacturer instructions, service history, training context, and open documentation questions. Related service considerations include ${relatedServiceConsideration || "documentation review and preventive maintenance"}. Next step: route findings through qualified internal review before customer or operational action.`,
     missingInformationToVerify: [
       "Exact product model",
       "Manufacturer documentation",
@@ -777,7 +777,7 @@ const fallbackPacket = ({
       "Whether the recall remedy has already been completed",
     ],
     officialSourceReminder:
-      "Verify against official CPSC notices, manufacturer instructions, applicable codes, NFPA standards, company procedures, and qualified internal review. This packet does not make final code, engineering, legal, compliance, fire safety, inspection, or operational determinations.",
+      "Verify against official sources, manufacturer instructions, applicable codes, NFPA standards, company procedures, and qualified internal review. This packet does not make final code, engineering, legal, compliance, fire safety, inspection, or operational determinations.",
   };
 };
 

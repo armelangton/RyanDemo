@@ -1208,7 +1208,7 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
         model: "Demo model unknown",
         locationContext: "Product safety talking point examples",
         serviceStatus: "Review product safety examples before event",
-        documentationNote: "Verify any recall examples against official CPSC notices.",
+        documentationNote: "Verify any product safety examples against official sources.",
         trainingRelevance: "Supports customer education and common detection questions.",
       },
       {
@@ -1461,7 +1461,18 @@ const PacketList = ({
 const compactItems = (items: string[], fallback: string[] = []) =>
   (items.length ? items : fallback)
     .map((item) => item.replace(/^Provided by user\/demo profile:\s*/i, ""))
-    .filter(Boolean)
+    .filter((item) => {
+      const lower = item.toLowerCase();
+      return (
+        item &&
+        !lower.includes("manual product safety") &&
+        !lower.includes("automatic product safety") &&
+        !lower.includes("additional notes") &&
+        !lower.includes("client/site profile, installed equipment, prep context") &&
+        !lower.includes("official cpsc") &&
+        !lower.includes("cpsc recall")
+      );
+    })
     .slice(0, 5);
 
 const roleSpecificAssetNote = (
@@ -1665,6 +1676,16 @@ const ReadinessPacket = ({
           `Assets: ${selectedTopics.slice(0, 3).join(", ")}.`,
         ],
   ).slice(0, 3);
+  const engagementSummaryText =
+    role === "Instructor"
+      ? `This packet is for an instructor preparing for ${roleEngagement.toLowerCase()} using the ${sampleSite} sample profile. The focus is on explaining ${selectedTopics.slice(0, 3).join(", ")} in practical language while connecting equipment records, documentation status, and verification needs to the session.`
+      : role === "Inspector"
+        ? `This packet is for an inspector preparing for ${roleEngagement.toLowerCase()} at the ${sampleSite} sample profile. The focus is on equipment records, documentation gaps, field verification, and follow-up items that should be checked before any official conclusion.`
+        : role === "Service Manager"
+          ? `This packet is for a service manager preparing for ${roleEngagement.toLowerCase()} using the ${sampleSite} sample profile. The focus is on readiness, open items, ownership, service coordination, documentation status, and follow-up.`
+          : role === "Sales / Account Manager"
+            ? `This packet is for a sales or account manager preparing for ${roleEngagement.toLowerCase()} using the ${sampleSite} sample profile. The focus is on a clear customer-facing summary, open questions, next steps, and safety-focused follow-up without making unverified claims.`
+            : `This packet is for a manager preparing for ${roleEngagement.toLowerCase()} using the ${sampleSite} sample profile. The focus is on readiness, risks, open items, ownership, documentation status, and internal or customer follow-up.`;
   const keyResources = resourcesToReview.slice(0, 4);
   const nextStep = followUpItems.slice(0, 1);
   const equipmentRecordSummary = compactItems(
@@ -1706,14 +1727,14 @@ const ReadinessPacket = ({
     "Confirm the recommended next step.",
   ];
   const whatToSayItems = compactItems([
-    guidance.internalFieldBrief,
     role === "Instructor"
-      ? "Today we will use sample equipment context to explain what to recognize, what to document, and what still needs verification."
+      ? "Today we are using sample equipment records to review how sprinkler systems, alarm/detection devices, and demonstration equipment fit into a fire protection discussion."
       : role === "Inspector"
-        ? "I am reviewing sample equipment and documentation context, and I will verify details before making any official conclusion."
+        ? "I am reviewing sample equipment and documentation context, and I will verify model, service, and documentation details before making any official conclusion."
         : role === "Sales / Account Manager"
-          ? "This summary highlights what we know, what still needs verification, and the next step for a safety-focused follow-up."
-          : "This summary shows readiness, open verification items, and the owner for follow-up before any action is taken.",
+          ? "This conversation should focus on what the sample record shows, what still needs verification, and the next practical step for a safety-focused follow-up."
+          : "This review should clarify readiness, open verification items, documentation status, and who owns the next follow-up step.",
+    "The main goal is to understand what each system does, what documentation matters, and what details need to be verified before making site-specific claims.",
   ]).slice(0, 3);
   const recommendedNextSteps = compactItems([
     ...guidance.recommendedNextBestActions,
@@ -1722,12 +1743,9 @@ const ReadinessPacket = ({
     "Assign follow-up ownership for open verification items.",
   ]).slice(0, 5);
   const packetText = [
-    "AI Engagement Packet",
-    `${sampleSite} - ${role} - ${roleEngagement}`,
-    assetText,
-    "",
+    "Engagement Packet",
     "Engagement Summary",
-    ...previewSnapshot.map((item) => `- ${item}`),
+    engagementSummaryText,
     "",
     "Equipment / Asset Records",
     ...equipmentRecords.flatMap((record) => [
@@ -1756,11 +1774,11 @@ const ReadinessPacket = ({
     "Missing Info / Verification Needed",
     ...aiFlaggedItems.slice(0, 5).map((item) => `- ${item}`),
     "",
-    "What to Say",
-    ...whatToSayItems.map((item) => `- ${item}`),
-    "",
     "Recommended Next Steps",
     ...recommendedNextSteps.map((item, index) => `${index + 1}. ${item}`),
+    "",
+    "What to Say",
+    ...whatToSayItems.map((item) => `- ${item}`),
   ].join("\n");
   const copyText = (text: string) => {
     if (typeof navigator === "undefined" || !navigator.clipboard) return;
@@ -1768,7 +1786,7 @@ const ReadinessPacket = ({
   };
   const shareText = (text: string) => {
     if (typeof navigator !== "undefined" && "share" in navigator) {
-      void navigator.share({ title: "AI Engagement Packet", text });
+      void navigator.share({ title: "Engagement Packet", text });
       return;
     }
     copyText(text);
@@ -1780,12 +1798,12 @@ const ReadinessPacket = ({
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div>
             <h2 className="text-2xl font-black leading-tight text-brand-charcoal sm:text-3xl">
-              AI Engagement Packet
+              Engagement Packet
             </h2>
-            <p className="mt-2 text-base leading-7 text-brand-gray700">
+            <p className="hidden">
               {sampleSite} · {role} · {roleEngagement}
             </p>
-            <p className="mt-1 text-sm font-bold leading-6 text-brand-gray700">
+            <p className="hidden">
               {assetText}
             </p>
           </div>
@@ -1827,7 +1845,7 @@ const ReadinessPacket = ({
           title="Engagement Summary"
           tone="green"
         >
-          <PacketList items={previewSnapshot} tone="green" />
+          <p className="leading-7 text-brand-gray700">{engagementSummaryText}</p>
         </PrepBriefSection>
 
         <PrepBriefSection title="Equipment / Asset Records" tone="neutral">
@@ -1898,16 +1916,16 @@ const ReadinessPacket = ({
           <PacketList items={aiFlaggedItems.slice(0, 5)} tone="red" />
         </PrepBriefSection>
 
-        <PrepBriefSection title="What to Say" tone="neutral">
-          <PacketList items={whatToSayItems} tone="neutral" />
-        </PrepBriefSection>
-
         <PrepBriefSection title="Recommended Next Steps" tone="green">
           <ol className="list-decimal space-y-3 pl-5">
             {recommendedNextSteps.map((item) => (
               <li key={item}>{item}</li>
             ))}
           </ol>
+        </PrepBriefSection>
+
+        <PrepBriefSection title="What to Say" tone="neutral">
+          <PacketList items={whatToSayItems} tone="neutral" />
         </PrepBriefSection>
 
       </div>
@@ -2010,7 +2028,7 @@ export default function Home() {
     `Role: ${role}`,
     `Engagement: ${roleEngagement}`,
     `Equipment / Assets: ${selectedTopics.join(", ") || "None selected"}`,
-    "No manual product safety recall selected. Packet is based on engagement, client/site record, equipment/assets, prep context, and automatic product safety review.",
+    "Packet is based on selected engagement, sample site context, equipment records, documentation needs, and training context.",
     `Customer/Site Profile: ${selectedSiteDetails.label}`,
     `Preparation focus: ${selectedServiceLens.label}`,
     `Engagement type: ${engagementType}`,
@@ -2080,8 +2098,8 @@ export default function Home() {
           noObviousMatchTerms: terms.filter((term) => !matchedTerms.has(term)),
           needsVerification: [
             "Possible matches require model, manufacturer, date range, and installed-equipment verification.",
-            "No obvious recall match found in this search is not proof that no recall exists.",
-            "Verify official CPSC notices, manufacturer instructions, site records, and company procedures before action.",
+            "No obvious safety match in sample context is not proof that no issue exists.",
+            "Verify official sources, manufacturer instructions, site records, and company procedures before action.",
           ],
         });
         setAutoReviewCheckedAt(new Date());
@@ -2092,8 +2110,8 @@ export default function Home() {
             searchTermsUsed: terms,
             noObviousMatchTerms: terms,
             needsVerification: [
-              "Automatic product safety review could not retrieve all CPSC results.",
-              "Verify product safety context manually against official CPSC and manufacturer sources.",
+              "Product/manufacturer context could not be fully checked.",
+              "Verify product safety context against official sources and manufacturer documentation.",
             ],
           });
           setAutoReviewCheckedAt(new Date());
@@ -2156,7 +2174,7 @@ export default function Home() {
             ),
             responsibleAiLabels: knowledgeBase.responsibleAiLabels,
             sourceHierarchy: [
-              "Official CPSC recall notices",
+              "Official product/manufacturer notices",
               "Manufacturer instructions and product documentation",
               "Applicable codes and NFPA standards",
               "Company procedures and qualified internal review",
@@ -2221,6 +2239,9 @@ export default function Home() {
           <p className="mt-1 text-sm leading-6 text-brand-gray700 sm:text-base">
             Get AI-generated guidance for inspections, training, and service visits.
           </p>
+          <p className="mt-2 text-sm leading-6 text-brand-gray700">
+            Select a site, role, and engagement type. The assistant uses sample context to generate a role-specific Engagement Packet.
+          </p>
         </div>
       </header>
 
@@ -2231,6 +2252,9 @@ export default function Home() {
               <h2 className="text-lg font-black text-brand-charcoal">
                 1. Select Client / Site
               </h2>
+              <p className="mt-1 text-xs font-semibold text-brand-gray500">
+                Choose the sample site or account for the engagement.
+              </p>
               <div className="mt-2 grid gap-2 sm:grid-cols-2">
                 {visibleSiteOptions.map((item) => {
                   const selected = selectedSampleSite === item.value;
@@ -2261,8 +2285,11 @@ export default function Home() {
             <div className="grid gap-5 md:grid-cols-[0.8fr_1.2fr]">
               <div>
                 <h2 className="text-lg font-black text-brand-charcoal">2. Select Role</h2>
+                <p className="mt-1 text-xs font-semibold text-brand-gray500">
+                  Choose the employee perspective for the packet.
+                </p>
                 <div className="mt-2 grid grid-cols-2 gap-2">
-                  {(["Instructor", "Inspector", "Manager", "Sales / Account Manager"] as UserRole[]).map((item) => {
+                  {(["Instructor", "Inspector", "Service Manager", "Manager", "Sales / Account Manager"] as UserRole[]).map((item) => {
                     const selected = role === item;
                     return (
                       <button
@@ -2286,6 +2313,9 @@ export default function Home() {
                 <h2 className="text-lg font-black text-brand-charcoal">
                   3. Select Engagement Type
                 </h2>
+                <p className="mt-1 text-xs font-semibold text-brand-gray500">
+                  Choose what the employee is preparing to do.
+                </p>
                 <div className="mt-2 grid gap-2 sm:grid-cols-3 md:grid-cols-1 lg:grid-cols-3">
                   {roleEngagementOptions[role].map((item) => {
                     const selected = roleEngagement === item;
@@ -2390,7 +2420,7 @@ export default function Home() {
             >
               {summarizingId
                 ? "Generating Packet..."
-                : "Generate AI Engagement Packet"}
+                : "Generate Engagement Packet"}
             </button>
           </div>
 
@@ -2400,7 +2430,7 @@ export default function Home() {
                 <div className="h-full w-1/2 animate-pulse rounded-full bg-brand-green" />
               </div>
               <p className="mt-3 text-sm font-extrabold text-brand-charcoal">
-                Reviewing site equipment, service context, and product safety information.
+                Reviewing sample site, equipment, documentation, and training context.
               </p>
             </div>
           ) : null}
