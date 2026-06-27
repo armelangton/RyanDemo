@@ -33,22 +33,23 @@ type Audience =
 type UserRole = "Inspector" | "Instructor";
 
 type RoleEngagement =
-  | "Inspection / Service Visit"
+  | "Inspection / Testing"
+  | "Maintenance Review"
   | "Site Walkthrough"
   | "Documentation Review"
   | "Training Session"
-  | "Fire Department Recruit Training"
-  | "Customer Education Session";
+  | "Recruit Training"
+  | "Customer Education"
+  | "Safety Demonstration";
 
 type Topic =
-  | "Fire Sprinklers"
+  | "Fire Sprinkler System"
   | "Fire Alarm / Detection"
   | "Fire Extinguishers"
   | "Emergency Lighting"
   | "Fire Hydrants"
   | "Special Hazards"
-  | "Design"
-  | "Training";
+  | "Training Props / Demonstration Equipment";
 
 type BriefAction =
   | "inspection_prep"
@@ -127,35 +128,57 @@ const visibleSiteOptions = [
 
 const roleEngagementOptions: Record<UserRole, RoleEngagement[]> = {
   Inspector: [
-    "Inspection / Service Visit",
+    "Inspection / Testing",
+    "Maintenance Review",
     "Site Walkthrough",
     "Documentation Review",
   ],
   Instructor: [
     "Training Session",
-    "Fire Department Recruit Training",
-    "Customer Education Session",
+    "Recruit Training",
+    "Customer Education",
+    "Safety Demonstration",
   ],
 };
 
 const inspectorDefaultTopics: Topic[] = [
-  "Fire Sprinklers",
-  "Fire Extinguishers",
-  "Emergency Lighting",
-];
-
-const instructorDefaultTopics: Topic[] = ["Fire Sprinklers", "Training"];
-
-const topicOptions: Topic[] = [
-  "Fire Sprinklers",
-  "Fire Alarm / Detection",
+  "Fire Sprinkler System",
   "Fire Extinguishers",
   "Emergency Lighting",
   "Fire Hydrants",
-  "Special Hazards",
-  "Design",
-  "Training",
 ];
+
+const instructorDefaultTopics: Topic[] = [
+  "Fire Sprinkler System",
+  "Fire Alarm / Detection",
+  "Training Props / Demonstration Equipment",
+];
+
+const equipmentAssetsBySite: Record<string, Topic[]> = {
+  "Municipal Facilities Account": [
+    "Fire Sprinkler System",
+    "Fire Extinguishers",
+    "Emergency Lighting",
+    "Fire Hydrants",
+  ],
+  "Fire Department Recruit Training Site": [
+    "Fire Sprinkler System",
+    "Fire Alarm / Detection",
+    "Training Props / Demonstration Equipment",
+  ],
+  "Healthcare Facility ITM Review": [
+    "Fire Sprinkler System",
+    "Fire Alarm / Detection",
+    "Special Hazards",
+    "Emergency Lighting",
+  ],
+  "Education Campus Facilities Training": [
+    "Fire Alarm / Detection",
+    "Fire Extinguishers",
+    "Emergency Lighting",
+    "Fire Sprinkler System",
+  ],
+};
 
 const sampleSiteDetails: Record<string, SiteProfile> = {
   "Municipal Facilities Account": {
@@ -1057,6 +1080,12 @@ const PacketList = ({
   );
 };
 
+const compactItems = (items: string[], fallback: string[] = []) =>
+  (items.length ? items : fallback)
+    .map((item) => item.replace(/^Provided by user\/demo profile:\s*/i, ""))
+    .filter(Boolean)
+    .slice(0, 5);
+
 const PrepBriefSection = ({
   title,
   children,
@@ -1066,19 +1095,19 @@ const PrepBriefSection = ({
   children: React.ReactNode;
   tone?: "green" | "amber" | "red" | "neutral";
 }) => {
-  const accentClass = {
-    green: "border-l-brand-green",
-    amber: "border-l-brand-warning",
-    red: "border-l-brand-red",
-    neutral: "border-l-brand-gray500",
+  const headingClass = {
+    green: "text-brand-green",
+    amber: "text-brand-warning",
+    red: "text-brand-red",
+    neutral: "text-brand-charcoal",
   }[tone];
 
   return (
-    <section className={`rounded-2xl border border-brand-gray200 border-l-4 ${accentClass} bg-white p-5 shadow-sm`}>
-      <h3 className="text-xl font-black leading-tight text-brand-charcoal">
+    <section className="border-t border-brand-gray200 py-4">
+      <h3 className={`text-lg font-black leading-tight ${headingClass}`}>
         {title}
       </h3>
-      <div className="mt-4 text-base leading-7 text-brand-gray700">{children}</div>
+      <div className="mt-3 text-sm leading-6 text-brand-gray700 sm:text-base">{children}</div>
     </section>
   );
 };
@@ -1122,12 +1151,12 @@ const ReadinessPacket = ({
           "Prior deficiencies",
           "Internal review owner",
         ];
-  const serviceText = selectedTopics.join(", ") || "None selected";
+  const assetText = selectedTopics.join(" · ") || "No equipment/assets selected";
   const standardsObjectiveAlignment =
     guidance.standardsObjectiveAlignment?.length
       ? guidance.standardsObjectiveAlignment
       : [
-          `Draft objective: participants can explain ${selectedTopics.join(", ") || "the selected services"} in practical jobsite language.`,
+          `Draft objective: participants can explain ${selectedTopics.join(", ") || "the selected equipment/assets"} in practical jobsite language.`,
           "Alignment note: use this as planning support only, not as approved certification language.",
           "Check for understanding: ask attendees to describe one field condition to verify and one question to escalate.",
           "Draft alignment for planning purposes. Verify against current Indiana, Pro Board/IFSAC, NFPA, department, company, and AHJ requirements before using for credit or certification.",
@@ -1137,7 +1166,7 @@ const ReadinessPacket = ({
       ? guidance.simpleLessonPlan
       : [
           "0-5 min: Introduction, audience expectations, and safety boundaries.",
-          `5-15 min: Core concept review for ${serviceText}.`,
+          `5-15 min: Core concept review for ${selectedTopics.join(", ") || "selected equipment/assets"}.`,
           "15-25 min: Demonstration or scenario discussion using approved examples.",
           "25-35 min: Guided practice or Q&A.",
           "35-42 min: Knowledge check.",
@@ -1175,28 +1204,54 @@ const ReadinessPacket = ({
       : "No obvious match does not prove there are no applicable recalls; verify official product and manufacturer sources before action.",
   ].slice(0, 5);
   const inspectorStartHere = [
-    "Verify product model numbers, manufacturer labels, and date codes while onsite.",
-    "Check inspection/service dates and documentation gaps before discussing status.",
+    "Verify model numbers and date codes.",
+    "Check open documentation gaps.",
+    "Confirm service dates with site contact.",
     ...guidance.recommendedNextBestActions,
   ].slice(0, 5);
   const instructorStartHere = [
-    "Confirm class topic, audience level, location, and session purpose.",
-    "Prepare demo equipment, safety boundaries, and practical examples before class.",
-    "Confirm attendance, certificate, or credit documentation requirements.",
+    "Confirm audience level and session purpose.",
+    "Prepare demo equipment and safety boundaries.",
+    "Confirm attendance documentation requirements.",
     ...guidance.recommendedNextBestActions,
   ].slice(0, 5);
-  const siteSnapshot = [
-    `Site/profile: ${sampleSite}.`,
-    `Role and engagement: ${role} for ${roleEngagement}.`,
-    `Services: ${serviceText}.`,
-    ...guidance.installedEquipmentReview,
-  ].slice(0, 5);
-  const trainingSnapshot = [
-    `Training profile: ${sampleSite}.`,
-    `Session type: ${roleEngagement}.`,
-    `Training services: ${serviceText}.`,
-    ...guidance.trainingOrEventPrepNotes,
-  ].slice(0, 5);
+  const clientContextItems = compactItems([
+    `Client/site: ${sampleSite}.`,
+    `Role: ${role}.`,
+    `Engagement: ${roleEngagement}.`,
+    ...guidance.deficiencyDocumentationFollowUp,
+  ]);
+  const assetItems = compactItems(
+    selectedTopics.map((item) => item),
+    guidance.installedEquipmentReview,
+  );
+  const aiFlaggedItems = compactItems([
+    ...guidance.keyAttentionFlags,
+    ...missingInformation,
+    hasPossibleMatches
+      ? "Confirm recall match with model/date code."
+      : "Verify official product safety sources.",
+  ]).slice(0, 5);
+  const checklistItems = compactItems([
+    ...guidance.equipmentProductChecklist,
+    ...guidance.audienceSpecificTalkingPoints,
+  ], [
+    "Verify model numbers and date codes.",
+    "Check open discrepancies before leaving.",
+    "Confirm documentation with site contact.",
+  ]);
+  const resourcesToReview = compactItems([
+    ...guidance.knownSourceFacts,
+    ...guidance.providedDemoProfileContext,
+    "Manufacturer instructions.",
+    "Applicable codes and NFPA standards.",
+  ]);
+  const photoBarcodeSignatureItems = [
+    "Capture label photos if details are missing.",
+    "Note barcode or asset tag if available.",
+    "Confirm whether customer sign-off is required.",
+    "Attach evidence to the official record.",
+  ];
   const relatedServiceItems = [
     ...guidance.relatedServiceGroups.safetyRiskReduction,
     ...guidance.relatedServiceGroups.maintenanceTesting,
@@ -1207,13 +1262,19 @@ const ReadinessPacket = ({
   const followUpItems = guidance.followUpNoteDraft
     ? [guidance.followUpNoteDraft]
     : ["Document unresolved questions, product verification needs, and the internal owner for follow-up."];
-  const officialReminder =
-    "Verify official sources, manufacturer instructions, applicable codes, NFPA standards, department requirements, company procedures, and AHJ requirements before action.";
   const packetText = [
     "Engagement Packet",
     `${sampleSite} - ${role} - ${roleEngagement}`,
-    `Services: ${serviceText}`,
-    "AI-generated guidance based on the selected site, role, engagement, and services.",
+    assetText,
+    "",
+    role === "Instructor" ? "Client / Training Site Context" : "Client / Site Context",
+    ...clientContextItems.map((item) => `- ${item}`),
+    "",
+    "Equipment / Assets",
+    ...assetItems.map((item) => `- ${item}`),
+    "",
+    "AI-Flagged Items",
+    ...aiFlaggedItems.map((item) => `- ${item}`),
     "",
     role === "Instructor" ? "Session Priorities" : "Onsite Priorities",
     ...(role === "Instructor" ? instructorStartHere : inspectorStartHere).map((item) => `- ${item}`),
@@ -1223,6 +1284,9 @@ const ReadinessPacket = ({
           "Lesson Flow",
           ...simpleLessonPlan.map((item) => `- ${item}`),
           "",
+          "Checklist / Questions",
+          ...checklistItems.map((item) => `- ${item}`),
+          "",
           "Materials / Equipment Needed",
           ...materialsEquipmentNeeded.map((item) => `- ${item}`),
           "",
@@ -1230,33 +1294,33 @@ const ReadinessPacket = ({
           ...standardsObjectiveAlignment.map((item) => `- ${item}`),
           "",
           "Safety Points to Emphasize",
-          ...[...trainingSnapshot, ...guidance.audienceSpecificTalkingPoints].slice(0, 5).map((item) => `- ${item}`),
+          ...guidance.audienceSpecificTalkingPoints.slice(0, 5).map((item) => `- ${item}`),
           "",
-          "Certification / Attendance Reminders",
+          "Attendance / Certification Reminders",
           ...certificationAttendanceReminders.map((item) => `- ${item}`),
         ]
       : [
-          "Systems / Equipment to Review",
-          ...siteSnapshot.map((item) => `- ${item}`),
+          "Checklist / Questions",
+          ...checklistItems.map((item) => `- ${item}`),
           "",
-          "Items to Verify",
-          ...missingInformation.slice(0, 6).map((item) => `- ${item}`),
+          "Discrepancies / Items to Verify",
+          ...missingInformation.slice(0, 5).map((item) => `- ${item}`),
           "",
-          "Product Safety / Recall Check",
+          "Product Safety / Recall Context",
           ...productSafetyItems.map((item) => `- ${item}`),
+          "",
+          "Photos / Barcodes / Signatures",
+          ...photoBarcodeSignatureItems.map((item) => `- ${item}`),
         ]),
-    "",
-    role === "Instructor" ? "Safety Points to Emphasize" : "Customer Talking Points",
-    ...guidance.audienceSpecificTalkingPoints.slice(0, 5).map((item) => `- ${item}`),
     "",
     "Related Service Considerations",
     ...relatedServiceItems.map((item) => `- ${item}`),
     "",
-    "Documentation / Follow-Up",
-    ...followUpItems.map((item) => `- ${item}`),
+    "Resources to Review",
+    ...resourcesToReview.map((item) => `- ${item}`),
     "",
-    "Official Source Reminder",
-    officialReminder,
+    "Recommended Follow-Up",
+    ...followUpItems.map((item) => `- ${item}`),
   ].join("\n");
   const copyText = (text: string) => {
     if (typeof navigator === "undefined" || !navigator.clipboard) return;
@@ -1265,21 +1329,18 @@ const ReadinessPacket = ({
   const hasFollowUpNote = guidance.followUpNoteDraft.trim().length > 0;
 
   return (
-    <section className="rounded-2xl border border-brand-gray200 bg-white p-5 shadow-panel sm:p-7">
-      <div className="border-b border-brand-gray200 pb-5">
+    <section className="rounded-2xl border border-brand-gray200 bg-white p-4 shadow-sm sm:p-5">
+      <div className="border-b border-brand-gray200 pb-4">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div>
-            <h2 className="text-3xl font-black leading-tight text-brand-charcoal">
+            <h2 className="text-2xl font-black leading-tight text-brand-charcoal sm:text-3xl">
               Engagement Packet
             </h2>
             <p className="mt-2 text-base leading-7 text-brand-gray700">
-              AI-generated guidance based on the selected site, role, engagement, and services.
-            </p>
-            <p className="mt-2 text-base leading-7 text-brand-gray700">
               {sampleSite} · {role} · {roleEngagement}
             </p>
-            <p className="mt-1 text-sm font-bold text-brand-gray700">
-              Services: {serviceText}
+            <p className="mt-1 text-sm font-bold leading-6 text-brand-gray700">
+              {assetText}
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -1315,7 +1376,22 @@ const ReadinessPacket = ({
         </div>
       </div>
 
-      <div className="mt-6 space-y-5">
+      <div className="space-y-1">
+        <PrepBriefSection
+          title={role === "Instructor" ? "Client / Training Site Context" : "Client / Site Context"}
+          tone="neutral"
+        >
+          <PacketList items={clientContextItems} tone="neutral" />
+        </PrepBriefSection>
+
+        <PrepBriefSection title="Equipment / Assets" tone="green">
+          <PacketList items={assetItems} tone="green" />
+        </PrepBriefSection>
+
+        <PrepBriefSection title="AI-Flagged Items" tone="red">
+          <PacketList items={aiFlaggedItems} tone="red" />
+        </PrepBriefSection>
+
         <PrepBriefSection
           title={role === "Instructor" ? "Session Priorities" : "Onsite Priorities"}
           tone="green"
@@ -1331,6 +1407,9 @@ const ReadinessPacket = ({
             <PrepBriefSection title="Lesson Flow" tone="green">
               <PacketList items={simpleLessonPlan} tone="green" />
             </PrepBriefSection>
+            <PrepBriefSection title="Checklist / Questions" tone="green">
+              <PacketList items={checklistItems} tone="green" />
+            </PrepBriefSection>
             <PrepBriefSection title="Materials / Equipment Needed" tone="green">
               <PacketList items={materialsEquipmentNeeded} tone="green" />
             </PrepBriefSection>
@@ -1339,21 +1418,27 @@ const ReadinessPacket = ({
             </PrepBriefSection>
             <PrepBriefSection title="Safety Points to Emphasize" tone="green">
               <PacketList
-                items={[...trainingSnapshot, ...guidance.audienceSpecificTalkingPoints].slice(0, 5)}
+                items={guidance.audienceSpecificTalkingPoints.slice(0, 5)}
                 tone="green"
               />
+            </PrepBriefSection>
+            <PrepBriefSection title="Attendance / Certification Reminders" tone="amber">
+              <PacketList items={certificationAttendanceReminders} tone="amber" />
             </PrepBriefSection>
           </>
         ) : (
           <>
-            <PrepBriefSection title="Systems / Equipment to Review" tone="green">
-              <PacketList items={siteSnapshot} tone="green" />
+            <PrepBriefSection title="Checklist / Questions" tone="green">
+              <PacketList items={checklistItems} tone="green" />
             </PrepBriefSection>
-            <PrepBriefSection title="Items to Verify" tone="red">
-              <PacketList items={missingInformation.slice(0, 6)} tone="red" />
+            <PrepBriefSection title="Discrepancies / Items to Verify" tone="red">
+              <PacketList items={missingInformation.slice(0, 5)} tone="red" />
             </PrepBriefSection>
-            <PrepBriefSection title="Product Safety / Recall Check" tone="amber">
+            <PrepBriefSection title="Product Safety / Recall Context" tone="amber">
               <PacketList items={productSafetyItems} tone="amber" />
+            </PrepBriefSection>
+            <PrepBriefSection title="Photos / Barcodes / Signatures" tone="neutral">
+              <PacketList items={photoBarcodeSignatureItems} tone="neutral" />
             </PrepBriefSection>
           </>
         )}
@@ -1367,17 +1452,15 @@ const ReadinessPacket = ({
           </PrepBriefSection>
         ) : null}
 
-        {role === "Instructor" ? (
-          <PrepBriefSection title="Certification / Attendance Reminders" tone="amber">
-            <PacketList items={certificationAttendanceReminders} tone="amber" />
-          </PrepBriefSection>
-        ) : null}
-
         <PrepBriefSection title="Related Service Considerations" tone="green">
           <PacketList items={relatedServiceItems} tone="green" />
         </PrepBriefSection>
 
-        <PrepBriefSection title="Follow-Up Notes" tone="neutral">
+        <PrepBriefSection title="Resources to Review" tone="neutral">
+          <PacketList items={resourcesToReview} tone="neutral" />
+        </PrepBriefSection>
+
+        <PrepBriefSection title="Recommended Follow-Up" tone="neutral">
           <div className="space-y-3">
             {hasFollowUpNote ? (
               <button
@@ -1391,10 +1474,6 @@ const ReadinessPacket = ({
             <PacketList items={followUpItems} tone="neutral" />
           </div>
         </PrepBriefSection>
-
-        <PrepBriefSection title="Official Source Reminder" tone="amber">
-          <p>{officialReminder}</p>
-        </PrepBriefSection>
       </div>
     </section>
   );
@@ -1405,7 +1484,7 @@ export default function Home() {
     useState<EngagementType>("Inspect / service");
   const [role, setRole] = useState<UserRole>("Inspector");
   const [roleEngagement, setRoleEngagement] = useState<RoleEngagement>(
-    "Inspection / Service Visit",
+    "Inspection / Testing",
   );
   const [selectedTopics, setSelectedTopics] =
     useState<Topic[]>(inspectorDefaultTopics);
@@ -1449,29 +1528,21 @@ export default function Home() {
       return;
     }
 
-    setRoleEngagement("Inspection / Service Visit");
+    setRoleEngagement("Inspection / Testing");
     setEngagementType("Inspect / service");
     setAudience("Internal Inspector");
     setBriefAction("inspection_prep");
     setSelectedTopics(inspectorDefaultTopics);
     setSelectedSampleSite("Municipal Facilities Account");
   };
-  const toggleTopic = (topic: Topic) => {
-    setSelectedTopics((current) =>
-      current.includes(topic)
-        ? current.filter((item) => item !== topic)
-        : [...current, topic],
-    );
-    setGuidance(null);
-  };
   const sourceContextUsed = [
     "Automatic product safety review based on selected site equipment",
     `Role: ${role}`,
     `Engagement: ${roleEngagement}`,
-    `Services: ${selectedTopics.join(", ") || "None selected"}`,
+    `Equipment / Assets: ${selectedTopics.join(", ") || "None selected"}`,
     selectedRecall
       ? `Optional manual CPSC recall result: ${selectedRecall.title}`
-      : "No manual product safety recall selected. Packet is based on engagement, site, service, prep context, and automatic product safety review.",
+      : "No manual product safety recall selected. Packet is based on engagement, client/site record, equipment/assets, prep context, and automatic product safety review.",
     `Customer/Site Profile: ${selectedSiteDetails.label}`,
     `Ryan Service Lens: ${selectedServiceLens.label}`,
     `Engagement type: ${engagementType}`,
@@ -1719,7 +1790,7 @@ export default function Home() {
   const startNewPacket = () => {
     setEngagementType("Inspect / service");
     setRole("Inspector");
-    setRoleEngagement("Inspection / Service Visit");
+    setRoleEngagement("Inspection / Testing");
     setSelectedTopics(inspectorDefaultTopics);
     setAudience("Internal Inspector");
     setSelectedSampleSite("Municipal Facilities Account");
@@ -1748,7 +1819,6 @@ export default function Home() {
             priority
             className="h-auto w-44 sm:w-56"
           />
-          <div className="mt-3 h-0.5 w-16 rounded-full bg-brand-red" />
           <h1 className="mt-3 text-[24px] font-black leading-tight text-brand-charcoal sm:text-[32px]">
             Engagement Assistant
           </h1>
@@ -1759,10 +1829,12 @@ export default function Home() {
       </header>
 
       <div className="mx-auto max-w-3xl px-4 py-4 sm:px-6">
-        <section className="border-t-2 border-brand-red rounded-2xl border border-brand-gray200 bg-white p-4 shadow-sm sm:p-5">
+        <section className="rounded-2xl border border-brand-gray200 bg-white p-4 shadow-sm sm:p-5">
           <div className="grid gap-5">
             <div>
-              <h2 className="text-lg font-black text-brand-charcoal">Site</h2>
+              <h2 className="text-lg font-black text-brand-charcoal">
+                1. Select Client / Site
+              </h2>
               <div className="mt-2 grid gap-2 sm:grid-cols-2">
                 {visibleSiteOptions.map((item) => {
                   const selected = selectedSampleSite === item.value;
@@ -1772,6 +1844,9 @@ export default function Home() {
                       type="button"
                       onClick={() => {
                         setSelectedSampleSite(item.value);
+                        setSelectedTopics(
+                          equipmentAssetsBySite[item.value] ?? inspectorDefaultTopics,
+                        );
                         setGuidance(null);
                       }}
                       className={`min-h-12 rounded-xl border px-3 py-3 text-left text-sm font-extrabold leading-5 transition ${
@@ -1789,7 +1864,7 @@ export default function Home() {
 
             <div className="grid gap-5 md:grid-cols-[0.8fr_1.2fr]">
               <div>
-                <h2 className="text-lg font-black text-brand-charcoal">Role</h2>
+                <h2 className="text-lg font-black text-brand-charcoal">2. Select Role</h2>
                 <div className="mt-2 grid grid-cols-2 gap-2">
                   {(["Inspector", "Instructor"] as UserRole[]).map((item) => {
                     const selected = role === item;
@@ -1812,7 +1887,9 @@ export default function Home() {
               </div>
 
               <div>
-                <h2 className="text-lg font-black text-brand-charcoal">Engagement</h2>
+                <h2 className="text-lg font-black text-brand-charcoal">
+                  3. Select Engagement Type
+                </h2>
                 <div className="mt-2 grid gap-2 sm:grid-cols-3 md:grid-cols-1 lg:grid-cols-3">
                   {roleEngagementOptions[role].map((item) => {
                     const selected = roleEngagement === item;
@@ -1839,25 +1916,21 @@ export default function Home() {
             </div>
 
             <div>
-              <h2 className="text-lg font-black text-brand-charcoal">Services</h2>
+              <h2 className="text-lg font-black text-brand-charcoal">
+                4. Equipment / Assets from Client Record
+              </h2>
+              <p className="mt-1 text-xs font-bold leading-5 text-brand-gray500">
+                Auto-filled from the selected client/site record for this demo.
+              </p>
               <div className="mt-2 flex flex-wrap gap-2">
-                {topicOptions.map((topic) => {
-                  const selected = selectedTopics.includes(topic);
-                  return (
-                    <button
-                      key={topic}
-                      type="button"
-                      onClick={() => toggleTopic(topic)}
-                      className={`rounded-xl border px-3 py-2 text-sm font-extrabold transition ${
-                        selected
-                          ? "border-brand-green bg-brand-green text-white"
-                          : "border-brand-gray200 bg-white text-brand-charcoal hover:border-brand-green hover:bg-green-50"
-                      }`}
-                    >
-                      {topic}
-                    </button>
-                  );
-                })}
+                {selectedTopics.map((topic) => (
+                  <span
+                    key={topic}
+                    className="rounded-xl border border-green-700/20 bg-green-50 px-3 py-2 text-sm font-extrabold text-brand-green"
+                  >
+                    {topic}
+                  </span>
+                ))}
               </div>
             </div>
           </div>
