@@ -14,7 +14,7 @@ Use the selected preparation context and optional recall/product safety informat
 - audience
 - sample site profile
 - installed equipment/products from the selected site profile
-- selected Ryan Service Lens
+- selected preparation focus, if provided
 - additional manual/site/training notes
 - automatic product safety review results
 - optional manual recall data, if present
@@ -84,13 +84,13 @@ Source-aware output:
 - Separate official recall facts from AI interpretation and internal follow-up where possible.
 - Do not blur official facts with AI suggestions.
 - Use source labels where appropriate: Known from source, Provided by user/demo profile, AI interpretation, Needs verification, Human review required.
-- Treat official CPSC recall facts as source facts. Treat selected site profile and service lens as demo/user-provided context. Treat preparation guidance as AI interpretation.
+- Treat official CPSC recall facts as source facts. Treat selected site profile and preparation focus as demo/user-provided context. Treat preparation guidance as AI interpretation.
 
 Ryan-aligned service context:
 - Protect: identify immediate safety or customer impact.
 - Prevent: identify inspection, maintenance, training, testing, or documentation steps that reduce risk.
 - Preserve: support system reliability, customer confidence, facility continuity, and follow-up planning.
-- Every packet must reflect the selected Ryan Service Lens. If the lens does not clearly apply, state what needs verification instead of forcing the connection.
+- Use the selected preparation focus only as supporting context. If it does not clearly apply, state what needs verification instead of forcing the connection.
 - Treat training resources, product knowledge, manufacturer documentation, and event preparation material as preparation context unless explicitly provided as official source facts.
 
 Audience guidance:
@@ -593,7 +593,7 @@ const fallbackPacket = ({
             ? `Optional manual product safety search result: ${title}`
             : "No manual product safety recall selected. Packet is based on engagement, site, service, prep context, and automatic product safety review.",
           `Sample site profile: ${sampleSite}`,
-          `Ryan Service Lens: ${serviceLensLabel}`,
+          `Preparation focus: ${serviceLensLabel}`,
           `Engagement type: ${engagementType}`,
           `Audience: ${audience}`,
           "Demo source notes: service environment brief, source hierarchy, documentation/deficiency follow-up logic, and training/event prep frameworks",
@@ -617,15 +617,15 @@ const fallbackPacket = ({
       `Provided by user/demo profile: upcoming reminder is ${upcomingReminder}.`,
       `Provided by user/demo profile: training or education need is ${trainingNeed}.`,
       `Provided by user/demo profile: documentation need is ${documentationNeed}.`,
-      `Provided by user/demo profile: selected Ryan Service Lens is ${serviceLensLabel}, focused on ${serviceLensFocus.join(", ") || "not specified"}.`,
+      `Provided by user/demo profile: selected preparation focus is ${serviceLensLabel}, focused on ${serviceLensFocus.join(", ") || "not specified"}.`,
       `Provided by user/demo profile: prep resources include ${[...prepMaterials, ...prepTopics, ...prepQuestions].slice(0, 6).join(", ") || "not specified"}.`,
       `Provided by user/demo profile: additional manual/site/training notes are ${additionalNotes || "not provided"}.`,
     ],
     aiInterpretation: [
-      `AI interpretation: use the ${serviceLensLabel} lens to prepare ${role} work for ${roleEngagement || engagementType}.`,
+      `AI interpretation: use selected preparation context to prepare ${role} work for ${roleEngagement || engagementType}.`,
       hasRecall
         ? "AI interpretation: compare optional manual recall product details with installed site equipment before making any customer-facing statement."
-        : "AI interpretation: prepare the engagement packet from site, installed equipment, audience, service lens, automatic product safety review, prep resources, and manual notes because no manual recall was selected.",
+        : "AI interpretation: prepare the engagement packet from site, installed equipment, audience, automatic product safety review, prep resources, and manual notes because no manual recall was selected.",
       "AI interpretation: connect related service considerations to safety, documentation, prevention, customer confidence, and risk reduction.",
       "Human review required: route any safety, code, compliance, inspection, engineering, or customer communication decision through qualified internal review.",
     ],
@@ -643,7 +643,7 @@ const fallbackPacket = ({
         ? "Training or education opportunity"
         : "Missing training context",
     ],
-    internalFieldBrief: `For ${role || "employee"} ${roleEngagement || engagementType}, prepare for ${sampleSite} using equipment/assets ${selectedTopics.join(", ") || "not specified"} and the ${serviceLensLabel} service lens. Start from the selected client/site profile, installed equipment, service reminder, training need, and documentation context. ${hasRecall ? `Optional manual product safety context: "${title}" lists manufacturer/company as ${manufacturer}, product context as ${product}, hazard as ${hazard}, and remedy as ${remedy}.` : "No manual product safety recall selected. Packet is based on engagement, client/site record, equipment/assets, prep context, and automatic product safety review."} Additional notes: ${additionalNotes || "none provided"}.`,
+    internalFieldBrief: `For ${role || "employee"} ${roleEngagement || engagementType}, prepare for ${sampleSite} using equipment/assets ${selectedTopics.join(", ") || "not specified"}. Start from the selected client/site profile, installed equipment, service reminder, training need, and documentation context. ${hasRecall ? `Optional manual product safety context: "${title}" lists manufacturer/company as ${manufacturer}, product context as ${product}, hazard as ${hazard}, and remedy as ${remedy}.` : "No manual product safety recall selected. Packet is based on engagement, client/site record, equipment/assets, prep context, and automatic product safety review."} Additional notes: ${additionalNotes || "none provided"}.`,
     standardsObjectiveAlignment:
       role === "Instructor"
         ? [
@@ -683,7 +683,7 @@ const fallbackPacket = ({
       audienceContext.talkingPoint,
       hasRecall
         ? "Describe the product, hazard, and remedy in plain language."
-        : "Use plain-language talking points based on the engagement, site profile, service lens, and prep resources.",
+        : "Use plain-language talking points based on the engagement, site profile, equipment/assets, and prep resources.",
       hasRecall
         ? "Ask whether the site has matching equipment, model numbers, date ranges, or service history."
         : "Ask what equipment, documentation, training history, or site details should be reviewed before the engagement.",
@@ -707,7 +707,7 @@ const fallbackPacket = ({
     trainingOrEventPrepNotes: [
       audienceContext.trainingNote,
       `Training/education need: ${trainingNeed}.`,
-      `Ryan Service Lens focus: ${serviceLensFocus.join(", ") || "not specified"}.`,
+      `Preparation focus: ${serviceLensFocus.join(", ") || "not specified"}.`,
       `Upcoming reminder: ${upcomingReminder}.`,
       `Documentation/deficiency context: ${documentationNeed}.`,
       `Additional manual/site/training notes: ${additionalNotes || "none provided"}.`,
@@ -742,7 +742,7 @@ const fallbackPacket = ({
     relatedServiceGroups: {
       safetyRiskReduction: [
         "Review safety-sensitive issues with a qualified internal employee.",
-        "Use the service lens to identify risk reduction and prevention service considerations.",
+        "Use selected context to identify risk reduction and prevention considerations.",
       ],
       maintenanceTesting: [
         "Review inspection, testing, maintenance, and preventive maintenance needs.",
