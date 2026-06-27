@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
+import Image from "next/image";
 import knowledgeBase from "../data/source-docs/sampleKnowledgeBase.json";
 import type {
   AiGuidance,
@@ -1739,11 +1740,16 @@ export default function Home() {
     <main className="min-h-screen bg-brand-gray100 text-brand-charcoal">
       <header className="border-t-4 border-brand-green bg-white">
         <div className="mx-auto max-w-3xl px-4 py-4 sm:px-6 sm:py-5">
-          <p className="text-base font-black uppercase tracking-[0.035em] text-brand-green sm:text-xl">
-            RYAN FIRE PROTECTION, INC.
-          </p>
-          <div className="mt-2 h-0.5 w-16 rounded-full bg-brand-red" />
-          <h1 className="mt-2 text-[24px] font-black leading-tight text-brand-charcoal sm:text-[32px]">
+          <Image
+            src="/ryan-logo.png"
+            alt="Ryan Fire Protection, Inc."
+            width={1280}
+            height={551}
+            priority
+            className="h-auto w-44 sm:w-56"
+          />
+          <div className="mt-3 h-0.5 w-16 rounded-full bg-brand-red" />
+          <h1 className="mt-3 text-[24px] font-black leading-tight text-brand-charcoal sm:text-[32px]">
             Engagement Assistant
           </h1>
           <p className="mt-1 text-sm leading-6 text-brand-gray700 sm:text-base">
