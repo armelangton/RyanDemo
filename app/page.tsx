@@ -2120,9 +2120,7 @@ export default function Home() {
       </div>
 
       <footer className="mx-auto mt-1 max-w-3xl px-5 pb-5 pt-1 text-center text-[11px] leading-4 text-brand-gray500 sm:px-6">
-        Proof-of-concept demo. Verify official sources, manufacturer
-        instructions, applicable codes, NFPA standards, department
-        requirements, company procedures, and AHJ requirements before action.
+        © 2026 Amy Melangton. Proof of concept for demonstration purposes only.
       </footer>
     </main>
   );
