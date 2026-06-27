@@ -58,6 +58,41 @@ type BriefAction =
   | "customer_talking_points"
   | "follow_up_notes";
 
+type Workflow =
+  | "Training / Lesson Plan"
+  | "Continuing Education Prep"
+  | "Inspection Prep"
+  | "Site Walkthrough Prep"
+  | "Documentation Review"
+  | "Product Safety Review";
+
+type PrepSection =
+  | "Lesson Plan"
+  | "Teaching Points"
+  | "Questions to Ask"
+  | "Materials Needed"
+  | "Attendance Notes"
+  | "Product / Manufacturer Updates"
+  | "Follow-Up Actions"
+  | "CE Prep Outline"
+  | "Learning Objectives"
+  | "Attendance / Certification Notes"
+  | "Checklist Questions"
+  | "Inspection Checklist"
+  | "Items to Verify"
+  | "Equipment / Assets"
+  | "Documentation Follow-Up"
+  | "Product Safety Context"
+  | "Customer Talking Points"
+  | "Resources to Review"
+  | "Walkthrough Checklist"
+  | "Customer Questions"
+  | "Documentation Checklist"
+  | "Missing Information"
+  | "Records to Review"
+  | "Manufacturer / Model Verification"
+  | "Official Source Reminder";
+
 type ServiceLens = {
   id: string;
   label: string;
@@ -90,6 +125,137 @@ type SiteProfile = {
 };
 
 const serviceLenses = knowledgeBase.serviceLenses as ServiceLens[];
+
+const workflows: Workflow[] = [
+  "Training / Lesson Plan",
+  "Continuing Education Prep",
+  "Inspection Prep",
+  "Site Walkthrough Prep",
+  "Documentation Review",
+  "Product Safety Review",
+];
+
+const workflowConfig: Record<
+  Workflow,
+  {
+    role: UserRole;
+    roleEngagement: RoleEngagement;
+    engagementType: EngagementType;
+    audience: Audience;
+    briefAction: BriefAction;
+    previewTitle: string;
+    packetTitle: string;
+    recommended: PrepSection[];
+    optional: PrepSection[];
+  }
+> = {
+  "Training / Lesson Plan": {
+    role: "Instructor",
+    roleEngagement: "Continuing Education Prep",
+    engagementType: "Teach / train",
+    audience: "Recruit Class",
+    briefAction: "training_prep",
+    previewTitle: "Training Preview",
+    packetTitle: "Training Prep Packet",
+    recommended: [
+      "Lesson Plan",
+      "Teaching Points",
+      "Questions to Ask",
+      "Materials Needed",
+      "Attendance Notes",
+    ],
+    optional: ["Product / Manufacturer Updates", "Follow-Up Actions"],
+  },
+  "Continuing Education Prep": {
+    role: "Instructor",
+    roleEngagement: "Continuing Education Prep",
+    engagementType: "Teach / train",
+    audience: "Instructor / Trainer",
+    briefAction: "training_prep",
+    previewTitle: "CE Prep Preview",
+    packetTitle: "CE Prep Packet",
+    recommended: [
+      "CE Prep Outline",
+      "Learning Objectives",
+      "Teaching Points",
+      "Materials Needed",
+      "Attendance / Certification Notes",
+    ],
+    optional: [
+      "Product / Manufacturer Updates",
+      "Checklist Questions",
+      "Follow-Up Actions",
+    ],
+  },
+  "Inspection Prep": {
+    role: "Inspector",
+    roleEngagement: "Inspection / Testing",
+    engagementType: "Inspect / service",
+    audience: "Internal Inspector",
+    briefAction: "inspection_prep",
+    previewTitle: "Inspection Prep Preview",
+    packetTitle: "Inspection Prep Packet",
+    recommended: [
+      "Inspection Checklist",
+      "Items to Verify",
+      "Equipment / Assets",
+      "Documentation Follow-Up",
+    ],
+    optional: [
+      "Product Safety Context",
+      "Customer Talking Points",
+      "Resources to Review",
+    ],
+  },
+  "Site Walkthrough Prep": {
+    role: "Inspector",
+    roleEngagement: "Site Walkthrough",
+    engagementType: "Inspect / service",
+    audience: "Facility Manager",
+    briefAction: "inspection_prep",
+    previewTitle: "Site Walkthrough Preview",
+    packetTitle: "Site Walkthrough Packet",
+    recommended: [
+      "Walkthrough Checklist",
+      "Items to Verify",
+      "Customer Questions",
+      "Resources to Review",
+    ],
+    optional: ["Equipment / Assets", "Product Safety Context", "Follow-Up Actions"],
+  },
+  "Documentation Review": {
+    role: "Inspector",
+    roleEngagement: "Documentation Review",
+    engagementType: "Follow up / document",
+    audience: "Internal Inspector",
+    briefAction: "follow_up_notes",
+    previewTitle: "Documentation Review Preview",
+    packetTitle: "Documentation Review Packet",
+    recommended: [
+      "Documentation Checklist",
+      "Missing Information",
+      "Records to Review",
+      "Follow-Up Actions",
+    ],
+    optional: ["Product Safety Context", "Customer Talking Points"],
+  },
+  "Product Safety Review": {
+    role: "Inspector",
+    roleEngagement: "Documentation Review",
+    engagementType: "Follow up / document",
+    audience: "Safety Coordinator",
+    briefAction: "inspection_prep",
+    previewTitle: "Product Safety Review Preview",
+    packetTitle: "Product Safety Review Packet",
+    recommended: [
+      "Product Safety Context",
+      "Manufacturer / Model Verification",
+      "Items to Verify",
+      "Official Source Reminder",
+    ],
+    optional: ["Customer Talking Points", "Documentation Follow-Up"],
+  },
+};
 
 const visibleSiteOptions = [
   {
@@ -160,9 +326,15 @@ const equipmentAssetsBySite: Record<string, Topic[]> = {
 
 type ClientRecord = {
   equipmentAssets: string[];
+  trainingHistory: string[];
+  serviceHistory: string[];
   serviceTrainingHistory: string[];
   openItems: string[];
+  missingInformation: string[];
   trainingContext: string[];
+  audience: string;
+  continuingEducationContext: string;
+  productSafetyTerms: string[];
   resources: {
     title: string;
     type: string;
@@ -174,6 +346,12 @@ type ClientRecord = {
 const clientRecords: Record<string, ClientRecord> = {
   "Fire Department Recruit Training Site": {
     equipmentAssets: equipmentAssetsBySite["Fire Department Recruit Training Site"],
+    trainingHistory: [
+      "Recruit training session requested",
+      "Sprinkler overview needed",
+      "Continuing education prep needed",
+    ],
+    serviceHistory: ["Training support record only"],
     serviceTrainingHistory: [
       "Recruit training requested",
       "Sprinkler overview needed",
@@ -184,11 +362,20 @@ const clientRecords: Record<string, ClientRecord> = {
       "Verify demonstration materials",
       "Prepare attendance documentation",
     ],
+    missingInformation: [
+      "Final training objectives",
+      "Demo material availability",
+      "Attendance documentation owner",
+    ],
     trainingContext: [
       "Recruit audience",
       "Continuing education prep",
       "Lesson plan needed",
     ],
+    audience: "Fire department recruits",
+    continuingEducationContext:
+      "Basic system recognition, safety awareness, and documentation expectations",
+    productSafetyTerms: ["sprinkler", "smoke alarm", "fire alarm"],
     resources: [
       {
         title: "Sprinkler System Overview",
@@ -218,6 +405,11 @@ const clientRecords: Record<string, ClientRecord> = {
   },
   "Municipal Facilities Account": {
     equipmentAssets: equipmentAssetsBySite["Municipal Facilities Account"],
+    trainingHistory: ["Facility staff may need safety awareness support"],
+    serviceHistory: [
+      "Annual inspection due soon",
+      "Prior extinguisher documentation gap",
+    ],
     serviceTrainingHistory: [
       "Annual inspection due soon",
       "Prior extinguisher documentation gap",
@@ -227,11 +419,20 @@ const clientRecords: Record<string, ClientRecord> = {
       "Emergency lighting date needs verification",
       "Photograph sprinkler manufacturer labels",
     ],
+    missingInformation: [
+      "Extinguisher model numbers",
+      "Emergency lighting service date",
+      "Sprinkler manufacturer labels",
+    ],
     trainingContext: [
       "Facility maintenance staff",
       "Documentation awareness",
       "Basic safety reminders",
     ],
+    audience: "Facility maintenance staff",
+    continuingEducationContext:
+      "Customer education may be needed for documentation and safety awareness",
+    productSafetyTerms: ["fire extinguisher", "smoke alarm", "emergency lighting"],
     resources: [
       {
         title: "Site Record",
@@ -261,6 +462,13 @@ const clientRecords: Record<string, ClientRecord> = {
   },
   "Healthcare Facility ITM Review": {
     equipmentAssets: equipmentAssetsBySite["Healthcare Facility ITM Review"],
+    trainingHistory: [
+      "Facilities and compliance staff may need documentation support",
+    ],
+    serviceHistory: [
+      "ITM documentation review",
+      "Healthcare compliance sensitivity",
+    ],
     serviceTrainingHistory: [
       "ITM documentation review",
       "Healthcare compliance sensitivity",
@@ -270,11 +478,20 @@ const clientRecords: Record<string, ClientRecord> = {
       "Verify special hazards details",
       "Review emergency lighting dates",
     ],
+    missingInformation: [
+      "Documentation gap details",
+      "Special hazards equipment details",
+      "Emergency lighting dates",
+    ],
     trainingContext: [
       "Facilities and compliance staff",
       "Inspection readiness",
       "Equipment awareness",
     ],
+    audience: "Facilities and compliance staff",
+    continuingEducationContext:
+      "Documentation, inspection readiness, and equipment awareness",
+    productSafetyTerms: ["fire alarm", "sprinkler", "emergency lighting"],
     resources: [
       {
         title: "ITM Record",
@@ -298,6 +515,11 @@ const clientRecords: Record<string, ClientRecord> = {
   },
   "Education Campus Facilities Training": {
     equipmentAssets: equipmentAssetsBySite["Education Campus Facilities Training"],
+    trainingHistory: [
+      "Staff education session",
+      "Campus safety walkthrough",
+    ],
+    serviceHistory: ["Campus safety walkthrough context"],
     serviceTrainingHistory: [
       "Staff education session",
       "Campus safety walkthrough",
@@ -307,11 +529,20 @@ const clientRecords: Record<string, ClientRecord> = {
       "Verify extinguisher training materials",
       "Identify campus follow-up questions",
     ],
+    missingInformation: [
+      "Audience knowledge level",
+      "Extinguisher training materials",
+      "Campus follow-up questions",
+    ],
     trainingContext: [
       "Campus staff",
       "Safety awareness",
       "Emergency systems overview",
     ],
+    audience: "Campus staff",
+    continuingEducationContext:
+      "Staff safety awareness, extinguisher basics, and emergency systems overview",
+    productSafetyTerms: ["fire extinguisher", "smoke alarm", "emergency lighting"],
     resources: [
       {
         title: "Training Outline",
@@ -1267,8 +1498,415 @@ const PrepBriefSection = ({
   );
 };
 
+const previewTitleForWorkflow = (workflow: Workflow) =>
+  workflowConfig[workflow].previewTitle;
+
+const flagsForRecord = (
+  workflow: Workflow,
+  record: ClientRecord,
+  automaticSafetyReview: AutomaticSafetyReview,
+) => {
+  const base =
+    workflow === "Training / Lesson Plan" ||
+    workflow === "Continuing Education Prep"
+      ? [
+          ...record.openItems,
+          "Review product safety terms.",
+          "Use site equipment in examples.",
+        ]
+      : workflow === "Product Safety Review"
+        ? [
+            "Verify model and date code.",
+            "Check manufacturer guidance.",
+            "Confirm official source before action.",
+            ...record.missingInformation,
+          ]
+        : [...record.openItems, ...record.missingInformation];
+
+  if (automaticSafetyReview.possibleMatches.length) {
+    base.unshift("Review possible product safety match.");
+  }
+
+  return compactItems(base).slice(0, 3);
+};
+
+const recommendedNextStep = (workflow: Workflow, record: ClientRecord) => {
+  if (workflow === "Training / Lesson Plan") {
+    return "Confirm objectives, materials, and attendance documentation before teaching.";
+  }
+  if (workflow === "Continuing Education Prep") {
+    return "Confirm learning objectives and documentation requirements before delivery.";
+  }
+  if (workflow === "Product Safety Review") {
+    return "Verify model, date code, and official source before discussing applicability.";
+  }
+  if (workflow === "Documentation Review") {
+    return "Review missing records and assign a follow-up owner.";
+  }
+  if (workflow === "Site Walkthrough Prep") {
+    return "Confirm walkthrough priorities and open questions with the site contact.";
+  }
+  return record.openItems[0] ?? "Confirm open items before the engagement.";
+};
+
+const sortResources = (
+  record: ClientRecord,
+  workflow: Workflow,
+  selectedSections: PrepSection[],
+) => {
+  const score = (resource: ClientRecord["resources"][number]) => {
+    const text = `${resource.title} ${resource.type} ${resource.description}`.toLowerCase();
+    let value = 0;
+    if (workflow.includes("Training") || workflow.includes("Education")) {
+      if (text.includes("training") || text.includes("instructor")) value += 4;
+      if (text.includes("attendance")) value += 3;
+    }
+    if (workflow.includes("Inspection") || workflow.includes("Walkthrough")) {
+      if (text.includes("site") || text.includes("asset") || text.includes("service")) value += 4;
+    }
+    if (workflow.includes("Documentation")) {
+      if (text.includes("documentation") || text.includes("record") || text.includes("checklist")) value += 4;
+    }
+    if (
+      workflow.includes("Product Safety") ||
+      selectedSections.some((section) => section.includes("Product"))
+    ) {
+      if (text.includes("safety") || text.includes("recall")) value += 5;
+    }
+    return value;
+  };
+
+  return [...record.resources].sort((a, b) => score(b) - score(a));
+};
+
+const sectionContent = ({
+  section,
+  workflow,
+  record,
+  guidance,
+  automaticSafetyReview,
+}: {
+  section: PrepSection;
+  workflow: Workflow;
+  record: ClientRecord;
+  guidance: AiGuidance;
+  automaticSafetyReview: AutomaticSafetyReview;
+}) => {
+  const safetyItems = [
+    "Review product safety terms.",
+    "Verify model and date code.",
+    "Check manufacturer guidance.",
+    "Confirm before customer discussion.",
+  ];
+  const checklist = [
+    ...record.openItems,
+    ...guidance.equipmentProductChecklist,
+  ].slice(0, 5);
+  const resources = sortResources(record, workflow, [section])
+    .slice(0, 5)
+    .map((resource) => `${resource.title}: ${resource.description}`);
+
+  const content: Partial<Record<PrepSection, string[]>> = {
+    "Lesson Plan": [
+      `Session Goal: ${record.continuingEducationContext}.`,
+      `Audience: ${record.audience}.`,
+      "Opening: Review purpose and safety role.",
+      `Demo: Cover ${record.equipmentAssets.slice(0, 3).join(", ")}.`,
+      "Wrap-up: Capture questions and follow-up.",
+    ],
+    "Teaching Points": [
+      "Use site equipment in examples.",
+      "Explain labels and basic components.",
+      "Connect training to field awareness.",
+      "Pause for likely attendee questions.",
+    ],
+    "Questions to Ask": [
+      "What should attendees recognize onsite?",
+      "Which records need documentation?",
+      "What questions should be escalated?",
+      "What materials are missing?",
+    ],
+    "Materials Needed": [...resources.slice(0, 3), "Attendance or completion record."],
+    "Attendance Notes": [
+      "Prepare attendance documentation.",
+      "Confirm completion tracking owner.",
+      "Avoid unapproved certification claims.",
+    ],
+    "Product / Manufacturer Updates": safetyItems,
+    "Follow-Up Actions": guidance.recommendedNextBestActions.slice(0, 5),
+    "CE Prep Outline": [
+      "Confirm learning objective.",
+      "Match examples to audience readiness.",
+      "Use approved materials only.",
+      "Record questions for follow-up.",
+    ],
+    "Learning Objectives": [
+      "Identify basic system purpose.",
+      "Recognize common components.",
+      "Know what to report.",
+      "Understand documentation expectations.",
+    ],
+    "Attendance / Certification Notes": [
+      "Prepare attendance roster.",
+      "Verify credit language before use.",
+      "Route certification questions for review.",
+    ],
+    "Checklist Questions": checklist,
+    "Inspection Checklist": checklist,
+    "Items to Verify": [
+      ...record.missingInformation,
+      ...guidance.missingInformationToVerify,
+    ].slice(0, 5),
+    "Equipment / Assets": record.equipmentAssets,
+    "Documentation Follow-Up": [
+      ...record.openItems,
+      "Assign follow-up owner.",
+      "Attach notes to official record.",
+    ].slice(0, 5),
+    "Product Safety Context": [
+      ...safetyItems,
+      automaticSafetyReview.possibleMatches.length
+        ? "Possible match needs verification."
+        : "No obvious match from demo review.",
+    ].slice(0, 5),
+    "Customer Talking Points": guidance.audienceSpecificTalkingPoints.slice(0, 4),
+    "Resources to Review": resources,
+    "Walkthrough Checklist": checklist,
+    "Customer Questions": [
+      "Which systems are most important today?",
+      "What documentation is missing?",
+      "Who owns follow-up?",
+      "What should be explained plainly?",
+    ],
+    "Documentation Checklist": [
+      ...record.missingInformation,
+      "Review service notes.",
+      "Confirm official record owner.",
+    ].slice(0, 5),
+    "Missing Information": record.missingInformation,
+    "Records to Review": resources,
+    "Manufacturer / Model Verification": [
+      "Verify manufacturer label.",
+      "Confirm model and date code.",
+      "Check manufacturer guidance.",
+      "Compare against official source.",
+    ],
+    "Official Source Reminder": [
+      "Verify CPSC and manufacturer sources.",
+      "Check applicable codes and NFPA standards.",
+      "Use qualified internal review.",
+    ],
+  };
+
+  return content[section] ?? [];
+};
+
+const AiPrepOutput = ({
+  guidance,
+  workflow,
+  selectedSections,
+  record,
+  sampleSite,
+  automaticSafetyReview,
+  onStartNew,
+}: {
+  guidance: AiGuidance;
+  workflow: Workflow;
+  selectedSections: PrepSection[];
+  record: ClientRecord;
+  sampleSite: string;
+  automaticSafetyReview: AutomaticSafetyReview;
+  onStartNew: () => void;
+}) => {
+  const [showExpanded, setShowExpanded] = useState(false);
+
+  if (!guidance) return null;
+
+  const sortedResources = sortResources(record, workflow, selectedSections);
+  const flags = flagsForRecord(workflow, record, automaticSafetyReview);
+  const snapshot = [
+    `${sampleSite}: ${record.continuingEducationContext}.`,
+    `Assets: ${record.equipmentAssets.slice(0, 3).join(", ")}.`,
+  ].slice(0, 2);
+  const nextStep = recommendedNextStep(workflow, record);
+  const packetTitle = workflowConfig[workflow].packetTitle;
+  const packetText = [
+    packetTitle,
+    sampleSite,
+    "",
+    "Snapshot",
+    ...snapshot.map((item) => `- ${item}`),
+    "",
+    "AI-Flagged Items",
+    ...flags.map((item) => `- ${item}`),
+    "",
+    ...selectedSections.flatMap((section) => [
+      section,
+      ...sectionContent({
+        section,
+        workflow,
+        record,
+        guidance,
+        automaticSafetyReview,
+      }).map((item) => `- ${item}`),
+      "",
+    ]),
+    "Recommended Follow-Up",
+    `- ${nextStep}`,
+    "",
+    "Verification Reminder",
+    "- Verify official sources, manufacturer instructions, applicable codes, NFPA standards, company procedures, and AHJ requirements before action.",
+  ].join("\n");
+  const copyText = (text: string) => {
+    if (typeof navigator === "undefined" || !navigator.clipboard) return;
+    void navigator.clipboard.writeText(text);
+  };
+  const shareText = (text: string) => {
+    if (typeof navigator !== "undefined" && "share" in navigator) {
+      void navigator.share({ title: packetTitle, text });
+      return;
+    }
+    copyText(text);
+  };
+
+  return (
+    <section className="rounded-2xl border border-brand-gray200 bg-white p-4 shadow-sm sm:p-5">
+      <div className="border-b border-brand-gray200 pb-3">
+        <h2 className="text-2xl font-black leading-tight text-brand-charcoal">
+          {previewTitleForWorkflow(workflow)}
+        </h2>
+        <p className="mt-1 text-sm font-bold leading-6 text-brand-gray700">
+          {sampleSite}
+        </p>
+      </div>
+
+      <div className="space-y-1">
+        <PrepBriefSection title="Snapshot" tone="green">
+          <PacketList items={snapshot} tone="green" />
+        </PrepBriefSection>
+        <PrepBriefSection title="AI-Flagged Items" tone="red">
+          <PacketList items={flags} tone="red" />
+        </PrepBriefSection>
+        <PrepBriefSection title="Recommended Sections Selected" tone="neutral">
+          <div className="flex flex-wrap gap-2">
+            {selectedSections.map((section) => (
+              <span
+                key={section}
+                className="rounded-lg border border-brand-gray200 bg-brand-gray100 px-2.5 py-1 text-xs font-black text-brand-charcoal"
+              >
+                {section}
+              </span>
+            ))}
+          </div>
+        </PrepBriefSection>
+        <PrepBriefSection title="Key Resources" tone="neutral">
+          <PacketList
+            items={sortedResources
+              .slice(0, 3)
+              .map((resource) => `${resource.title}: ${resource.description}`)}
+            tone="neutral"
+          />
+        </PrepBriefSection>
+        <PrepBriefSection title="Recommended Next Step" tone="green">
+          <p>{nextStep}</p>
+        </PrepBriefSection>
+
+        <div className="flex flex-wrap gap-2 border-t border-brand-gray200 pt-4">
+          <button
+            type="button"
+            onClick={() => setShowExpanded((value) => !value)}
+            className="rounded-xl border border-brand-green bg-white px-3 py-2 text-sm font-extrabold text-brand-green transition hover:bg-green-50"
+          >
+            {showExpanded ? "Hide Selected Sections" : "Expand Selected Sections"}
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowExpanded(true)}
+            className="rounded-xl border border-brand-gray200 bg-white px-3 py-2 text-sm font-extrabold text-brand-charcoal transition hover:bg-brand-gray100"
+          >
+            View Full Packet
+          </button>
+          <button
+            type="button"
+            onClick={() => copyText(packetText)}
+            className="rounded-xl border border-brand-gray200 bg-white px-3 py-2 text-sm font-extrabold text-brand-charcoal transition hover:bg-brand-gray100"
+          >
+            Copy
+          </button>
+          <button
+            type="button"
+            onClick={() => shareText(packetText)}
+            className="rounded-xl border border-brand-gray200 bg-white px-3 py-2 text-sm font-extrabold text-brand-charcoal transition hover:bg-brand-gray100"
+          >
+            Share
+          </button>
+          <button
+            type="button"
+            onClick={() => window.print()}
+            className="rounded-xl border border-brand-gray200 bg-white px-3 py-2 text-sm font-extrabold text-brand-charcoal transition hover:bg-brand-gray100"
+          >
+            Print
+          </button>
+          <button
+            type="button"
+            onClick={onStartNew}
+            className="rounded-xl border border-brand-gray200 bg-white px-3 py-2 text-sm font-extrabold text-brand-gray700 transition hover:bg-brand-gray100"
+          >
+            Start New
+          </button>
+        </div>
+
+        {showExpanded ? (
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="sm:col-span-2">
+              <PrepBriefSection title={packetTitle} tone="green">
+                <PacketList items={snapshot} tone="green" />
+              </PrepBriefSection>
+            </div>
+            {selectedSections.map((section) => (
+              <PrepBriefSection key={section} title={section} tone="neutral">
+                <PacketList
+                  items={sectionContent({
+                    section,
+                    workflow,
+                    record,
+                    guidance,
+                    automaticSafetyReview,
+                  })}
+                  tone={
+                    section.includes("Safety") ||
+                    section.includes("Verify") ||
+                    section.includes("Missing")
+                      ? "red"
+                      : "green"
+                  }
+                />
+              </PrepBriefSection>
+            ))}
+            <div className="sm:col-span-2">
+              <PrepBriefSection title="Recommended Follow-Up" tone="green">
+                <p>{nextStep}</p>
+              </PrepBriefSection>
+              <PrepBriefSection title="Verification Reminder" tone="amber">
+                <p>
+                  Verify official sources, manufacturer instructions, applicable
+                  codes, NFPA standards, company procedures, and AHJ requirements
+                  before action.
+                </p>
+              </PrepBriefSection>
+            </div>
+          </div>
+        ) : null}
+      </div>
+    </section>
+  );
+};
+
 const ReadinessPacket = ({
   guidance,
+  workflow,
+  selectedSections,
+  record,
   role,
   roleEngagement,
   selectedTopics,
@@ -1277,7 +1915,10 @@ const ReadinessPacket = ({
   automaticSafetyReview,
   onStartNew,
 }: {
-  guidance: AiGuidance | null;
+  guidance: AiGuidance;
+  workflow: Workflow;
+  selectedSections: PrepSection[];
+  record: ClientRecord;
   role: UserRole;
   roleEngagement: RoleEngagement;
   selectedTopics: Topic[];
@@ -1290,6 +1931,18 @@ const ReadinessPacket = ({
   const [showLessonPlan, setShowLessonPlan] = useState(false);
 
   if (!guidance) return null;
+
+  return (
+    <AiPrepOutput
+      guidance={guidance}
+      workflow={workflow}
+      selectedSections={selectedSections}
+      record={record}
+      sampleSite={sampleSite}
+      automaticSafetyReview={automaticSafetyReview}
+      onStartNew={onStartNew}
+    />
+  );
 
   const hasPossibleMatches = automaticSafetyReview.possibleMatches.length > 0;
   const missingInformation =
@@ -1304,7 +1957,7 @@ const ReadinessPacket = ({
           "Internal review owner",
         ];
   const assetText = selectedTopics.join(" · ") || "No equipment/assets selected";
-  const simpleLessonPlan =
+  const simpleLessonPlan: string[] = (
     guidance.simpleLessonPlan?.length
       ? guidance.simpleLessonPlan
       : [
@@ -1314,8 +1967,8 @@ const ReadinessPacket = ({
           "25-35 min: Guided practice or Q&A.",
           "35-42 min: Knowledge check.",
           "42-45 min: Wrap-up, attendance documentation, and follow-up reminder.",
-        ];
-  const materialsEquipmentNeeded =
+        ]) ?? [];
+  const materialsEquipmentNeeded: string[] = (
     guidance.materialsEquipmentNeeded?.length
       ? guidance.materialsEquipmentNeeded
       : [
@@ -1323,15 +1976,15 @@ const ReadinessPacket = ({
           "Attendance/sign-in record",
           "Relevant equipment examples, photos, or approved documentation",
           "Follow-up notes for unresolved technical questions",
-        ];
-  const certificationAttendanceReminders =
+        ]) ?? [];
+  const certificationAttendanceReminders: string[] = (
     guidance.certificationAttendanceReminders?.length
       ? guidance.certificationAttendanceReminders
       : [
           "Confirm attendance documentation requirements before the session.",
           "Verify whether any certificate or credit language is approved before use.",
           "Route standards, credit, or certification questions to qualified review.",
-        ];
+        ]) ?? [];
   const productSafetyItems = [
     ...automaticSafetyReview.equipmentChecked.slice(0, 4).map((item) => {
       const label = equipmentLabel(item);
@@ -1707,20 +2360,29 @@ const ReadinessPacket = ({
 };
 
 export default function Home() {
+  const [selectedWorkflow, setSelectedWorkflow] =
+    useState<Workflow>("Training / Lesson Plan");
   const [engagementType, setEngagementType] =
-    useState<EngagementType>("Teach / train");
+    useState<EngagementType>(workflowConfig["Training / Lesson Plan"].engagementType);
   const [role, setRole] = useState<UserRole>("Instructor");
   const [roleEngagement, setRoleEngagement] = useState<RoleEngagement>(
-    "Continuing Education Prep",
+    workflowConfig["Training / Lesson Plan"].roleEngagement,
   );
   const [selectedTopics, setSelectedTopics] =
     useState<Topic[]>(instructorDefaultTopics);
-  const [audience, setAudience] = useState<Audience>("Instructor / Trainer");
+  const [audience, setAudience] = useState<Audience>(
+    workflowConfig["Training / Lesson Plan"].audience,
+  );
   const [selectedSampleSite, setSelectedSampleSite] = useState(
     "Fire Department Recruit Training Site",
   );
   const [selectedServiceLensId, setSelectedServiceLensId] = useState(serviceLenses[0].id);
-  const [briefAction, setBriefAction] = useState<BriefAction>("training_prep");
+  const [briefAction, setBriefAction] = useState<BriefAction>(
+    workflowConfig["Training / Lesson Plan"].briefAction,
+  );
+  const [selectedSections, setSelectedSections] = useState<PrepSection[]>(
+    workflowConfig["Training / Lesson Plan"].recommended,
+  );
   const [guidance, setGuidance] = useState<AiGuidance | null>(null);
   const [summarizingId, setSummarizingId] = useState("");
   const [summaryError, setSummaryError] = useState("");
@@ -1741,39 +2403,36 @@ export default function Home() {
     clientRecords["Fire Department Recruit Training Site"];
   const selectedServiceLens =
     serviceLenses.find((lens) => lens.id === selectedServiceLensId) ?? serviceLenses[0];
-  const applyRole = (nextRole: UserRole) => {
-    setRole(nextRole);
+  const applyWorkflow = (nextWorkflow: Workflow) => {
+    const config = workflowConfig[nextWorkflow];
+    setSelectedWorkflow(nextWorkflow);
+    setRole(config.role);
+    setRoleEngagement(config.roleEngagement);
+    setEngagementType(config.engagementType);
+    setAudience(config.audience);
+    setBriefAction(config.briefAction);
+    setSelectedSections(config.recommended);
     setGuidance(null);
 
-    if (nextRole === "Instructor") {
-      setRoleEngagement(
-        roleEngagementOptions.Instructor.includes(roleEngagement)
-          ? roleEngagement
-          : "Continuing Education Prep",
-      );
-      setEngagementType("Teach / train");
-      setAudience("Instructor / Trainer");
-      setBriefAction("training_prep");
+    if (config.role === "Instructor") {
       setSelectedTopics(instructorDefaultTopics);
-      setSelectedSampleSite("Fire Department Recruit Training Site");
       return;
     }
 
-    setRoleEngagement(
-      roleEngagementOptions.Inspector.includes(roleEngagement)
-        ? roleEngagement
-        : "Inspection / Testing",
-    );
-    setEngagementType("Inspect / service");
-    setAudience("Internal Inspector");
-    setBriefAction("inspection_prep");
     setSelectedTopics(inspectorDefaultTopics);
-    setSelectedSampleSite("Municipal Facilities Account");
+  };
+  const toggleSection = (section: PrepSection) => {
+    setSelectedSections((current) =>
+      current.includes(section)
+        ? current.filter((item) => item !== section)
+        : [...current, section],
+    );
+    setGuidance(null);
   };
   const sourceContextUsed = [
     "Automatic product safety review based on selected site equipment",
-    `Role: ${role}`,
-    `Engagement: ${roleEngagement}`,
+    `Workflow: ${selectedWorkflow}`,
+    `Selected sections: ${selectedSections.join(", ") || "None selected"}`,
     `Equipment / Assets: ${selectedTopics.join(", ") || "None selected"}`,
     "No manual product safety recall selected. Packet is based on engagement, client/site record, equipment/assets, prep context, and automatic product safety review.",
     `Customer/Site Profile: ${selectedSiteDetails.label}`,
@@ -1890,6 +2549,9 @@ export default function Home() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           recall,
+          workflow: selectedWorkflow,
+          selectedSections,
+          clientRecord: selectedClientRecord,
           role,
           roleEngagement,
           selectedTopics,
@@ -1945,14 +2607,17 @@ export default function Home() {
   };
 
   const startNewPacket = () => {
-    setEngagementType("Teach / train");
-    setRole("Instructor");
-    setRoleEngagement("Continuing Education Prep");
+    const config = workflowConfig["Training / Lesson Plan"];
+    setSelectedWorkflow("Training / Lesson Plan");
+    setEngagementType(config.engagementType);
+    setRole(config.role);
+    setRoleEngagement(config.roleEngagement);
     setSelectedTopics(instructorDefaultTopics);
-    setAudience("Instructor / Trainer");
+    setAudience(config.audience);
     setSelectedSampleSite("Fire Department Recruit Training Site");
     setSelectedServiceLensId(serviceLenses[0].id);
-    setBriefAction("training_prep");
+    setBriefAction(config.briefAction);
+    setSelectedSections(config.recommended);
     setGuidance(null);
     setSummaryError("");
     setAdditionalNotes("");
@@ -1984,7 +2649,32 @@ export default function Home() {
           <div className="grid gap-4">
             <div>
               <h2 className="text-lg font-black text-brand-charcoal">
-                1. Select Client / Site
+                1. Select Workflow
+              </h2>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {workflows.map((item) => {
+                  const selected = selectedWorkflow === item;
+                  return (
+                    <button
+                      key={item}
+                      type="button"
+                      onClick={() => applyWorkflow(item)}
+                      className={`rounded-xl border px-3 py-2 text-left text-sm font-extrabold leading-5 transition ${
+                        selected
+                          ? "border-brand-green bg-brand-green text-white"
+                          : "border-brand-gray200 bg-white text-brand-charcoal hover:border-brand-green hover:bg-green-50"
+                      }`}
+                    >
+                      {item}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div>
+              <h2 className="text-lg font-black text-brand-charcoal">
+                2. Select Client / Site
               </h2>
               <div className="mt-2 grid gap-2 sm:grid-cols-2">
                 {visibleSiteOptions.map((item) => {
@@ -2013,72 +2703,29 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="grid gap-5 md:grid-cols-[0.8fr_1.2fr]">
-              <div>
-                <h2 className="text-lg font-black text-brand-charcoal">2. Select Role</h2>
-                <div className="mt-2 grid grid-cols-2 gap-2">
-                  {(["Instructor", "Inspector"] as UserRole[]).map((item) => {
-                    const selected = role === item;
-                    return (
-                      <button
-                        key={item}
-                        type="button"
-                        onClick={() => applyRole(item)}
-                        className={`min-h-10 rounded-xl border px-3 py-2.5 text-center text-sm font-extrabold transition ${
-                          selected
-                            ? "border-brand-green bg-brand-green text-white"
-                            : "border-brand-gray200 bg-white text-brand-charcoal hover:border-brand-green hover:bg-green-50"
-                        }`}
-                      >
-                        {item}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div>
-                <h2 className="text-lg font-black text-brand-charcoal">
-                  3. Select Engagement Type
-                </h2>
-                <div className="mt-2 grid gap-2 sm:grid-cols-3 md:grid-cols-1 lg:grid-cols-3">
-                  {roleEngagementOptions[role].map((item) => {
-                    const selected = roleEngagement === item;
-                    return (
-                      <button
-                        key={item}
-                        type="button"
-                        onClick={() => {
-                          setRoleEngagement(item);
-                          setGuidance(null);
-                        }}
-                        className={`min-h-10 rounded-xl border px-3 py-2.5 text-left text-sm font-extrabold leading-5 transition ${
-                          selected
-                            ? "border-brand-green bg-brand-green text-white"
-                            : "border-brand-gray200 bg-white text-brand-charcoal hover:border-brand-green hover:bg-green-50"
-                        }`}
-                      >
-                        {item}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-
             <div>
               <h2 className="text-lg font-black text-brand-charcoal">
-                4. Client Record Summary
+                3. AI Review of Site Record
               </h2>
-              <p className="mt-1 text-xs font-bold leading-5 text-brand-gray500">
-                Sample record data used for this demo.
-              </p>
               <div className="mt-2 grid gap-2 text-sm text-brand-gray700 sm:grid-cols-2">
                 {[
+                  [
+                    "What matters",
+                    [
+                      selectedWorkflow === "Training / Lesson Plan" ||
+                      selectedWorkflow === "Continuing Education Prep"
+                        ? `${selectedClientRecord.audience} needs ${selectedWorkflow.toLowerCase()} using current site context.`
+                        : `${selectedSampleSite} has open preparation items for ${selectedWorkflow.toLowerCase()}.`,
+                    ],
+                  ],
                   ["Equipment / Assets", selectedClientRecord.equipmentAssets],
-                  ["Service / Training History", selectedClientRecord.serviceTrainingHistory],
                   ["Open Items", selectedClientRecord.openItems],
-                  ["Training / CE Context", selectedClientRecord.trainingContext],
+                  [
+                    "Resources Available",
+                    sortResources(selectedClientRecord, selectedWorkflow, selectedSections)
+                      .slice(0, 3)
+                      .map((resource) => resource.title),
+                  ],
                 ].map(([label, values]) => (
                   <div
                     key={label as string}
@@ -2097,10 +2744,62 @@ export default function Home() {
 
             <div>
               <h2 className="text-lg font-black text-brand-charcoal">
+                4. AI Recommended Prep
+              </h2>
+              <div className="mt-2 space-y-3">
+                <div>
+                  <p className="text-xs font-black text-brand-green">Recommended</p>
+                  <div className="mt-1 flex flex-wrap gap-2">
+                    {workflowConfig[selectedWorkflow].recommended.map((section) => {
+                      const selected = selectedSections.includes(section);
+                      return (
+                        <button
+                          key={section}
+                          type="button"
+                          onClick={() => toggleSection(section)}
+                          className={`rounded-xl border px-3 py-2 text-sm font-extrabold transition ${
+                            selected
+                              ? "border-brand-green bg-brand-green text-white"
+                              : "border-brand-gray200 bg-white text-brand-charcoal hover:border-brand-green hover:bg-green-50"
+                          }`}
+                        >
+                          {section}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+                <div>
+                  <p className="text-xs font-black text-brand-gray500">Optional</p>
+                  <div className="mt-1 flex flex-wrap gap-2">
+                    {workflowConfig[selectedWorkflow].optional.map((section) => {
+                      const selected = selectedSections.includes(section);
+                      return (
+                        <button
+                          key={section}
+                          type="button"
+                          onClick={() => toggleSection(section)}
+                          className={`rounded-xl border px-3 py-2 text-sm font-extrabold transition ${
+                            selected
+                              ? "border-brand-green bg-brand-green text-white"
+                              : "border-brand-gray200 bg-white text-brand-charcoal hover:border-brand-green hover:bg-green-50"
+                          }`}
+                        >
+                          {section}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h2 className="text-lg font-black text-brand-charcoal">
                 5. Relevant Resources
               </h2>
               <div className="mt-2 grid gap-2 sm:grid-cols-2">
-                {selectedClientRecord.resources.map((resource) => (
+                {sortResources(selectedClientRecord, selectedWorkflow, selectedSections).map((resource) => (
                   <div
                     key={resource.title}
                     className="rounded-xl border border-brand-gray200 bg-white px-3 py-2"
@@ -2131,12 +2830,12 @@ export default function Home() {
             <button
               type="button"
               onClick={() => void generateSummary(null, briefAction)}
-              disabled={Boolean(summarizingId)}
+              disabled={Boolean(summarizingId) || selectedSections.length === 0}
               className="w-full rounded-xl bg-brand-green px-5 py-4 text-center text-base font-black text-white transition hover:bg-brand-greenDark disabled:cursor-not-allowed disabled:bg-brand-gray500 sm:w-auto"
             >
               {summarizingId
-                ? "Generating Packet..."
-                : "Generate Packet"}
+                ? "Generating Preview..."
+                : "Generate Preview"}
             </button>
           </div>
 
@@ -2161,6 +2860,9 @@ export default function Home() {
             {guidance ? (
               <ReadinessPacket
                 guidance={guidance}
+                workflow={selectedWorkflow}
+                selectedSections={selectedSections}
+                record={selectedClientRecord}
                 role={role}
                 roleEngagement={roleEngagement}
                 selectedTopics={selectedTopics}
