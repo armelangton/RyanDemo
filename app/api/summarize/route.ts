@@ -5,7 +5,11 @@ export const dynamic = "force-dynamic";
 
 const systemPrompt = `You are generating an internal Engagement Packet for a fire protection employee.
 
-Use the selected preparation context and optional recall/product safety information to create practical internal guidance. You must use available context in this order:
+Use the selected workflow, selected output sections, preparation context, and optional recall/product safety information to create practical internal guidance. The website is the interface and AI is the engine inside the app; do not direct the user to a separate GPT handoff.
+
+You must use available context in this order:
+- selected workflow
+- selected output sections
 - client/site record
 - role
 - role-specific engagement
@@ -35,6 +39,7 @@ The packet should make the AI value clear by combining client/site context, equi
 Manual recall data is optional. If no manual recall is selected, say: "No manual product safety recall selected. Packet is based on engagement, client/site record, equipment/assets, prep context, and automatic product safety review." If a manual recall is selected, include it as optional manual product safety context.
 
 The packet should support the existing UI packet structure.
+Respect selectedSections when deciding what details matter most. Do not generate every possible section as if the user selected all options.
 
 For Inspector role, prioritize these user-facing sections:
 1. Client / Site Context
@@ -817,6 +822,9 @@ export async function POST(request: Request) {
   let siteProfile: Record<string, unknown> = {};
   let sourceContext: Record<string, unknown> = {};
   let prepResources: Record<string, unknown> = {};
+  let workflow = "Training / Lesson Plan";
+  let selectedSections: string[] = [];
+  let clientRecord: Record<string, unknown> = {};
   let additionalNotes = "";
   let briefAction = "inspection_prep";
   let installedEquipment: Record<string, unknown>[] = [];
@@ -862,6 +870,9 @@ export async function POST(request: Request) {
     siteProfile = objectValue(body?.siteProfile);
     sourceContext = objectValue(body?.sourceContext);
     prepResources = objectValue(body?.prepResources);
+    workflow = typeof body?.workflow === "string" ? body.workflow : workflow;
+    selectedSections = listValue(body?.selectedSections);
+    clientRecord = objectValue(body?.clientRecord);
     additionalNotes =
       typeof body?.additionalNotes === "string" ? body.additionalNotes.trim() : "";
     briefAction =
@@ -915,6 +926,9 @@ export async function POST(request: Request) {
             role: "user",
             content: JSON.stringify(
               {
+                workflow,
+                selectedSections,
+                clientRecord,
                 engagementType,
                 role,
                 roleEngagement,
