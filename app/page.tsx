@@ -2225,21 +2225,25 @@ export default function Home() {
     <main className="min-h-screen bg-brand-gray100 text-brand-charcoal">
       <header className="bg-white">
         <div className="mx-auto max-w-3xl px-4 py-3 sm:px-6 sm:py-4">
-          <Image
-            src="/ryan-logo.png"
-            alt="Ryan Fire Protection, Inc."
-            width={1280}
-            height={551}
-            priority
-            className="h-auto w-32 sm:w-48"
-          />
-          <h1 className="mt-2 text-[23px] font-black leading-tight text-brand-charcoal sm:text-[32px]">
-            Engagement Assistant
-          </h1>
-          <p className="mt-1 text-sm leading-6 text-brand-gray700 sm:text-base">
-            Get AI-generated guidance for inspections, training, and service visits.
-          </p>
-          <p className="mt-2 text-sm leading-6 text-brand-gray700">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <Image
+              src="/ryan-logo.png"
+              alt="Ryan Fire Protection, Inc."
+              width={1280}
+              height={551}
+              priority
+              className="h-auto w-32 shrink-0 sm:w-44"
+            />
+            <div>
+              <h1 className="text-[23px] font-black leading-tight text-brand-charcoal sm:text-[32px]">
+                Engagement Assistant
+              </h1>
+              <p className="mt-1 text-sm leading-6 text-brand-gray700 sm:text-base">
+                Get AI-generated guidance for inspections, training, and service visits.
+              </p>
+            </div>
+          </div>
+          <p className="mt-3 text-sm leading-6 text-brand-gray700">
             Select a site, role, and engagement type. The assistant uses sample context to generate a role-specific Engagement Packet.
           </p>
         </div>

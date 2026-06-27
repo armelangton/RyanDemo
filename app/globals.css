@@ -19,6 +19,7 @@
   --color-white: #ffffff;
   --color-success: #009a44;
   --color-warning: #a86612;
+  --font-display: "Envie", "Roboto Slab", "Arvo", Georgia, serif;
   color: #1f3428;
   background: #f4f5f6;
 }
@@ -68,12 +69,7 @@ h3,
 h4,
 .panel-title {
   color: #1f3428;
-  font-family:
-    "Roboto Slab",
-    "Rockwell",
-    "Arvo",
-    Georgia,
-    serif;
+  font-family: var(--font-display);
   font-weight: 800;
   letter-spacing: 0;
 }
