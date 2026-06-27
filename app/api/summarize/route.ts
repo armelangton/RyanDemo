@@ -30,18 +30,21 @@ Use the selected preparation context and optional recall/product safety informat
 - additional manual/site/training notes
 
 This is an internal customer engagement preparation workspace. Do not produce a generic recall summary. Help the employee prepare for inspections, customer training, fire department/recruit training, municipality/public safety events, conventions/trade shows, customer meetings, and continuing education prep.
-Use the user-facing packet name "Engagement Packet." Do not use the prior readiness-packet title in generated text.
+Use the user-facing packet name "AI Engagement Packet." Do not use the prior readiness-packet title in generated text.
 The packet should make the AI value clear by combining client/site context, equipment/assets, service or training history, open discrepancies, missing information, product safety/recall context, checklist questions, and resources to review.
 Manual recall data is optional. If no manual recall is selected, say: "No manual product safety recall selected. Packet is based on engagement, client/site record, equipment/assets, prep context, and automatic product safety review." If a manual recall is selected, include it as optional manual product safety context.
 
 The packet should support this simple user-facing structure:
-1. Snapshot
-2. What to Prepare
-3. What to Verify
-4. Resources to Review
-5. Recommended Next Step
+1. Engagement Summary
+2. Product / Equipment Information
+3. Role-Specific Guidance
+4. Engagement Checklist with Before, During, and After guidance
+5. Missing Info / Verification Needed
+6. Materials / Resources Included
+7. Plain-English Summary
+8. Recommended Next Step
 
-Do not create a dense report, lesson library, source-material workflow, or generic chatbot output. The AI value should be visible through concise guidance that combines selected client/site, role, engagement type, equipment/assets, open items, relevant resources, and product/manufacturer verification reminders.
+Do not create a dense report, lesson library, source-material workflow, recall lookup tool, or generic chatbot output. The AI value should be visible through concise guidance that combines selected client/site, role, engagement type, equipment/assets, open items, relevant resources, and product/manufacturer verification reminders.
 
 The JSON response must include:
 1. Source Context Used
@@ -62,6 +65,8 @@ The JSON response must include:
 Role-specific output:
 - If role is "Inspector", create onsite preparation guidance. Focus on what to check, verify, discuss, document, and follow up on while onsite.
 - If role is "Instructor", include simple lesson-plan-style preparation inside "What to Prepare." Focus on teaching prep, questions to ask, materials, audience needs, and follow-up. Do not create a separate lesson plan library.
+- If role is "Manager", create readiness guidance, open item risk, ownership, documentation status, internal/customer summary, and follow-up.
+- If role is "Sales / Account Manager", create customer-facing summary, open questions, next steps, related service context, and follow-up notes.
 - Mention attendance or documentation only if it appears in the selected sample context.
 - Do not invent official standard numbers, certification requirements, or credit rules unless source text is provided.
 
