@@ -30,7 +30,12 @@ type Audience =
   | "Internal Sales / Marketing Team"
   | "Prospective Customer";
 
-type UserRole = "Inspector" | "Instructor" | "Manager" | "Sales / Account Manager";
+type UserRole =
+  | "Inspector"
+  | "Instructor"
+  | "Service Manager"
+  | "Manager"
+  | "Sales / Account Manager";
 
 type RoleEngagement =
   | "Inspection / Testing"
@@ -45,7 +50,8 @@ type RoleEngagement =
   | "Customer Meeting Prep"
   | "Documentation Follow-Up"
   | "Account Review"
-  | "Service Opportunity Review";
+  | "Service Opportunity Review"
+  | "Service Coordination Review";
 
 type Topic =
   | "Fire Sprinkler System"
@@ -53,6 +59,7 @@ type Topic =
   | "Fire Extinguishers"
   | "Emergency Lighting"
   | "Fire Hydrants"
+  | "Fire Pump"
   | "Special Hazards"
   | "Training Props / Demonstration Equipment";
 
@@ -127,6 +134,11 @@ const roleEngagementOptions: Record<UserRole, RoleEngagement[]> = {
     "Documentation Follow-Up",
     "Customer Meeting Prep",
   ],
+  "Service Manager": [
+    "Service Coordination Review",
+    "Readiness Review",
+    "Documentation Follow-Up",
+  ],
   "Sales / Account Manager": [
     "Customer Meeting Prep",
     "Account Review",
@@ -153,6 +165,7 @@ const equipmentAssetsBySite: Record<string, Topic[]> = {
     "Fire Extinguishers",
     "Emergency Lighting",
     "Fire Hydrants",
+    "Fire Pump",
   ],
   "Fire Department Recruit Training Site": [
     "Fire Sprinkler System",
@@ -164,6 +177,7 @@ const equipmentAssetsBySite: Record<string, Topic[]> = {
     "Fire Alarm / Detection",
     "Special Hazards",
     "Emergency Lighting",
+    "Fire Pump",
   ],
   "Education Campus Facilities Training": [
     "Fire Alarm / Detection",
@@ -184,6 +198,200 @@ type ClientRecord = {
     description: string;
     action: string;
   }[];
+};
+
+type EquipmentAssetRecord = {
+  name: string;
+  category: string;
+  manufacturer: string;
+  model: string;
+  sku: string;
+  serialNumber: string;
+  location: string;
+  installDate: string;
+  lastInspectionTestDate: string;
+  certificationServiceStatus: string;
+  recallSafetyStatus: string;
+  documentationStatus: string;
+  deficiencyStatus: string;
+  description: string;
+  notes: string;
+  verificationNeeded: string;
+};
+
+const equipmentRecordLibrary: Record<string, EquipmentAssetRecord> = {
+  "Fire Sprinkler System": {
+    name: "Wet Pipe Sprinkler System",
+    category: "Sprinkler system",
+    manufacturer: "Viking",
+    model: "Demo model unknown",
+    sku: "VIK-WP-DEMO-001",
+    serialNumber: "DEMO-SPR-1042",
+    location: "Training wing / mechanical room",
+    installDate: "Demo date unknown",
+    lastInspectionTestDate: "Sample record: annual ITM due this quarter",
+    certificationServiceStatus: "Sample record needs verification",
+    recallSafetyStatus:
+      "Sample record: no confirmed recall match. Verify exact model, date code, and official documentation before relying on this.",
+    documentationStatus: "Sample record: inspection documentation needs review",
+    deficiencyStatus: "Sample record: no confirmed deficiency listed",
+    description:
+      "Wet pipe sprinkler system used as the primary example for recruit awareness and facility training.",
+    notes:
+      "Useful for explaining sprinkler purpose, sprinkler head activation, valve/gauge awareness, and inspection documentation.",
+    verificationNeeded:
+      "Confirm exact system type, valve locations, manufacturer details, inspection history, and site-specific restrictions.",
+  },
+  "Fire Alarm / Detection": {
+    name: "Fire Alarm / Detection System",
+    category: "Alarm and detection",
+    manufacturer: "Honeywell",
+    model: "Demo panel unknown",
+    sku: "HON-ALM-DEMO-002",
+    serialNumber: "DEMO-ALM-2088",
+    location: "Main facility / alarm panel area",
+    installDate: "Demo date unknown",
+    lastInspectionTestDate: "Sample record: testing documentation needs review",
+    certificationServiceStatus: "Sample record needs verification",
+    recallSafetyStatus:
+      "Sample record: no confirmed recall match. Verify exact model, date code, and official documentation before relying on this.",
+    documentationStatus: "Sample record: testing documentation needs review",
+    deficiencyStatus: "Sample record: open documentation question",
+    description:
+      "Alarm/detection system used to discuss detection, notification, monitoring, and response.",
+    notes:
+      "Useful for explaining the difference between detection, notification, and sprinkler response.",
+    verificationNeeded:
+      "Confirm installed panel/device details, monitoring setup, testing records, and documentation status.",
+  },
+  "Fire Extinguishers": {
+    name: "Portable Fire Extinguishers",
+    category: "Portable fire protection equipment",
+    manufacturer: "Amerex",
+    model: "Demo extinguisher type unknown",
+    sku: "AMX-EXT-DEMO-003",
+    serialNumber: "DEMO-EXT-3175",
+    location: "Hallway / training area examples",
+    installDate: "Demo date unknown",
+    lastInspectionTestDate: "Sample record: monthly visual check status unknown",
+    certificationServiceStatus: "Sample record needs verification",
+    recallSafetyStatus:
+      "Sample record: no confirmed recall match. Verify exact model, date code, and official documentation before relying on this.",
+    documentationStatus: "Sample record: inspection tag status unknown",
+    deficiencyStatus: "Sample record: access/location needs confirmation",
+    description:
+      "Portable extinguishers used for first-response awareness and customer/facility education.",
+    notes:
+      "Useful for explaining extinguisher access, hazard suitability, inspection tags, and employee training.",
+    verificationNeeded:
+      "Confirm extinguisher type/class, location, inspection tag, maintenance status, and training requirements.",
+  },
+  "Emergency Lighting": {
+    name: "Emergency Lighting / Exit Signs",
+    category: "Emergency lighting",
+    manufacturer: "Lithonia",
+    model: "Demo model unknown",
+    sku: "LIT-EML-DEMO-004",
+    serialNumber: "DEMO-EML-5521",
+    location: "Exit corridors",
+    installDate: "Demo date unknown",
+    lastInspectionTestDate: "Sample record: test documentation needs review",
+    certificationServiceStatus: "Sample record needs verification",
+    recallSafetyStatus:
+      "Sample record: no confirmed recall match. Verify exact model, date code, and official documentation before relying on this.",
+    documentationStatus: "Sample record: test documentation needs review",
+    deficiencyStatus: "Sample record: no confirmed deficiency listed",
+    description:
+      "Emergency lighting and exit signs used to discuss egress visibility and periodic testing.",
+    notes: "Useful for facility training, walkthroughs, and documentation review.",
+    verificationNeeded:
+      "Confirm device locations, visibility, battery/test records, and documentation status.",
+  },
+  "Fire Hydrants": {
+    name: "Exterior Fire Hydrant",
+    category: "Water supply / hydrant",
+    manufacturer: "Mueller",
+    model: "Demo hydrant model unknown",
+    sku: "MUL-HYD-DEMO-006",
+    serialNumber: "DEMO-HYD-8841",
+    location: "Public building exterior",
+    installDate: "Demo date unknown",
+    lastInspectionTestDate: "Sample record: flow test date needs confirmation",
+    certificationServiceStatus: "Sample record needs verification",
+    recallSafetyStatus:
+      "Sample record: no confirmed recall match. Verify exact model, date code, and official documentation before relying on this.",
+    documentationStatus: "Sample record: hydrant inspection record needs review",
+    deficiencyStatus: "Sample record: access and flow data need verification",
+    description:
+      "Hydrant context used to discuss water supply, access, inspection, and documentation.",
+    notes: "Useful for municipal readiness, inspections, and service planning.",
+    verificationNeeded:
+      "Confirm hydrant location, access, flow test history, maintenance notes, and ownership.",
+  },
+  "Fire Pump": {
+    name: "Fire Pump",
+    category: "Fire pump",
+    manufacturer: "Aurora",
+    model: "Demo pump model unknown",
+    sku: "AUR-PMP-DEMO-005",
+    serialNumber: "DEMO-PMP-7604",
+    location: "Pump room",
+    installDate: "Demo date unknown",
+    lastInspectionTestDate: "Sample record: annual test record needs confirmation",
+    certificationServiceStatus: "Sample record needs verification",
+    recallSafetyStatus:
+      "Sample record: no confirmed recall match. Verify exact model, date code, and official documentation before relying on this.",
+    documentationStatus: "Sample record: annual test record needs confirmation",
+    deficiencyStatus: "Sample record: qualified review required",
+    description:
+      "Fire pump context used when discussing water supply support for fire protection systems.",
+    notes:
+      "Useful for explaining that some systems depend on water supply, pressure, testing, and documentation.",
+    verificationNeeded:
+      "Confirm pump role, test records, maintenance history, alarms/monitoring, and qualified review requirements.",
+  },
+  "Special Hazards": {
+    name: "Special Hazard System",
+    category: "Special hazards",
+    manufacturer: "Ansul",
+    model: "Demo suppression model unknown",
+    sku: "ANS-SPH-DEMO-007",
+    serialNumber: "DEMO-SPH-6290",
+    location: "Special equipment area",
+    installDate: "Demo date unknown",
+    lastInspectionTestDate: "Sample record: service record needs confirmation",
+    certificationServiceStatus: "Sample record needs verification",
+    recallSafetyStatus:
+      "Sample record: no confirmed recall match. Verify exact model, date code, and official documentation before relying on this.",
+    documentationStatus: "Sample record: manufacturer documentation needs review",
+    deficiencyStatus: "Sample record: qualified review required",
+    description:
+      "Special hazard system context used for documentation and qualified service discussions.",
+    notes: "Useful for explaining why specialized systems require verified details.",
+    verificationNeeded:
+      "Confirm hazard type, agent/system details, service history, and qualified review requirements.",
+  },
+  "Training Props / Demonstration Equipment": {
+    name: "Training Props / Demonstration Equipment",
+    category: "Training equipment",
+    manufacturer: "Demo training kit",
+    model: "Demo model unknown",
+    sku: "TRN-PROP-DEMO-008",
+    serialNumber: "DEMO-TRN-4410",
+    location: "Training room",
+    installDate: "Demo date unknown",
+    lastInspectionTestDate: "Sample record: instructor review needed",
+    certificationServiceStatus: "Sample record needs verification",
+    recallSafetyStatus:
+      "Sample record: no confirmed recall match. Verify exact model, date code, and official documentation before relying on this.",
+    documentationStatus: "Sample record: training material status needs review",
+    deficiencyStatus: "Sample record: demonstration condition needs confirmation",
+    description:
+      "Demo equipment used to support recruit training, facility education, and hands-on explanation.",
+    notes: "Useful for teaching component recognition and field awareness.",
+    verificationNeeded:
+      "Confirm training prop condition, approved use, safety boundaries, and instructor notes.",
+  },
 };
 
 const clientRecords: Record<string, ClientRecord> = {
@@ -209,25 +417,25 @@ const clientRecords: Record<string, ClientRecord> = {
         title: "Sprinkler System Overview",
         type: "Training Resource",
         description: "Basic component and system explanation.",
-        action: "Use in Packet",
+        action: "Sample context",
       },
       {
         title: "Instructor Checklist",
         type: "Lesson Planning",
         description: "Prep reminders for CE delivery.",
-        action: "View",
+        action: "Sample context",
       },
       {
         title: "Product Safety Data",
         type: "Safety / Recall Context",
         description: "Verification reminders based on assets.",
-        action: "Use in Packet",
+        action: "Sample context",
       },
       {
         title: "Attendance Roster Template",
         type: "Documentation",
         description: "Attendance or CE completion reminder.",
-        action: "View",
+        action: "Sample context",
       },
     ],
   },
@@ -252,25 +460,25 @@ const clientRecords: Record<string, ClientRecord> = {
         title: "Site Record",
         type: "Client Context",
         description: "Account, equipment, and open items.",
-        action: "View",
+        action: "Sample context",
       },
       {
         title: "Asset List",
         type: "Equipment Record",
         description: "Current demo equipment record.",
-        action: "Use in Packet",
+        action: "Sample context",
       },
       {
         title: "Service Notes",
         type: "Documentation",
         description: "Recent reminders and open gaps.",
-        action: "View",
+        action: "Sample context",
       },
       {
         title: "Product Safety Data",
         type: "Safety / Recall Context",
         description: "Recall verification reminders.",
-        action: "Use in Packet",
+        action: "Sample context",
       },
     ],
   },
@@ -295,19 +503,19 @@ const clientRecords: Record<string, ClientRecord> = {
         title: "ITM Record",
         type: "Client Context",
         description: "Inspection and testing context.",
-        action: "View",
+        action: "Sample context",
       },
       {
         title: "Manufacturer Documentation",
         type: "Resource",
         description: "Equipment guidance to verify.",
-        action: "View",
+        action: "Sample context",
       },
       {
         title: "Healthcare Safety Checklist",
         type: "Documentation",
         description: "Facility-sensitive review reminders.",
-        action: "Use in Packet",
+        action: "Sample context",
       },
     ],
   },
@@ -332,19 +540,19 @@ const clientRecords: Record<string, ClientRecord> = {
         title: "Training Outline",
         type: "Training Resource",
         description: "Session structure and reminders.",
-        action: "Use in Packet",
+        action: "Sample context",
       },
       {
         title: "Campus Notes",
         type: "Client Context",
         description: "Sample campus follow-up context.",
-        action: "View",
+        action: "Sample context",
       },
       {
         title: "Attendance Record Template",
         type: "Documentation",
         description: "Training completion reminder.",
-        action: "View",
+        action: "Sample context",
       },
     ],
   },
@@ -1256,6 +1464,26 @@ const compactItems = (items: string[], fallback: string[] = []) =>
     .filter(Boolean)
     .slice(0, 5);
 
+const roleSpecificAssetNote = (
+  role: UserRole,
+  engagement: RoleEngagement,
+  record: EquipmentAssetRecord,
+) => {
+  if (role === "Instructor") {
+    return `Use this ${record.category.toLowerCase()} record for teaching points, likely questions, demonstration context, and documentation reminders for ${engagement}.`;
+  }
+  if (role === "Inspector") {
+    return `Use this ${record.category.toLowerCase()} record to focus field checks, documentation gaps, service status questions, and verification items for ${engagement}.`;
+  }
+  if (role === "Service Manager") {
+    return `Use this ${record.category.toLowerCase()} record to coordinate ownership, service readiness, documentation status, and follow-up for ${engagement}.`;
+  }
+  if (role === "Sales / Account Manager") {
+    return `Use this ${record.category.toLowerCase()} record for customer-facing context, open questions, next steps, and safety-focused follow-up for ${engagement}.`;
+  }
+  return `Use this ${record.category.toLowerCase()} record to summarize readiness, risks, open items, ownership, and follow-up for ${engagement}.`;
+};
+
 const PrepBriefSection = ({
   title,
   children,
@@ -1316,6 +1544,9 @@ const ReadinessPacket = ({
           "Internal review owner",
         ];
   const assetText = selectedTopics.join(" · ") || "No equipment/assets selected";
+  const equipmentRecords = selectedTopics
+    .map((topic) => equipmentRecordLibrary[topic])
+    .filter(Boolean);
   const simpleLessonPlan =
     guidance.simpleLessonPlan?.length
       ? guidance.simpleLessonPlan
@@ -1436,17 +1667,21 @@ const ReadinessPacket = ({
   ).slice(0, 3);
   const keyResources = resourcesToReview.slice(0, 4);
   const nextStep = followUpItems.slice(0, 1);
-  const productEquipmentItems = compactItems([
-    ...selectedTopics,
-    ...guidance.installedEquipmentReview,
-    ...productSafetyItems,
-  ]).slice(0, 5);
+  const equipmentRecordSummary = compactItems(
+    equipmentRecords.map(
+      (record) =>
+        `${record.name}: ${record.manufacturer}, ${record.model}, ${record.location}. ${record.verificationNeeded}`,
+    ),
+    [...selectedTopics, ...guidance.installedEquipmentReview, ...productSafetyItems],
+  ).slice(0, 5);
   const roleGuidanceItems = compactItems([
     role === "Instructor"
       ? "Use lesson-plan-style guidance for the selected training audience."
       : role === "Inspector"
         ? "Use onsite guidance for field verification and documentation."
-        : role === "Manager"
+        : role === "Service Manager"
+          ? "Use service coordination guidance for readiness, ownership, documentation, and follow-up."
+          : role === "Manager"
           ? "Use readiness guidance for ownership, risk, and follow-up."
           : "Use customer-facing guidance for open questions and next steps.",
     ...checklistItems,
@@ -1470,12 +1705,22 @@ const ReadinessPacket = ({
     "Review verification items with the right internal owner.",
     "Confirm the recommended next step.",
   ];
-  const plainEnglishItems = compactItems([
+  const whatToSayItems = compactItems([
     guidance.internalFieldBrief,
     role === "Instructor"
-      ? "This packet helps prepare a practical training conversation."
-      : "This packet helps prepare a practical customer or site conversation.",
-  ]).slice(0, 2);
+      ? "Today we will use sample equipment context to explain what to recognize, what to document, and what still needs verification."
+      : role === "Inspector"
+        ? "I am reviewing sample equipment and documentation context, and I will verify details before making any official conclusion."
+        : role === "Sales / Account Manager"
+          ? "This summary highlights what we know, what still needs verification, and the next step for a safety-focused follow-up."
+          : "This summary shows readiness, open verification items, and the owner for follow-up before any action is taken.",
+  ]).slice(0, 3);
+  const recommendedNextSteps = compactItems([
+    ...guidance.recommendedNextBestActions,
+    "Confirm exact equipment model, serial number, and service status.",
+    "Review missing documentation before the engagement.",
+    "Assign follow-up ownership for open verification items.",
+  ]).slice(0, 5);
   const packetText = [
     "AI Engagement Packet",
     `${sampleSite} - ${role} - ${roleEngagement}`,
@@ -1484,8 +1729,23 @@ const ReadinessPacket = ({
     "Engagement Summary",
     ...previewSnapshot.map((item) => `- ${item}`),
     "",
-    "Product / Equipment Information",
-    ...productEquipmentItems.map((item) => `- ${item}`),
+    "Equipment / Asset Records",
+    ...equipmentRecords.flatMap((record) => [
+      `- ${record.name}`,
+      `  Category: ${record.category}`,
+      `  Manufacturer: ${record.manufacturer}`,
+      `  Model: ${record.model}`,
+      `  SKU / Product Number: ${record.sku}`,
+      `  Serial Number: ${record.serialNumber}`,
+      `  Location: ${record.location}`,
+      `  Last Inspection / Test Date: ${record.lastInspectionTestDate}`,
+      `  Certification / Service Status: ${record.certificationServiceStatus}`,
+      `  Recall / Safety Status: ${record.recallSafetyStatus}`,
+      `  Documentation Status: ${record.documentationStatus}`,
+      `  Deficiency Status: ${record.deficiencyStatus}`,
+      `  Description: ${record.description}`,
+      `  Verification Needed: ${record.verificationNeeded}`,
+    ]),
     "",
     "Role-Specific Guidance",
     ...roleGuidanceItems.map((item) => `- ${item}`),
@@ -1496,14 +1756,11 @@ const ReadinessPacket = ({
     "Missing Info / Verification Needed",
     ...aiFlaggedItems.slice(0, 5).map((item) => `- ${item}`),
     "",
-    "Materials / Resources Included",
-    ...resourcesToReview.map((item) => `- ${item}`),
+    "What to Say",
+    ...whatToSayItems.map((item) => `- ${item}`),
     "",
-    "Plain-English Summary",
-    ...plainEnglishItems.map((item) => `- ${item}`),
-    "",
-    "Recommended Next Step",
-    ...followUpItems.slice(0, 1).map((item) => `- ${item}`),
+    "Recommended Next Steps",
+    ...recommendedNextSteps.map((item, index) => `${index + 1}. ${item}`),
   ].join("\n");
   const copyText = (text: string) => {
     if (typeof navigator === "undefined" || !navigator.clipboard) return;
@@ -1573,8 +1830,47 @@ const ReadinessPacket = ({
           <PacketList items={previewSnapshot} tone="green" />
         </PrepBriefSection>
 
-        <PrepBriefSection title="Product / Equipment Information" tone="neutral">
-          <PacketList items={productEquipmentItems} tone="neutral" />
+        <PrepBriefSection title="Equipment / Asset Records" tone="neutral">
+          <div className="grid gap-3">
+            {equipmentRecords.map((record) => (
+              <article
+                key={record.serialNumber}
+                className="rounded-xl border border-brand-gray200 bg-white p-3"
+              >
+                <h4 className="text-base font-black text-brand-charcoal">
+                  {record.name}
+                </h4>
+                <dl className="mt-2 grid gap-x-4 gap-y-1 text-sm sm:grid-cols-2">
+                  {[
+                    ["Category", record.category],
+                    ["Manufacturer", record.manufacturer],
+                    ["Model", record.model],
+                    ["SKU / Product Number", record.sku],
+                    ["Serial Number", record.serialNumber],
+                    ["Location", record.location],
+                    ["Last Inspection / Test Date", record.lastInspectionTestDate],
+                    ["Certification / Service Status", record.certificationServiceStatus],
+                    ["Recall / Safety Status", record.recallSafetyStatus],
+                    ["Documentation Status", record.documentationStatus],
+                    ["Deficiency Status", record.deficiencyStatus],
+                    ["Description", record.description],
+                    ["Role-specific note", roleSpecificAssetNote(role, roleEngagement, record)],
+                    ["Verification Needed", record.verificationNeeded],
+                  ].map(([label, value]) => (
+                    <div key={label} className="border-t border-brand-gray200 pt-1">
+                      <dt className="text-[11px] font-black uppercase tracking-wide text-brand-gray500">
+                        {label}
+                      </dt>
+                      <dd className="mt-0.5 text-brand-gray700">{value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </article>
+            ))}
+            {!equipmentRecords.length ? (
+              <PacketList items={equipmentRecordSummary} tone="neutral" />
+            ) : null}
+          </div>
         </PrepBriefSection>
 
         <PrepBriefSection title="Role-Specific Guidance" tone="green">
@@ -1602,16 +1898,16 @@ const ReadinessPacket = ({
           <PacketList items={aiFlaggedItems.slice(0, 5)} tone="red" />
         </PrepBriefSection>
 
-        <PrepBriefSection title="Materials / Resources Included" tone="neutral">
-          <PacketList items={keyResources} tone="neutral" />
+        <PrepBriefSection title="What to Say" tone="neutral">
+          <PacketList items={whatToSayItems} tone="neutral" />
         </PrepBriefSection>
 
-        <PrepBriefSection title="Plain-English Summary" tone="neutral">
-          <PacketList items={plainEnglishItems} tone="neutral" />
-        </PrepBriefSection>
-
-        <PrepBriefSection title="Recommended Next Step" tone="green">
-          <PacketList items={nextStep} tone="green" />
+        <PrepBriefSection title="Recommended Next Steps" tone="green">
+          <ol className="list-decimal space-y-3 pl-5">
+            {recommendedNextSteps.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ol>
         </PrepBriefSection>
 
       </div>
@@ -1832,6 +2128,9 @@ export default function Home() {
           role,
           roleEngagement,
           selectedTopics,
+          equipmentAssetRecords: selectedTopics
+            .map((topic) => equipmentRecordLibrary[topic])
+            .filter(Boolean),
           engagementType,
           audience,
           sampleSite: selectedSampleSite,
@@ -1849,6 +2148,9 @@ export default function Home() {
           sourceContext: {
             sourceContextUsed,
             clientRecord: selectedClientRecord,
+            equipmentAssetRecords: selectedTopics
+              .map((topic) => equipmentRecordLibrary[topic])
+              .filter(Boolean),
             materialsResourcesIncluded: selectedClientRecord.resources.map(
               (resource) => `${resource.title}: ${resource.description}`,
             ),
@@ -2007,6 +2309,15 @@ export default function Home() {
                   })}
                 </div>
               </div>
+            </div>
+
+            <div className="rounded-xl border border-brand-gray200 bg-brand-gray100 px-3 py-2 text-sm leading-6 text-brand-gray700">
+              <p className="font-extrabold text-brand-charcoal">
+                Using sample context for: {selectedSampleSite} · {role} · {roleEngagement}
+              </p>
+              <p className="mt-0.5 text-xs font-semibold text-brand-gray700">
+                The packet will use sample site, equipment, documentation, and training context for this selected engagement.
+              </p>
             </div>
 
             <div className="hidden">

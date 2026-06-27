@@ -36,13 +36,12 @@ Manual recall data is optional. If no manual recall is selected, say: "No manual
 
 The packet should support this simple user-facing structure:
 1. Engagement Summary
-2. Product / Equipment Information
+2. Equipment / Asset Records
 3. Role-Specific Guidance
 4. Engagement Checklist with Before, During, and After guidance
 5. Missing Info / Verification Needed
-6. Materials / Resources Included
-7. Plain-English Summary
-8. Recommended Next Step
+6. What to Say
+7. Recommended Next Steps
 
 Do not create a dense report, lesson library, source-material workflow, recall lookup tool, or generic chatbot output. The AI value should be visible through concise guidance that combines selected client/site, role, engagement type, equipment/assets, open items, relevant resources, and product/manufacturer verification reminders.
 
