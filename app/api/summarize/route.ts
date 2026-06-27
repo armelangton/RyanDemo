@@ -5,11 +5,7 @@ export const dynamic = "force-dynamic";
 
 const systemPrompt = `You are generating an internal Engagement Packet for a fire protection employee.
 
-Use the selected workflow, selected output sections, preparation context, and optional recall/product safety information to create practical internal guidance. The website is the interface and AI is the engine inside the app; do not direct the user to a separate GPT handoff.
-
-You must use available context in this order:
-- selected workflow
-- selected output sections
+Use the selected preparation context and optional recall/product safety information to create practical internal guidance. You must use available context in this order:
 - client/site record
 - role
 - role-specific engagement
@@ -38,30 +34,14 @@ Use the user-facing packet name "Engagement Packet." Do not use the prior readin
 The packet should make the AI value clear by combining client/site context, equipment/assets, service or training history, open discrepancies, missing information, product safety/recall context, checklist questions, and resources to review.
 Manual recall data is optional. If no manual recall is selected, say: "No manual product safety recall selected. Packet is based on engagement, client/site record, equipment/assets, prep context, and automatic product safety review." If a manual recall is selected, include it as optional manual product safety context.
 
-The packet should support the existing UI packet structure.
-Respect selectedSections when deciding what details matter most. Do not generate every possible section as if the user selected all options.
+The packet should support this simple user-facing structure:
+1. Snapshot
+2. What to Prepare
+3. What to Verify
+4. Resources to Review
+5. Recommended Next Step
 
-For Inspector role, prioritize these user-facing sections:
-1. Client / Site Context
-2. Equipment / Assets
-3. AI-Flagged Items
-4. Checklist / Questions
-5. Discrepancies / Items to Verify
-6. Product Safety / Recall Context
-7. Photos / Barcodes / Signatures
-8. Resources to Review
-9. Recommended Follow-Up
-
-For Instructor role, prioritize these user-facing sections:
-1. Client / Training Site Context
-2. Equipment / Assets
-3. AI-Flagged Items
-4. Lesson Flow
-5. Checklist / Questions
-6. Standards / Objective Alignment
-7. Attendance / Certification Reminders
-8. Resources to Review
-9. Recommended Follow-Up
+Do not create a dense report, lesson library, source-material workflow, or generic chatbot output. The AI value should be visible through concise guidance that combines selected client/site, role, engagement type, equipment/assets, open items, relevant resources, and product/manufacturer verification reminders.
 
 The JSON response must include:
 1. Source Context Used
@@ -80,10 +60,10 @@ The JSON response must include:
 14. Official Source Reminder
 
 Role-specific output:
-- If role is "Inspector", create onsite field guidance. Do not include lesson plans or curriculum language. Focus on what to check, verify, discuss, document, and follow up on while onsite.
-- If role is "Instructor", create session guidance. Include lesson flow, checklist questions, standards/objective alignment, attendance/certification reminders, resources to review, and recommended follow-up. Use demo-safe language and do not claim official certification approval.
-- For instructor Standards / Objective Alignment, include draft measurable learning objectives, brief alignment notes, a simple check-for-understanding method, and this caution: "Draft alignment for planning purposes. Verify against current Indiana, Pro Board/IFSAC, NFPA, department, company, and AHJ requirements before using for credit or certification."
-- Do not invent official standard numbers unless source text is provided.
+- If role is "Inspector", create onsite preparation guidance. Focus on what to check, verify, discuss, document, and follow up on while onsite.
+- If role is "Instructor", include simple lesson-plan-style preparation inside "What to Prepare." Focus on teaching prep, questions to ask, materials, audience needs, and follow-up. Do not create a separate lesson plan library.
+- Mention attendance or documentation only if it appears in the selected sample context.
+- Do not invent official standard numbers, certification requirements, or credit rules unless source text is provided.
 
 Source-aware output:
 - Separate official recall facts from AI interpretation and internal follow-up where possible.
@@ -822,9 +802,6 @@ export async function POST(request: Request) {
   let siteProfile: Record<string, unknown> = {};
   let sourceContext: Record<string, unknown> = {};
   let prepResources: Record<string, unknown> = {};
-  let workflow = "Training / Lesson Plan";
-  let selectedSections: string[] = [];
-  let clientRecord: Record<string, unknown> = {};
   let additionalNotes = "";
   let briefAction = "inspection_prep";
   let installedEquipment: Record<string, unknown>[] = [];
@@ -870,9 +847,6 @@ export async function POST(request: Request) {
     siteProfile = objectValue(body?.siteProfile);
     sourceContext = objectValue(body?.sourceContext);
     prepResources = objectValue(body?.prepResources);
-    workflow = typeof body?.workflow === "string" ? body.workflow : workflow;
-    selectedSections = listValue(body?.selectedSections);
-    clientRecord = objectValue(body?.clientRecord);
     additionalNotes =
       typeof body?.additionalNotes === "string" ? body.additionalNotes.trim() : "";
     briefAction =
@@ -926,9 +900,6 @@ export async function POST(request: Request) {
             role: "user",
             content: JSON.stringify(
               {
-                workflow,
-                selectedSections,
-                clientRecord,
                 engagementType,
                 role,
                 roleEngagement,
