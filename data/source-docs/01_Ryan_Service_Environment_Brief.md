@@ -1,7 +1,7 @@
 # Ryan Fire Protection Service Environment Brief
 
 ## Purpose
-This document gives the Fire Protection Field Assistant a Ryan-specific service context so the app does not feel like a generic recall summary tool.
+This document gives the Engagement Assistant a Ryan-specific service context so the app does not feel like a generic recall summary tool.
 
 This is demo source material for a concept prototype. It should not be treated as official Ryan Fire Protection documentation.
 

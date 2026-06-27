@@ -1209,9 +1209,10 @@ const ReadinessPacket = ({
   const officialReminder =
     "Verify official sources, manufacturer instructions, applicable codes, NFPA standards, department requirements, company procedures, and AHJ requirements before action.";
   const packetText = [
-    "AI Engagement Readiness Packet",
+    "Engagement Packet",
     `${sampleSite} - ${role} - ${roleEngagement}`,
     `Services: ${serviceText}`,
+    "AI-generated guidance based on the selected site, role, engagement, and services.",
     "",
     role === "Instructor" ? "Session Priorities" : "Onsite Priorities",
     ...(role === "Instructor" ? instructorStartHere : inspectorStartHere).map((item) => `- ${item}`),
@@ -1268,8 +1269,11 @@ const ReadinessPacket = ({
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div>
             <h2 className="text-3xl font-black leading-tight text-brand-charcoal">
-              AI Engagement Readiness Packet
+              Engagement Packet
             </h2>
+            <p className="mt-2 text-base leading-7 text-brand-gray700">
+              AI-generated guidance based on the selected site, role, engagement, and services.
+            </p>
             <p className="mt-2 text-base leading-7 text-brand-gray700">
               {sampleSite} · {role} · {roleEngagement}
             </p>
@@ -1740,10 +1744,10 @@ export default function Home() {
           </p>
           <div className="mt-2 h-0.5 w-16 rounded-full bg-brand-red" />
           <h1 className="mt-2 text-[24px] font-black leading-tight text-brand-charcoal sm:text-[32px]">
-            Fire Protection Field Assistant
+            Engagement Assistant
           </h1>
           <p className="mt-1 text-sm leading-6 text-brand-gray700 sm:text-base">
-            Generate focused prep packets for inspectors and instructors.
+            Get AI-generated guidance for inspections, training, and service visits.
           </p>
         </div>
       </header>
@@ -1860,8 +1864,8 @@ export default function Home() {
               className="w-full rounded-xl bg-brand-green px-5 py-4 text-center text-base font-black text-white transition hover:bg-brand-greenDark disabled:cursor-not-allowed disabled:bg-brand-gray500 sm:w-auto"
             >
               {summarizingId
-                ? "Generating AI Engagement Readiness Packet..."
-                : "Generate AI Engagement Readiness Packet"}
+                ? "Generating Packet..."
+                : "Generate Packet"}
             </button>
           </div>
 

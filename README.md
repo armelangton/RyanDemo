@@ -1,4 +1,4 @@
-# Fire Protection Field Assistant
+# Engagement Assistant
 
 An internal employee preparation workspace inspired by Ryan Fire Protection service workflows. The app helps inspectors, instructors, service managers, field employees, sales engineers, project managers, convention representatives, and other customer-facing employees prepare for inspections, customer training, customer meetings, fire department events, public safety engagements, conventions/trade shows, and continuing education prep.
 
@@ -6,13 +6,13 @@ This is not official Ryan Fire Protection software. It is a concept prototype cr
 
 ## Purpose
 
-Fire protection employees often need to prepare using information from multiple sources: site context, installed equipment, service reminders, documentation needs, product safety notices, manufacturer documentation to verify, training resources, customer-friendly explanations, related service considerations, and follow-up topics. This app demonstrates how AI-assisted guidance and public recall data could help employees quickly organize that information, explain technical issues in plain language, and prepare for more informed customer engagements.
+Fire protection employees often need to prepare using information from multiple sources: site context, installed equipment, service reminders, documentation needs, product safety notices, manufacturer documentation to verify, training resources, customer-friendly explanations, related service considerations, and follow-up items. This app demonstrates how AI-assisted guidance and public recall data could help employees quickly organize that information, explain technical issues in plain language, and prepare for more informed customer engagements.
 
 The project is intentionally framed as an AI implementation concept rather than a software engineering showcase. It uses a practical public-data workflow to show how an internal employee could combine recall information, service context, audience needs, and responsible review boundaries before taking action.
 
 ## What This App Does
 
-The app lets a Ryan Fire Protection-style internal user choose an engagement type, audience, sample site profile, and Ryan Service Lens. The selected site profile includes installed equipment/products, known systems, service reminders, training needs, and documentation needs. The app automatically checks public CPSC recall data for possible product safety context from that installed equipment, while still allowing an optional manual product safety search. It then generates an AI Engagement Readiness Packet around the customer/site engagement.
+The app lets a Ryan Fire Protection-style internal user choose a site, role, engagement, and services. The selected site profile includes installed equipment, known systems, service reminders, training needs, and documentation needs. The app automatically checks public CPSC recall data for possible product safety context from that installed equipment. It then generates an Engagement Packet around the selected work context.
 
 The packet is designed to help employees understand what to verify, what to discuss, what questions may come up, what related service considerations may matter, what customer-friendly explanations may be useful, and what information still needs official or internal review.
 
@@ -34,7 +34,7 @@ It is not a customer portal, CRM, LMS, inspection authority, or compliance decis
 
 ## Product Safety / Recall Context
 
-The primary feature is the **AI Engagement Readiness Packet**. Product safety context is supporting information, not the center of the workflow.
+The primary feature is the **Engagement Packet**. Product safety context is supporting information inside the packet, not the center of the setup workflow.
 
 The app performs an automatic product safety review by creating CPSC search terms from installed equipment in the selected site profile, including manufacturer, product name, category, and model when known. Possible recall matches are labeled cautiously and require verification against official CPSC notices, manufacturer instructions, exact model/date ranges, and site records.
 
@@ -52,9 +52,9 @@ Users can search by:
 - Remedy
 - Description
 
-## AI Engagement Readiness Packet
+## Engagement Packet
 
-The app uses `/api/summarize` to generate an **AI Engagement Readiness Packet**. The request includes engagement type, audience, sample site profile, installed equipment/products, Ryan Service Lens, instructor/event prep resources, service reminders, documentation/deficiency context, automatic product safety review results, optional manual product safety search result, additional notes, and requested preparation action.
+The app uses `/api/summarize` to generate an **Engagement Packet**. The request includes site, role, engagement, selected services, site profile, installed equipment/products, instructor/event prep resources, service reminders, documentation/deficiency context, automatic product safety review results, optional manual product safety context, additional notes, and requested preparation action.
 
 Available brief actions:
 
@@ -74,25 +74,27 @@ Supported engagement types:
 - Customer Meeting
 - Continuing Education Prep
 
-The readiness packet includes:
+Inspector packets include onsite guidance sections such as:
 
-- Source Context Used
-- Known from Source
-- Provided by User/Demo Profile
-- AI Interpretation
-- Readiness Score
-- Key Attention Flags
-- Internal Field Brief
-- Customer / Audience Talking Points
-- Installed Equipment Review
-- Product Safety / Recall Review
-- Instructor / Event Prep Notes
-- Protect / Prevent / Preserve Lens
-- Deficiency / Documentation Follow-Up
+- Onsite Priorities
+- Systems / Equipment to Review
+- Items to Verify
+- Product Safety / Recall Check
+- Customer Talking Points
 - Related Service Considerations
-- Recommended Next Best Actions
-- Follow-Up Note Draft
-- Missing Information to Verify
+- Documentation / Follow-Up
+- Official Source Reminder
+
+Instructor packets include session guidance sections such as:
+
+- Session Priorities
+- Lesson Flow
+- Materials / Equipment Needed
+- Standards / Objective Alignment
+- Safety Points to Emphasize
+- Attendance / Certification Reminders
+- Related Service Considerations
+- Documentation / Follow-Up
 - Official Source Reminder
 
 ## Prototype Prep Resources
@@ -103,7 +105,7 @@ Examples include:
 
 - Materials or resources to bring
 - Equipment/prep checklist
-- Suggested discussion topics
+- Suggested discussion items
 - Demonstration or training notes
 - Likely attendee questions
 - Follow-up reminders
@@ -149,7 +151,7 @@ It does not decide whether a recall applies to a customer site. That still requi
 
 AI-generated guidance should be reviewed against official CPSC notices, manufacturer instructions, applicable codes, NFPA standards, company procedures, and qualified internal review before action is taken. The app is intended to support preparation and review, not replace professional judgment, manufacturer guidance, regulatory requirements, inspection judgment, engineering judgment, or official documentation.
 
-The readiness score reflects preparation completeness only. It does not imply code compliance, safety approval, or recall applicability.
+The packet does not provide code compliance, safety approval, or recall applicability determinations.
 
 ## Tech Stack
 

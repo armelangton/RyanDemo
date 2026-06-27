@@ -1,7 +1,7 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "Fire Protection Field Assistant API",
+    "title": "Engagement Assistant API",
     "version": "0.1.0",
     "description": "Public recall lookup endpoints for a field assistant proof of concept."
   },

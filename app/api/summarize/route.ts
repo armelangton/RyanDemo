@@ -3,7 +3,7 @@ import knowledgeBase from "../../../data/source-docs/sampleKnowledgeBase.json";
 
 export const dynamic = "force-dynamic";
 
-const systemPrompt = `You are generating an internal AI Engagement Readiness Packet for a fire protection employee.
+const systemPrompt = `You are generating an internal Engagement Packet for a fire protection employee.
 
 Use the selected preparation context and optional recall/product safety information to create practical internal guidance. You must use available context in this order:
 - role
@@ -29,6 +29,7 @@ Use the selected preparation context and optional recall/product safety informat
 - additional manual/site/training notes
 
 This is an internal customer engagement preparation workspace. Do not produce a generic recall summary. Help the employee prepare for inspections, customer training, fire department/recruit training, municipality/public safety events, conventions/trade shows, customer meetings, and continuing education prep.
+Use the user-facing packet name "Engagement Packet." Do not use the prior readiness-packet title in generated text.
 Manual recall data is optional. If no manual recall is selected, say: "No manual product safety recall selected. Packet is based on engagement, site, service, prep context, and automatic product safety review." If a manual recall is selected, include it as optional manual product safety context.
 
 The packet should support the existing UI packet structure.
@@ -768,7 +769,7 @@ const fallbackPacket = ({
         : "Verify manufacturer documentation, applicable standards, and company procedures for any product-specific discussion.",
       "Review related service considerations with a qualified internal employee.",
     ],
-    followUpNoteDraft: `${hasRecall ? `Reviewed optional manual public recall information for ${title}` : "Prepared engagement readiness packet without a selected manual product safety recall"} while preparing for ${engagementType} with ${audience}. Need to verify product/equipment details, site equipment match, manufacturer instructions, service history, training context, automatic product safety review results, and open documentation questions. Related service considerations include ${relatedServiceConsideration || "documentation review and preventive maintenance"}. Next step: route findings through qualified internal review before customer or operational action.`,
+    followUpNoteDraft: `${hasRecall ? `Reviewed optional manual public recall information for ${title}` : "Prepared engagement packet without a selected manual product safety recall"} while preparing for ${engagementType} with ${audience}. Need to verify product/equipment details, site equipment match, manufacturer instructions, service history, training context, automatic product safety review results, and open documentation questions. Related service considerations include ${relatedServiceConsideration || "documentation review and preventive maintenance"}. Next step: route findings through qualified internal review before customer or operational action.`,
     missingInformationToVerify: [
       "Exact product model",
       "Manufacturer documentation",
@@ -983,7 +984,7 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json(
-      { error: "Unable to generate engagement readiness packet right now." },
+      { error: "Unable to generate engagement packet right now." },
       { status: 502 },
     );
   }
