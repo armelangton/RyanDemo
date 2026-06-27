@@ -1734,10 +1734,11 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-brand-gray100 text-brand-charcoal">
       <header className="border-t-4 border-brand-green bg-white">
-        <div className="mx-auto max-w-3xl px-4 py-5 sm:px-6">
+        <div className="mx-auto max-w-3xl px-4 py-4 sm:px-6 sm:py-5">
           <p className="text-base font-black uppercase tracking-[0.035em] text-brand-green sm:text-xl">
             RYAN FIRE PROTECTION, INC.
           </p>
+          <div className="mt-2 h-0.5 w-16 rounded-full bg-brand-red" />
           <h1 className="mt-2 text-[24px] font-black leading-tight text-brand-charcoal sm:text-[32px]">
             Fire Protection Field Assistant
           </h1>
@@ -1748,7 +1749,7 @@ export default function Home() {
       </header>
 
       <div className="mx-auto max-w-3xl px-4 py-4 sm:px-6">
-        <section className="rounded-2xl border border-brand-gray200 bg-white p-4 shadow-sm sm:p-5">
+        <section className="border-t-2 border-brand-red rounded-2xl border border-brand-gray200 bg-white p-4 shadow-sm sm:p-5">
           <div className="grid gap-5">
             <div>
               <h2 className="text-lg font-black text-brand-charcoal">Site</h2>
@@ -1903,7 +1904,7 @@ export default function Home() {
 
       </div>
 
-      <footer className="mx-auto mt-2 max-w-3xl px-4 pb-6 pt-2 text-center text-xs leading-5 text-brand-gray700 sm:px-6">
+      <footer className="mx-auto mt-1 max-w-3xl px-5 pb-5 pt-1 text-center text-[11px] leading-4 text-brand-gray500 sm:px-6">
         Proof-of-concept demo. Verify official sources, manufacturer
         instructions, applicable codes, NFPA standards, department
         requirements, company procedures, and AHJ requirements before action.
