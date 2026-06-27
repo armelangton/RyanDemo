@@ -4,6 +4,8 @@ An internal employee preparation workspace inspired by Ryan Fire Protection serv
 
 This is not official Ryan Fire Protection software. It is a concept prototype created for demonstration purposes and is not affiliated with or endorsed by Ryan Fire Protection, Inc.
 
+Copyright © 2026 Amy Melangton. All rights reserved. This proof-of-concept, including its source code, sample workflows, sample records, written content, lesson-plan templates, and demo structure, is provided solely for portfolio/application review. No rights are granted to copy, modify, distribute, commercialize, or reuse this work without written permission. Ryan Fire Protection names, marks, logos, and references are used only for contextual demonstration; no ownership or affiliation is claimed.
+
 ## Purpose
 
 Fire protection employees often need to prepare using information from multiple sources: site context, installed equipment, service reminders, documentation needs, product safety notices, manufacturer documentation to verify, training resources, customer-friendly explanations, related service considerations, and follow-up items. This app demonstrates how AI-assisted guidance and public recall data could help employees quickly organize that information, explain technical issues in plain language, and prepare for more informed customer engagements.

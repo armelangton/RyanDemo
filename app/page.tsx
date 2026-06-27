@@ -163,8 +163,10 @@ const workflowConfig: Record<
       "Questions to Ask",
       "Materials Needed",
       "Attendance Notes",
+      "Product / Manufacturer Updates",
+      "Follow-Up Actions",
     ],
-    optional: ["Product / Manufacturer Updates", "Follow-Up Actions"],
+    optional: [],
   },
   "Continuing Education Prep": {
     role: "Instructor",
@@ -180,9 +182,9 @@ const workflowConfig: Record<
       "Teaching Points",
       "Materials Needed",
       "Attendance / Certification Notes",
+      "Product / Manufacturer Updates",
     ],
     optional: [
-      "Product / Manufacturer Updates",
       "Checklist Questions",
       "Follow-Up Actions",
     ],
@@ -335,12 +337,94 @@ type ClientRecord = {
   audience: string;
   continuingEducationContext: string;
   productSafetyTerms: string[];
+  trainingStatus: {
+    completionPercent: number;
+    currentAttendees: number;
+    requiredAttendees: number;
+    dueSoonCount: number;
+    overdueCount: number;
+    certificateRequired: boolean;
+    rosterRequired: boolean;
+    certificateDueDate: string;
+    lastTrainingDate: string;
+    nextTrainingWindow: string;
+    trainingNotes: string;
+  };
   resources: {
     title: string;
     type: string;
     description: string;
     action: string;
+    purpose?: string;
+    sampleNote?: string;
   }[];
+};
+
+const sampleLessonResources: ClientRecord["resources"] = [
+  {
+    title: "Sample Lesson Plan: Sprinkler System Basics",
+    type: "Sample Lesson Plan",
+    purpose: "For fire department recruit training or facility staff education.",
+    description:
+      "Sample demo lesson plan for sprinkler purpose, components, activation basics, and field awareness.",
+    sampleNote:
+      "Sample demo content used to show how integrated AI could adapt internal training materials. Final lesson content should be reviewed and completed by the instructor.",
+    action: "Reference",
+  },
+  {
+    title: "Sample Lesson Plan: Fire Alarm / Detection Overview",
+    type: "Sample Lesson Plan",
+    purpose: "For recruit training, customer education, or facility teams.",
+    description:
+      "Sample demo lesson plan covering detection devices, notification basics, documentation reminders, and escalation questions.",
+    sampleNote:
+      "Sample demo content used to show how integrated AI could adapt internal training materials. Final lesson content should be reviewed and completed by the instructor.",
+    action: "Reference",
+  },
+  {
+    title: "Sample Lesson Plan: Fire Extinguisher Awareness",
+    type: "Sample Lesson Plan",
+    purpose: "For customer education or campus/facility staff.",
+    description:
+      "Sample demo lesson plan covering extinguisher types, placement awareness, inspection awareness, and reporting issues.",
+    sampleNote:
+      "Sample demo content used to show how integrated AI could adapt internal training materials. Final lesson content should be reviewed and completed by the instructor.",
+    action: "Reference",
+  },
+  {
+    title: "Sample Lesson Plan: Emergency Lighting Awareness",
+    type: "Sample Lesson Plan",
+    purpose: "For facility maintenance, campus teams, or inspection-prep conversations.",
+    description:
+      "Sample demo lesson plan covering emergency lighting purpose, visual checks, and follow-up documentation.",
+    sampleNote:
+      "Sample demo content used to show how integrated AI could adapt internal training materials. Final lesson content should be reviewed and completed by the instructor.",
+    action: "Reference",
+  },
+  {
+    title: "Sample Lesson Plan: Documentation & Inspection Readiness",
+    type: "Sample Lesson Plan",
+    purpose: "For facility, healthcare, education, or compliance staff.",
+    description:
+      "Sample demo lesson plan covering records, missing information, service notes, and follow-up ownership.",
+    sampleNote:
+      "Sample demo content used to show how integrated AI could adapt internal training materials. Final lesson content should be reviewed and completed by the instructor.",
+    action: "Reference",
+  },
+];
+
+const defaultTrainingStatus: ClientRecord["trainingStatus"] = {
+  completionPercent: 0,
+  currentAttendees: 0,
+  requiredAttendees: 0,
+  dueSoonCount: 0,
+  overdueCount: 0,
+  certificateRequired: false,
+  rosterRequired: false,
+  certificateDueDate: "Not specified",
+  lastTrainingDate: "Not specified",
+  nextTrainingWindow: "Not specified",
+  trainingNotes: "No training status provided in this sample record.",
 };
 
 const clientRecords: Record<string, ClientRecord> = {
@@ -376,12 +460,27 @@ const clientRecords: Record<string, ClientRecord> = {
     continuingEducationContext:
       "Basic system recognition, safety awareness, and documentation expectations",
     productSafetyTerms: ["sprinkler", "smoke alarm", "fire alarm"],
+    trainingStatus: {
+      completionPercent: 75,
+      currentAttendees: 18,
+      requiredAttendees: 24,
+      dueSoonCount: 6,
+      overdueCount: 0,
+      certificateRequired: true,
+      rosterRequired: true,
+      certificateDueDate: "After session completion",
+      lastTrainingDate: "Sample record: prior recruit class",
+      nextTrainingWindow: "Within 30 days",
+      trainingNotes:
+        "Roster and certificate completion notes should be prepared before the session.",
+    },
     resources: [
+      sampleLessonResources[0],
       {
         title: "Sprinkler System Overview",
         type: "Training Resource",
         description: "Basic component and system explanation.",
-        action: "Use in Packet",
+        action: "Reference",
       },
       {
         title: "Instructor Checklist",
@@ -393,7 +492,7 @@ const clientRecords: Record<string, ClientRecord> = {
         title: "Product Safety Data",
         type: "Safety / Recall Context",
         description: "Verification reminders based on assets.",
-        action: "Use in Packet",
+        action: "Reference",
       },
       {
         title: "Attendance Roster Template",
@@ -401,6 +500,13 @@ const clientRecords: Record<string, ClientRecord> = {
         description: "Attendance or CE completion reminder.",
         action: "View",
       },
+      {
+        title: "Department Training Requirements",
+        type: "Training Reference",
+        description: "Sample reminder to verify department requirements.",
+        action: "Reference",
+      },
+      sampleLessonResources[1],
     ],
   },
   "Municipal Facilities Account": {
@@ -433,7 +539,21 @@ const clientRecords: Record<string, ClientRecord> = {
     continuingEducationContext:
       "Customer education may be needed for documentation and safety awareness",
     productSafetyTerms: ["fire extinguisher", "smoke alarm", "emergency lighting"],
+    trainingStatus: {
+      ...defaultTrainingStatus,
+      completionPercent: 60,
+      currentAttendees: 9,
+      requiredAttendees: 15,
+      dueSoonCount: 4,
+      certificateRequired: false,
+      rosterRequired: true,
+      nextTrainingWindow: "Next inspection cycle",
+      trainingNotes:
+        "Facility staff may need safety awareness and documentation reminders.",
+    },
     resources: [
+      sampleLessonResources[2],
+      sampleLessonResources[3],
       {
         title: "Site Record",
         type: "Client Context",
@@ -444,7 +564,7 @@ const clientRecords: Record<string, ClientRecord> = {
         title: "Asset List",
         type: "Equipment Record",
         description: "Current demo equipment record.",
-        action: "Use in Packet",
+        action: "Reference",
       },
       {
         title: "Service Notes",
@@ -456,7 +576,7 @@ const clientRecords: Record<string, ClientRecord> = {
         title: "Product Safety Data",
         type: "Safety / Recall Context",
         description: "Recall verification reminders.",
-        action: "Use in Packet",
+        action: "Reference",
       },
     ],
   },
@@ -492,7 +612,20 @@ const clientRecords: Record<string, ClientRecord> = {
     continuingEducationContext:
       "Documentation, inspection readiness, and equipment awareness",
     productSafetyTerms: ["fire alarm", "sprinkler", "emergency lighting"],
+    trainingStatus: {
+      ...defaultTrainingStatus,
+      completionPercent: 70,
+      currentAttendees: 14,
+      requiredAttendees: 20,
+      dueSoonCount: 3,
+      certificateRequired: false,
+      rosterRequired: true,
+      nextTrainingWindow: "During ITM review window",
+      trainingNotes:
+        "Facilities and compliance staff may need documentation support.",
+    },
     resources: [
+      sampleLessonResources[4],
       {
         title: "ITM Record",
         type: "Client Context",
@@ -509,7 +642,7 @@ const clientRecords: Record<string, ClientRecord> = {
         title: "Healthcare Safety Checklist",
         type: "Documentation",
         description: "Facility-sensitive review reminders.",
-        action: "Use in Packet",
+        action: "Reference",
       },
     ],
   },
@@ -543,12 +676,26 @@ const clientRecords: Record<string, ClientRecord> = {
     continuingEducationContext:
       "Staff safety awareness, extinguisher basics, and emergency systems overview",
     productSafetyTerms: ["fire extinguisher", "smoke alarm", "emergency lighting"],
+    trainingStatus: {
+      ...defaultTrainingStatus,
+      completionPercent: 50,
+      currentAttendees: 12,
+      requiredAttendees: 24,
+      dueSoonCount: 8,
+      certificateRequired: false,
+      rosterRequired: true,
+      nextTrainingWindow: "Upcoming staff education session",
+      trainingNotes:
+        "Staff education session needs materials and follow-up questions prepared.",
+    },
     resources: [
+      sampleLessonResources[2],
+      sampleLessonResources[3],
       {
         title: "Training Outline",
         type: "Training Resource",
         description: "Session structure and reminders.",
-        action: "Use in Packet",
+        action: "Reference",
       },
       {
         title: "Campus Notes",
@@ -1508,15 +1655,17 @@ const flagsForRecord = (
 ) => {
   if (workflow === "Training / Lesson Plan") {
     return [
-      "Confirm recruit training objectives.",
+      "Prepare attendance roster.",
+      "Confirm certificate completion process.",
       "Verify demonstration materials.",
-      "Prepare attendance documentation.",
+      "Review product safety terms before instruction.",
     ];
   }
   if (workflow === "Continuing Education Prep") {
     return [
-      "Confirm CE objectives.",
-      "Prepare attendance documentation.",
+      "Confirm who is due soon.",
+      "Prepare completion documentation.",
+      "Verify whether certificates are required.",
       "Review product update terms.",
     ];
   }
@@ -1578,6 +1727,85 @@ const whatMattersForRecord = (
     return "Product safety review should focus on model details, manufacturer guidance, and official source verification.";
   }
   return `${sampleSite} needs prep around ${record.openItems[0]?.toLowerCase() ?? "open site items"}.`;
+};
+
+const trainingStatusSummary = (record: ClientRecord) => {
+  const status = record.trainingStatus;
+  if (!status.currentAttendees && !status.requiredAttendees) {
+    return "No training status provided.";
+  }
+  return `${status.completionPercent}% current · ${status.dueSoonCount} due soon · ${
+    status.certificateRequired ? "certificates required" : "certificates not required"
+  } · ${status.rosterRequired ? "roster needed" : "roster not required"}`;
+};
+
+const trainingCertificateNotes = (record: ClientRecord) => {
+  const status = record.trainingStatus;
+  const notes = [];
+  if (status.rosterRequired) notes.push("Prepare roster before session.");
+  if (status.certificateRequired) notes.push("Confirm certificate process.");
+  if (status.dueSoonCount > 0) {
+    notes.push(`${status.dueSoonCount} attendees are due soon.`);
+  }
+  if (status.trainingNotes) notes.push(status.trainingNotes);
+  return notes.slice(0, 4);
+};
+
+const suggestedLessonFocus = (record: ClientRecord, workflow: Workflow) => {
+  const lesson = record.resources.find((resource) => {
+    const title = resource.title.toLowerCase();
+    if (workflow === "Documentation Review") {
+      return title.includes("documentation");
+    }
+    if (record.equipmentAssets.some((item) => item.toLowerCase().includes("extinguisher"))) {
+      return title.includes("extinguisher");
+    }
+    if (record.equipmentAssets.some((item) => item.toLowerCase().includes("emergency lighting"))) {
+      return title.includes("emergency lighting");
+    }
+    if (record.equipmentAssets.some((item) => item.toLowerCase().includes("alarm"))) {
+      return title.includes("alarm");
+    }
+    return title.includes("sprinkler");
+  });
+
+  return lesson?.title.replace("Sample Lesson Plan: ", "") ?? "Lesson plan placeholder";
+};
+
+const productSafetyNotes = (
+  record: ClientRecord,
+  automaticSafetyReview: AutomaticSafetyReview,
+) => [
+  `Search terms came from the site record: ${record.productSafetyTerms.join(", ")}.`,
+  "Verify manufacturer, model, and date code.",
+  automaticSafetyReview.possibleMatches.length
+    ? "Review possible match before discussion."
+    : "Review official source before action.",
+].slice(0, 3);
+
+const recommendationReason = (
+  section: PrepSection,
+  workflow: Workflow,
+  record: ClientRecord,
+) => {
+  if (section === "Lesson Plan") {
+    return "Recommended because this is a recruit training workflow.";
+  }
+  if (section === "Attendance Notes" || section === "Attendance / Certification Notes") {
+    return record.trainingStatus.certificateRequired
+      ? `Recommended because certificates are required and ${record.trainingStatus.dueSoonCount} are due soon.`
+      : "Recommended because roster documentation is part of the record.";
+  }
+  if (section.includes("Product") || section.includes("Safety")) {
+    return "Recommended because product safety terms are available from the site record.";
+  }
+  if (section.includes("Documentation") || section.includes("Missing")) {
+    return "Recommended because open record gaps need follow-up.";
+  }
+  if (section.includes("Materials")) {
+    return "Recommended because sample source materials are available.";
+  }
+  return `Recommended for ${workflow.toLowerCase()}.`;
 };
 
 const recommendedNextStep = (workflow: Workflow, record: ClientRecord) => {
@@ -1789,11 +2017,22 @@ const AiPrepOutput = ({
   const sortedResources = sortResources(record, workflow, selectedSections);
   const flags = flagsForRecord(workflow, record, automaticSafetyReview);
   const snapshot = [
-    `${sampleSite}: ${record.continuingEducationContext}.`,
-    `Assets: ${record.equipmentAssets.slice(0, 3).join(", ")}.`,
-  ].slice(0, 2);
+    workflow === "Training / Lesson Plan"
+      ? "Fire department recruit training focused on sprinkler basics."
+      : `${sampleSite}: ${record.continuingEducationContext}.`,
+    `Sample training record shows ${trainingStatusSummary(record)}.`,
+    record.trainingStatus.certificateRequired
+      ? "Certificates are required after completion."
+      : `Assets: ${record.equipmentAssets.slice(0, 3).join(", ")}.`,
+  ].slice(0, 3);
   const nextStep = recommendedNextStep(workflow, record);
   const packetTitle = workflowConfig[workflow].packetTitle;
+  const lessonFocus = suggestedLessonFocus(record, workflow);
+  const certificateNotes = trainingCertificateNotes(record);
+  const safetyNotes = productSafetyNotes(record, automaticSafetyReview);
+  const sampleMaterialsUsed = sortedResources
+    .slice(0, 5)
+    .map((resource) => resource.title.replace("Sample Lesson Plan: ", "sample lesson plan: "));
   const packetText = [
     packetTitle,
     sampleSite,
@@ -1803,6 +2042,15 @@ const AiPrepOutput = ({
     "",
     "AI-Flagged Items",
     ...flags.map((item) => `- ${item}`),
+    "",
+    "Suggested Lesson Focus",
+    `- ${lessonFocus}, based on the selected site, equipment, and sample training context.`,
+    "",
+    "Training / Certificate Notes",
+    ...certificateNotes.map((item) => `- ${item}`),
+    "",
+    "Equipment / Product Safety Notes",
+    ...safetyNotes.map((item) => `- ${item}`),
     "",
     ...selectedSections.flatMap((section) => [
       section,
@@ -1848,6 +2096,22 @@ const AiPrepOutput = ({
         <PrepBriefSection title="Snapshot" tone="green">
           <PacketList items={snapshot} tone="green" />
         </PrepBriefSection>
+        <PrepBriefSection title="Suggested Lesson Focus" tone="green">
+          <p>
+            {lessonFocus}, based on the selected site, equipment, and sample
+            training context.
+          </p>
+          <p className="mt-2 text-xs font-bold text-brand-gray500">
+            Uses sample demo lesson-plan content. Final training materials
+            should be reviewed by the instructor.
+          </p>
+        </PrepBriefSection>
+        <PrepBriefSection title="Training / Certificate Notes" tone="neutral">
+          <PacketList items={certificateNotes} tone="neutral" />
+        </PrepBriefSection>
+        <PrepBriefSection title="Equipment / Product Safety Notes" tone="amber">
+          <PacketList items={safetyNotes} tone="amber" />
+        </PrepBriefSection>
         <PrepBriefSection title="AI-Flagged Items" tone="red">
           <PacketList items={flags} tone="red" />
         </PrepBriefSection>
@@ -1873,6 +2137,9 @@ const AiPrepOutput = ({
         </PrepBriefSection>
         <PrepBriefSection title="Recommended Next Step" tone="green">
           <p>{nextStep}</p>
+          <p className="mt-2 text-xs font-bold text-brand-gray500">
+            Sample demo materials used: {sampleMaterialsUsed.join(", ")}.
+          </p>
         </PrepBriefSection>
 
         <div className="flex flex-wrap gap-2 border-t border-brand-gray200 pt-4">
@@ -2410,7 +2677,7 @@ const ReadinessPacket = ({
                 onClick={() => copyText(gptFollowUpPrompt)}
                 className="rounded-xl border border-brand-gray200 bg-white px-3 py-2 text-sm font-extrabold text-brand-charcoal transition hover:bg-brand-gray100"
               >
-                Copy GPT Prompt
+                Copy Follow-Up Text
               </button>
               <p>{gptFollowUpPrompt}</p>
             </div>
@@ -2784,7 +3051,26 @@ export default function Home() {
                     ],
                   ],
                   ["Equipment / Assets", selectedClientRecord.equipmentAssets],
+                  [
+                    "Training / Certificate Status",
+                    [trainingStatusSummary(selectedClientRecord)],
+                  ],
                   ["Open Items", selectedClientRecord.openItems],
+                  [
+                    "Open Items / AI-Flagged Prep",
+                    flagsForRecord(
+                      selectedWorkflow,
+                      selectedClientRecord,
+                      automaticSafetyReview,
+                    ),
+                  ],
+                  [
+                    "Equipment / Product Safety Context",
+                    [
+                      `Terms: ${selectedClientRecord.productSafetyTerms.join(", ")}`,
+                      "Search Product Safety Context: auto-reviewed from site record",
+                    ],
+                  ],
                   [
                     "Resources Available",
                     sortResources(selectedClientRecord, selectedWorkflow, selectedSections)
@@ -2822,13 +3108,23 @@ export default function Home() {
                           key={section}
                           type="button"
                           onClick={() => toggleSection(section)}
-                          className={`max-w-full rounded-lg border px-2.5 py-1.5 text-xs font-extrabold leading-5 transition sm:text-sm ${
+                          title={recommendationReason(
+                            section,
+                            selectedWorkflow,
+                            selectedClientRecord,
+                          )}
+                          className={`max-w-full rounded-lg border px-2.5 py-1.5 text-left text-xs leading-5 transition sm:text-sm ${
                             selected
-                              ? "border-brand-green bg-brand-green text-white"
+                              ? "border-brand-green bg-green-50 text-brand-green"
                               : "border-brand-gray200 bg-white text-brand-charcoal hover:border-brand-green hover:bg-green-50"
                           }`}
                         >
-                          {section}
+                          <span className="block font-extrabold">{section}</span>
+                          {selected ? (
+                            <span className="block text-[10px] font-bold uppercase tracking-wide text-brand-gray500">
+                              AI recommended
+                            </span>
+                          ) : null}
                         </button>
                       );
                     })}
@@ -2846,7 +3142,7 @@ export default function Home() {
                           onClick={() => toggleSection(section)}
                           className={`max-w-full rounded-lg border px-2.5 py-1.5 text-xs font-bold leading-5 transition sm:text-sm ${
                             selected
-                              ? "border-brand-green bg-brand-green text-white"
+                              ? "border-brand-green bg-green-50 text-brand-green"
                               : "border-brand-gray200 bg-white text-brand-charcoal hover:border-brand-green hover:bg-green-50"
                           }`}
                         >
@@ -2896,6 +3192,16 @@ export default function Home() {
                       <p className="mt-1 text-xs leading-5 text-brand-gray700">
                         {resource.description}
                       </p>
+                      {resource.purpose ? (
+                        <p className="mt-1 text-xs leading-5 text-brand-gray500">
+                          Purpose: {resource.purpose}
+                        </p>
+                      ) : null}
+                      {resource.sampleNote ? (
+                        <p className="mt-1 text-xs leading-5 text-brand-gray500">
+                          {resource.sampleNote}
+                        </p>
+                      ) : null}
                     </div>
                   );
                 })}
@@ -2956,8 +3262,11 @@ export default function Home() {
       </div>
 
       <footer className="mx-auto mt-1 max-w-3xl px-5 pb-5 pt-1 text-center text-[11px] leading-4 text-brand-gray500 sm:px-6">
-        Proof-of-concept demo. Verify official sources, manufacturer
-        instructions, applicable codes, NFPA standards, department
+        © 2026 Amy Melangton. All rights reserved. Proof-of-concept demo
+        created for portfolio/application review. Ryan Fire Protection names,
+        logos, and references are used only for contextual demonstration; no
+        ownership or affiliation is claimed. Verify official sources,
+        manufacturer instructions, applicable codes, NFPA standards, department
         requirements, company procedures, and AHJ requirements before action.
       </footer>
     </main>
