@@ -1484,7 +1484,7 @@ const PrepBriefSection = ({
 
   return (
     <section className="border-t border-brand-gray200 py-4">
-      <h3 className={`text-lg font-black leading-tight ${headingClass}`}>
+      <h3 className={`text-lg font-extrabold leading-tight ${headingClass}`}>
         {title}
       </h3>
       <div className="mt-3 text-sm leading-6 text-brand-gray700 sm:text-base">{children}</div>
@@ -1922,11 +1922,11 @@ const ReadinessPacket = ({
   };
 
   return (
-    <section className="rounded-2xl border border-brand-gray200 bg-white p-4 shadow-sm sm:p-5">
+    <section className="rounded-[16px] border border-brand-gray200 bg-white p-4 shadow-sm sm:p-5">
       <div className="border-b border-brand-gray200 pb-4">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div>
-            <h2 className="text-2xl font-black leading-tight text-brand-charcoal sm:text-3xl">
+            <h2 className="text-2xl font-extrabold leading-tight text-brand-charcoal sm:text-3xl">
               Engagement Packet
             </h2>
           </div>
@@ -1978,7 +1978,7 @@ const ReadinessPacket = ({
                 key={record.serialNumber}
                 className="rounded-xl border border-brand-gray200 bg-white p-3"
               >
-                <h4 className="text-base font-black text-brand-charcoal">
+                <h4 className="text-base font-extrabold text-brand-charcoal">
                   {record.name}
                 </h4>
                 <dl className="mt-2 grid gap-x-4 gap-y-1 text-sm sm:grid-cols-2">
@@ -2021,15 +2021,15 @@ const ReadinessPacket = ({
         <PrepBriefSection title="Engagement Checklist" tone="neutral">
           <div className="grid gap-4 sm:grid-cols-3">
             <div>
-              <p className="text-sm font-black text-brand-charcoal">Before</p>
+              <p className="text-sm font-extrabold text-brand-charcoal">Before</p>
               <PacketList items={beforeItems} tone="neutral" />
             </div>
             <div>
-              <p className="text-sm font-black text-brand-charcoal">During</p>
+              <p className="text-sm font-extrabold text-brand-charcoal">During</p>
               <PacketList items={duringItems} tone="neutral" />
             </div>
             <div>
-              <p className="text-sm font-black text-brand-charcoal">After</p>
+              <p className="text-sm font-extrabold text-brand-charcoal">After</p>
               <PacketList items={afterItems} tone="neutral" />
             </div>
           </div>
@@ -2366,10 +2366,11 @@ export default function Home() {
       </header>
 
       <div className="mx-auto max-w-3xl px-4 py-3 sm:px-6">
-        <section className="rounded-2xl border border-t-2 border-brand-gray200 border-t-brand-orange bg-white p-3 shadow-sm sm:p-5">
+        <section className="rounded-[16px] border border-brand-gray200 bg-white p-3 shadow-sm sm:p-5">
+          <div className="mb-3 h-1 w-14 rounded-md bg-brand-orange" aria-hidden="true" />
           <div className="grid gap-4">
             <div>
-              <h2 className="text-lg font-black text-brand-greenDark">
+              <h2 className="text-lg font-extrabold text-brand-greenDark">
                 1. Select Client / Site
               </h2>
               <p className="mt-1 text-xs font-semibold text-brand-gray500">
@@ -2391,7 +2392,7 @@ export default function Home() {
                       }}
                       className={`min-h-10 rounded-xl border px-3 py-2.5 text-left text-sm font-extrabold leading-5 transition [font-family:var(--font-display)] ${
                         selected
-                          ? "border-brand-green bg-brand-greenSoft text-brand-greenDark"
+                          ? "border-brand-green bg-brand-green text-white"
                           : "border-brand-gray200 bg-white text-brand-charcoal hover:border-brand-green hover:bg-brand-greenSoft"
                       }`}
                     >
@@ -2404,7 +2405,7 @@ export default function Home() {
 
             <div className="grid gap-5 md:grid-cols-[0.8fr_1.2fr]">
               <div>
-                <h2 className="text-lg font-black text-brand-greenDark">2. Select Role</h2>
+                <h2 className="text-lg font-extrabold text-brand-greenDark">2. Select Role</h2>
                 <p className="mt-1 text-xs font-semibold text-brand-gray500">
                   Choose the employee perspective for the packet.
                 </p>
@@ -2418,7 +2419,7 @@ export default function Home() {
                         onClick={() => applyRole(item)}
                         className={`min-h-10 rounded-xl border px-3 py-2.5 text-center text-sm font-extrabold transition [font-family:var(--font-display)] ${
                           selected
-                            ? "border-brand-green bg-brand-greenSoft text-brand-greenDark"
+                            ? "border-brand-green bg-brand-green text-white"
                             : "border-brand-gray200 bg-white text-brand-charcoal hover:border-brand-green hover:bg-brand-greenSoft"
                         }`}
                       >
@@ -2430,7 +2431,7 @@ export default function Home() {
               </div>
 
               <div>
-                <h2 className="text-lg font-black text-brand-greenDark">
+                <h2 className="text-lg font-extrabold text-brand-greenDark">
                   3. Select Engagement Type
                 </h2>
                 <p className="mt-1 text-xs font-semibold text-brand-gray500">
@@ -2449,7 +2450,7 @@ export default function Home() {
                         }}
                         className={`min-h-10 rounded-xl border px-3 py-2.5 text-left text-sm font-extrabold leading-5 transition [font-family:var(--font-display)] ${
                           selected
-                            ? "border-brand-green bg-brand-greenSoft text-brand-greenDark"
+                            ? "border-brand-green bg-brand-green text-white"
                             : "border-brand-gray200 bg-white text-brand-charcoal hover:border-brand-green hover:bg-brand-greenSoft"
                         }`}
                       >
@@ -2511,7 +2512,7 @@ export default function Home() {
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div>
-                        <p className="text-sm font-black text-brand-charcoal">
+                        <p className="text-sm font-extrabold text-brand-charcoal">
                           {resource.title}
                         </p>
                         <p className="mt-0.5 text-xs font-bold text-brand-green">
@@ -2536,7 +2537,7 @@ export default function Home() {
               type="button"
               onClick={() => void generateSummary(null, briefAction)}
               disabled={Boolean(summarizingId)}
-              className="w-full rounded-xl bg-brand-green px-5 py-4 text-center text-base font-black text-white transition hover:bg-brand-greenDark disabled:cursor-not-allowed disabled:bg-brand-gray500 sm:w-auto [font-family:var(--font-display)]"
+              className="w-full rounded-xl bg-brand-green px-5 py-4 text-center text-base font-extrabold text-white transition hover:bg-brand-greenDark disabled:cursor-not-allowed disabled:bg-brand-gray500 sm:w-auto [font-family:var(--font-display)]"
             >
               {summarizingId
                 ? "Generating Packet..."
