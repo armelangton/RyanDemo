@@ -163,6 +163,8 @@ type ClientRecord = {
   serviceTrainingHistory: string[];
   openItems: string[];
   trainingContext: string[];
+  history?: string[];
+  serviceQuotePrepItems?: string[];
   resources: {
     title: string;
     type: string;
@@ -383,6 +385,16 @@ const clientRecords: Record<string, ClientRecord> = {
       "Continuing education prep",
       "Lesson plan needed",
     ],
+    history: [
+      "Last training session used sprinkler and alarm examples for recruit awareness.",
+      "Previous instructor notes flagged recurring questions about system behavior and documentation.",
+      "Prior follow-up note requested attendance documentation before the next session.",
+    ],
+    serviceQuotePrepItems: [
+      "Confirm demonstration materials before the session.",
+      "Prepare attendance and completion notes for internal documentation.",
+      "Route product/manufacturer questions to qualified review before teaching.",
+    ],
     resources: [
       {
         title: "Sprinkler System Overview",
@@ -425,6 +437,16 @@ const clientRecords: Record<string, ClientRecord> = {
       "Facility maintenance staff",
       "Documentation awareness",
       "Basic safety reminders",
+    ],
+    history: [
+      "Last service visit included a reminder to confirm extinguisher inspection tags.",
+      "Previous documentation review noted emergency lighting test records needed review.",
+      "Prior customer question involved whether sprinkler documentation was current.",
+    ],
+    serviceQuotePrepItems: [
+      "If documentation gaps are confirmed, prepare follow-up notes for service coordination.",
+      "Confirm whether missing annual test records require a service task or quote.",
+      "Capture model and serial details before customer-facing recommendations.",
     ],
     resources: [
       {
@@ -469,6 +491,16 @@ const clientRecords: Record<string, ClientRecord> = {
       "Inspection readiness",
       "Equipment awareness",
     ],
+    history: [
+      "Previous documentation review noted missing alarm testing records.",
+      "Last ITM review emphasized healthcare-sensitive documentation completeness.",
+      "Prior follow-up note requested confirmation of special hazards equipment details.",
+    ],
+    serviceQuotePrepItems: [
+      "Confirm documentation gaps before discussing next steps.",
+      "Verify special hazards details before service coordination.",
+      "Review emergency lighting dates before preparing customer follow-up.",
+    ],
     resources: [
       {
         title: "ITM Record",
@@ -505,6 +537,16 @@ const clientRecords: Record<string, ClientRecord> = {
       "Campus staff",
       "Safety awareness",
       "Emergency systems overview",
+    ],
+    history: [
+      "Prior staff education session covered extinguisher basics.",
+      "Campus walkthrough notes flagged audience knowledge level as an open question.",
+      "Previous follow-up requested updated extinguisher training materials.",
+    ],
+    serviceQuotePrepItems: [
+      "Confirm audience knowledge level before the session.",
+      "Verify extinguisher training materials before customer education.",
+      "Identify follow-up owner for campus questions after the walkthrough.",
     ],
     resources: [
       {
@@ -1466,6 +1508,136 @@ const roleSpecificAssetNote = (
   return `Use this ${record.category.toLowerCase()} record to summarize readiness, risks, open items, ownership, and follow-up for ${engagement}.`;
 };
 
+const requiredRecordFields: Array<{
+  label: string;
+  key: keyof EquipmentAssetRecord;
+}> = [
+  { label: "Manufacturer", key: "manufacturer" },
+  { label: "Model", key: "model" },
+  { label: "SKU / Product Number", key: "sku" },
+  { label: "Serial Number", key: "serialNumber" },
+  { label: "Location", key: "location" },
+  { label: "Last Inspection / Test Date", key: "lastInspectionTestDate" },
+  { label: "Certification / Service Status", key: "certificationServiceStatus" },
+  { label: "Recall / Safety Status", key: "recallSafetyStatus" },
+  { label: "Documentation Status", key: "documentationStatus" },
+  { label: "Deficiency Status", key: "deficiencyStatus" },
+];
+
+const incompleteRecordTerms = [
+  "unknown",
+  "demo unknown",
+  "needs verification",
+  "needs review",
+  "needs confirmation",
+  "missing",
+  "pending",
+  "tbd",
+  "not provided",
+];
+
+const isIncompleteRecordValue = (value: string) => {
+  const normalized = value.trim().toLowerCase();
+  return !normalized || incompleteRecordTerms.some((term) => normalized.includes(term));
+};
+
+const buildRecordReview = (
+  equipmentRecords: EquipmentAssetRecord[],
+  clientRecord: ClientRecord,
+  roleEngagement: RoleEngagement,
+) => {
+  const missingByRecord = equipmentRecords
+    .map((record) => ({
+      record,
+      missingFields: requiredRecordFields
+        .filter((field) => isIncompleteRecordValue(String(record[field.key] ?? "")))
+        .map((field) => `${field.label} needs verification`),
+    }))
+    .filter((item) => item.missingFields.length > 0);
+
+  const totalFieldsChecked = equipmentRecords.length * requiredRecordFields.length;
+  const missingFieldCount = missingByRecord.reduce(
+    (total, item) => total + item.missingFields.length,
+    0,
+  );
+  const completeFieldCount = Math.max(totalFieldsChecked - missingFieldCount, 0);
+  const completenessPercentage = totalFieldsChecked
+    ? Math.round((completeFieldCount / totalFieldsChecked) * 100)
+    : 0;
+
+  const possibleIssues = equipmentRecords.flatMap((record) => {
+    const issues: string[] = [];
+    if (
+      !isIncompleteRecordValue(record.documentationStatus) &&
+      isIncompleteRecordValue(record.certificationServiceStatus)
+    ) {
+      issues.push(
+        `${record.name}: Possible issue - documentation appears usable, but certification/service status needs review.`,
+      );
+    }
+    if (
+      record.deficiencyStatus.toLowerCase().includes("no confirmed") &&
+      /open|follow-up|question|review/i.test(`${record.notes} ${record.verificationNeeded}`)
+    ) {
+      issues.push(
+        `${record.name}: Sample record inconsistency - deficiency status says none confirmed, but notes still point to follow-up.`,
+      );
+    }
+    if (
+      roleEngagement === "Inspection / Testing / Maintenance" &&
+      isIncompleteRecordValue(record.lastInspectionTestDate)
+    ) {
+      issues.push(
+        `${record.name}: Possible issue - inspection/test date needs review for this engagement.`,
+      );
+    }
+    if (
+      !isIncompleteRecordValue(record.manufacturer) &&
+      (isIncompleteRecordValue(record.model) || isIncompleteRecordValue(record.serialNumber))
+    ) {
+      issues.push(
+        `${record.name}: Needs review - manufacturer is listed, but model or serial detail is incomplete.`,
+      );
+    }
+    if (
+      record.recallSafetyStatus.toLowerCase().includes("no confirmed") &&
+      (isIncompleteRecordValue(record.model) || isIncompleteRecordValue(record.sku))
+    ) {
+      issues.push(
+        `${record.name}: Verify before relying on this - safety status is not confirmed while model or product number needs review.`,
+      );
+    }
+    return issues;
+  });
+
+  const historicalNotes = [
+    ...(clientRecord.history ?? []),
+    ...clientRecord.serviceTrainingHistory.map((item) => `Sample history: ${item}.`),
+  ].slice(0, 4);
+
+  const serviceQuotePrepItems = [
+    ...(clientRecord.serviceQuotePrepItems ?? []),
+    ...(missingFieldCount
+      ? ["If incomplete records are confirmed, prepare service coordination follow-up notes."]
+      : []),
+    ...(possibleIssues.length
+      ? ["Verify possible record issues internally before customer follow-up."]
+      : []),
+  ].slice(0, 4);
+
+  return {
+    totalEquipmentRecords: equipmentRecords.length,
+    totalFieldsChecked,
+    completeFieldCount,
+    missingFieldCount,
+    completenessPercentage,
+    missingByRecord,
+    possibleIssues: possibleIssues.slice(0, 5),
+    historicalNotes,
+    serviceQuotePrepItems,
+  };
+};
+
 const PrepBriefSection = ({
   title,
   children,
@@ -1500,6 +1672,7 @@ const ReadinessPacket = ({
   audience,
   sampleSite,
   automaticSafetyReview,
+  clientRecord,
   onStartNew,
 }: {
   guidance: AiGuidance | null;
@@ -1509,6 +1682,7 @@ const ReadinessPacket = ({
   audience: Audience;
   sampleSite: string;
   automaticSafetyReview: AutomaticSafetyReview;
+  clientRecord: ClientRecord;
   onStartNew: () => void;
 }) => {
   if (!guidance) return null;
@@ -1525,9 +1699,14 @@ const ReadinessPacket = ({
           "Prior deficiencies",
           "Internal review owner",
         ];
-    const equipmentRecords = selectedTopics
+  const equipmentRecords = selectedTopics
     .map((topic) => equipmentRecordLibrary[topic])
     .filter(Boolean);
+  const recordReview = buildRecordReview(
+    equipmentRecords,
+    clientRecord,
+    roleEngagement,
+  );
   const simpleLessonPlan =
     guidance.simpleLessonPlan?.length
       ? guidance.simpleLessonPlan
@@ -1873,6 +2052,28 @@ const ReadinessPacket = ({
   ]).slice(0, 5);
   const packetText = [
     "Engagement Packet",
+    "Record Review",
+    `${recordReview.totalEquipmentRecords} equipment records reviewed`,
+    `${recordReview.totalFieldsChecked} required fields checked`,
+    `${recordReview.completeFieldCount} fields complete`,
+    `${recordReview.missingFieldCount} fields missing or need verification`,
+    `Record Completeness: ${recordReview.completenessPercentage}%`,
+    "",
+    "Missing / Incomplete Fields",
+    ...recordReview.missingByRecord.flatMap((item) => [
+      `- ${item.record.name}`,
+      ...item.missingFields.map((field) => `  - ${field}`),
+    ]),
+    "",
+    "Possible Record Issues",
+    ...recordReview.possibleIssues.map((item) => `- ${item}`),
+    "",
+    "Historical Notes",
+    ...recordReview.historicalNotes.map((item) => `- ${item}`),
+    "",
+    "Service / Quote Prep Items",
+    ...recordReview.serviceQuotePrepItems.map((item) => `- ${item}`),
+    "",
     "Engagement Summary",
     engagementSummaryText,
     "",
@@ -1962,6 +2163,111 @@ const ReadinessPacket = ({
           </div>
         </div>
       </div>
+
+      <section className="border-b border-brand-gray200 py-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <h3 className="text-xl font-extrabold leading-tight text-brand-greenDark">
+              Record Review
+            </h3>
+            <p className="mt-1 text-xs font-semibold leading-5 text-brand-gray500">
+              These record checks are calculated from sample records for demonstration purposes. They are not code, safety, compliance, inspection, or engineering determinations.
+            </p>
+          </div>
+          <span className="w-fit rounded-lg bg-brand-orange px-2.5 py-1 text-xs font-extrabold text-white">
+            Operational check
+          </span>
+        </div>
+
+        <div className="mt-4 grid gap-3 lg:grid-cols-[0.85fr_1.15fr]">
+          <article className="rounded-xl border border-brand-gray200 bg-brand-gray100 p-3">
+            <p className="text-xs font-extrabold uppercase tracking-wide text-brand-gray500">
+              Record Completeness
+            </p>
+            <div className="mt-2 flex items-end gap-2">
+              <span className="text-4xl font-extrabold leading-none text-brand-green">
+                {recordReview.completenessPercentage}%
+              </span>
+              <span className="pb-1 text-sm font-semibold text-brand-gray700">
+                {recordReview.completeFieldCount} of {recordReview.totalFieldsChecked} fields complete
+              </span>
+            </div>
+            <p className="mt-3 text-sm leading-6 text-brand-gray700">
+              {recordReview.missingFieldCount
+                ? `Most sample records include identifiers and locations, but ${recordReview.missingFieldCount} fields still need verification or review.`
+                : "Sample records include the required fields checked for this demo review."}
+            </p>
+            <p className="mt-2 text-xs font-semibold text-brand-gray500">
+              {recordReview.totalEquipmentRecords} equipment records reviewed.
+            </p>
+          </article>
+
+          <div className="grid gap-3 sm:grid-cols-2">
+            <article className="rounded-xl border border-brand-gray200 bg-white p-3">
+              <h4 className="text-sm font-extrabold text-brand-greenDark">
+                Missing / Incomplete Fields
+              </h4>
+              <div className="mt-2 space-y-2 text-sm leading-5 text-brand-gray700">
+                {recordReview.missingByRecord.slice(0, 3).map((item) => (
+                  <div key={item.record.serialNumber}>
+                    <p className="font-extrabold text-brand-charcoal">{item.record.name}</p>
+                    <ul className="mt-1 list-disc space-y-1 pl-5">
+                      {item.missingFields.slice(0, 3).map((field) => (
+                        <li key={field}>{field}</li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+                {!recordReview.missingByRecord.length ? (
+                  <p>No incomplete required fields were found in this sample check.</p>
+                ) : null}
+              </div>
+            </article>
+
+            <article className="rounded-xl border border-brand-gray200 bg-white p-3">
+              <h4 className="text-sm font-extrabold text-brand-greenDark">
+                Possible Record Issues
+              </h4>
+              <PacketList
+                items={
+                  recordReview.possibleIssues.length
+                    ? recordReview.possibleIssues.slice(0, 4)
+                    : ["No possible record issues surfaced from the sample checks."]
+                }
+                tone={recordReview.possibleIssues.length ? "amber" : "neutral"}
+              />
+            </article>
+
+            <article className="rounded-xl border border-brand-gray200 bg-white p-3">
+              <h4 className="text-sm font-extrabold text-brand-greenDark">
+                Historical Notes
+              </h4>
+              <PacketList
+                items={
+                  recordReview.historicalNotes.length
+                    ? recordReview.historicalNotes.slice(0, 4)
+                    : ["No sample history notes were provided for this record."]
+                }
+                tone="neutral"
+              />
+            </article>
+
+            <article className="rounded-xl border border-brand-gray200 bg-white p-3">
+              <h4 className="text-sm font-extrabold text-brand-greenDark">
+                Service / Quote Prep Items
+              </h4>
+              <PacketList
+                items={
+                  recordReview.serviceQuotePrepItems.length
+                    ? recordReview.serviceQuotePrepItems.slice(0, 4)
+                    : ["No service or quote prep items surfaced from this sample record."]
+                }
+                tone="amber"
+              />
+            </article>
+          </div>
+        </div>
+      </section>
 
       <div className="space-y-1">
         <PrepBriefSection
@@ -2572,6 +2878,7 @@ export default function Home() {
                 audience={audience}
                 sampleSite={selectedSampleSite}
                 automaticSafetyReview={automaticSafetyReview}
+                clientRecord={selectedClientRecord}
                 onStartNew={startNewPacket}
               />
             ) : null}
