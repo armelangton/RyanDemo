@@ -38,20 +38,12 @@ type UserRole =
   | "Sales / Account Manager";
 
 type RoleEngagement =
-  | "Inspection / Testing"
-  | "Maintenance Review"
-  | "Site Walkthrough"
-  | "Documentation Review"
-  | "Continuing Education Prep"
-  | "Training Session"
-  | "Recruit Training"
-  | "Customer Education"
-  | "Readiness Review"
-  | "Customer Meeting Prep"
-  | "Documentation Follow-Up"
-  | "Account Review"
-  | "Service Opportunity Review"
-  | "Service Coordination Review";
+  | "Inspection / Testing / Maintenance"
+  | "Deficiency / Service Follow-Up"
+  | "Documentation / Compliance Review"
+  | "Site Survey / Asset Capture"
+  | "Customer Training / Demonstration"
+  | "Design / Construction Coordination";
 
 type Topic =
   | "Fire Sprinkler System"
@@ -116,35 +108,14 @@ const visibleSiteOptions = [
   },
 ];
 
-const roleEngagementOptions: Record<UserRole, RoleEngagement[]> = {
-  Inspector: [
-    "Inspection / Testing",
-    "Maintenance Review",
-    "Site Walkthrough",
-    "Documentation Review",
-  ],
-  Instructor: [
-    "Continuing Education Prep",
-    "Training Session",
-    "Recruit Training",
-    "Customer Education",
-  ],
-  Manager: [
-    "Readiness Review",
-    "Documentation Follow-Up",
-    "Customer Meeting Prep",
-  ],
-  "Service Manager": [
-    "Service Coordination Review",
-    "Readiness Review",
-    "Documentation Follow-Up",
-  ],
-  "Sales / Account Manager": [
-    "Customer Meeting Prep",
-    "Account Review",
-    "Service Opportunity Review",
-  ],
-};
+const roleEngagementOptions: RoleEngagement[] = [
+  "Inspection / Testing / Maintenance",
+  "Deficiency / Service Follow-Up",
+  "Documentation / Compliance Review",
+  "Site Survey / Asset Capture",
+  "Customer Training / Demonstration",
+  "Design / Construction Coordination",
+];
 
 const inspectorDefaultTopics: Topic[] = [
   "Fire Sprinkler System",
@@ -1554,8 +1525,7 @@ const ReadinessPacket = ({
           "Prior deficiencies",
           "Internal review owner",
         ];
-  const assetText = selectedTopics.join(" · ") || "No equipment/assets selected";
-  const equipmentRecords = selectedTopics
+    const equipmentRecords = selectedTopics
     .map((topic) => equipmentRecordLibrary[topic])
     .filter(Boolean);
   const simpleLessonPlan =
@@ -1695,6 +1665,179 @@ const ReadinessPacket = ({
     ),
     [...selectedTopics, ...guidance.installedEquipmentReview, ...productSafetyItems],
   ).slice(0, 5);
+  const engagementFocus = (() => {
+    switch (roleEngagement) {
+      case "Inspection / Testing / Maintenance":
+        return {
+          guidance: [
+            "Review inspection/test dates, service status, and documentation gaps.",
+            "Verify certification, deficiency, and safety status before conclusions.",
+            "Confirm model, serial, and location details while onsite.",
+          ],
+          before: [
+            "Review equipment records and open documentation gaps.",
+            "Check last inspection/test dates and service status.",
+            "Prepare model, serial, and location verification questions.",
+          ],
+          during: [
+            "Verify labels, locations, service status, and visible condition.",
+            "Document deficiencies and unresolved record questions.",
+            "Avoid official conclusions until details are confirmed.",
+          ],
+          after: [
+            "Update documentation gaps and follow-up owners.",
+            "Route safety/manufacturer questions for qualified review.",
+            "Confirm the next service or customer communication step.",
+          ],
+          next: [
+            "Confirm exact model, serial number, and service status.",
+            "Review missing inspection or test documentation.",
+            "Capture unresolved deficiencies and assign follow-up ownership.",
+          ],
+        };
+      case "Deficiency / Service Follow-Up":
+        return {
+          guidance: [
+            "Start with open deficiencies and affected equipment.",
+            "Clarify what can be explained to the customer now.",
+            "Identify the owner for each follow-up action.",
+          ],
+          before: [
+            "Review deficiency status for affected equipment.",
+            "Check service notes, quote status, and documentation gaps.",
+            "Prepare customer-friendly explanation of unresolved items.",
+          ],
+          during: [
+            "Confirm affected equipment and current condition.",
+            "Separate verified facts from items still under review.",
+            "Capture customer questions and ownership for next steps.",
+          ],
+          after: [
+            "Send follow-up items to the responsible internal owner.",
+            "Update documentation with verified deficiency status.",
+            "Confirm next customer communication before action.",
+          ],
+          next: [
+            "Confirm which deficiencies remain open.",
+            "Assign an owner for service or documentation follow-up.",
+            "Prepare a customer-facing explanation after internal review.",
+          ],
+        };
+      case "Documentation / Compliance Review":
+        return {
+          guidance: [
+            "Focus on missing records and documentation readiness.",
+            "Check certification/service status against available records.",
+            "Flag records needing correction or qualified review.",
+          ],
+          before: [
+            "Collect inspection, test, service, and deficiency records.",
+            "Identify missing documentation before the review.",
+            "Prepare questions about certification and service status.",
+          ],
+          during: [
+            "Compare records against equipment and location details.",
+            "Mark corrections and missing information clearly.",
+            "Confirm who owns each documentation follow-up.",
+          ],
+          after: [
+            "Summarize missing records and required corrections.",
+            "Route compliance questions through qualified review.",
+            "Share only reviewed customer-facing notes.",
+          ],
+          next: [
+            "List missing records and documentation corrections.",
+            "Confirm certification and service status for each record.",
+            "Assign follow-up ownership for unresolved documentation gaps.",
+          ],
+        };
+      case "Site Survey / Asset Capture":
+        return {
+          guidance: [
+            "Prioritize complete asset details and field notes.",
+            "Capture manufacturer, model, SKU, serial, location, and condition.",
+            "Photograph labels or asset tags when details are missing.",
+          ],
+          before: [
+            "Prepare the asset capture list and open questions.",
+            "Review which systems need manufacturer/model confirmation.",
+            "Plan photos or notes for missing equipment details.",
+          ],
+          during: [
+            "Capture manufacturer, model, SKU, serial, and location.",
+            "Note visible condition, access issues, and documentation gaps.",
+            "Photograph labels where allowed by site procedures.",
+          ],
+          after: [
+            "Update asset records with verified details.",
+            "Flag incomplete records for follow-up.",
+            "Route product or manufacturer questions for review.",
+          ],
+          next: [
+            "Capture missing model, SKU, serial, and location details.",
+            "Photograph equipment labels where permitted.",
+            "Update the sample asset record with verified information.",
+          ],
+        };
+      case "Customer Training / Demonstration":
+        return {
+          guidance: [
+            "Turn equipment records into plain-language teaching points.",
+            "Prepare likely questions and demonstration boundaries.",
+            "Verify site-specific details before making customer claims.",
+          ],
+          before: [
+            "Confirm audience level and training purpose.",
+            "Prepare equipment examples, talking points, and questions.",
+            "Review documentation and product safety context before teaching.",
+          ],
+          during: [
+            "Explain what each system does in practical terms.",
+            "Use verified examples and avoid unconfirmed site-specific claims.",
+            "Capture attendance, questions, and follow-up items.",
+          ],
+          after: [
+            "Document attendance and unresolved questions.",
+            "Send verification items to the appropriate internal reviewer.",
+            "Prepare any customer follow-up summary.",
+          ],
+          next: [
+            "Confirm training objectives, materials, and attendance needs.",
+            "Review product/manufacturer context before instruction.",
+            "Prepare customer-friendly talking points and follow-up notes.",
+          ],
+        };
+      case "Design / Construction Coordination":
+      default:
+        return {
+          guidance: [
+            "Clarify scope, assumptions, site constraints, and coordination needs.",
+            "Verify equipment context before design or construction discussion.",
+            "Identify follow-up questions for qualified review.",
+          ],
+          before: [
+            "Review scope assumptions and known equipment records.",
+            "Prepare questions about site constraints and coordination needs.",
+            "Identify materials or equipment details needing verification.",
+          ],
+          during: [
+            "Separate confirmed scope from open design questions.",
+            "Capture coordination needs, constraints, and responsible owners.",
+            "Avoid technical determinations without qualified review.",
+          ],
+          after: [
+            "Document open scope and coordination questions.",
+            "Route design, engineering, or code questions for review.",
+            "Confirm the next coordination step.",
+          ],
+          next: [
+            "Confirm scope assumptions and site constraints.",
+            "Verify equipment/material details before coordination.",
+            "Assign owners for open design or construction questions.",
+          ],
+        };
+    }
+  })();
   const roleGuidanceItems = compactItems([
     role === "Instructor"
       ? "Use lesson-plan-style guidance for the selected training audience."
@@ -1705,27 +1848,12 @@ const ReadinessPacket = ({
           : role === "Manager"
           ? "Use readiness guidance for ownership, risk, and follow-up."
           : "Use customer-facing guidance for open questions and next steps.",
-    ...checklistItems,
+    ...engagementFocus.guidance,
+    ...guidance.audienceSpecificTalkingPoints,
   ]).slice(0, 5);
-  const beforeItems = [
-    "Review the selected client/site context.",
-    "Review equipment, open items, and relevant resources.",
-    role === "Instructor"
-      ? "Prepare teaching points and audience questions."
-      : "Prepare verification questions and documentation notes.",
-  ];
-  const duringItems = [
-    role === "Instructor"
-      ? "Use equipment examples and plain-language explanations."
-      : "Verify equipment details and document unresolved items.",
-    "Avoid official conclusions until details are verified.",
-    "Capture questions, gaps, and follow-up owners.",
-  ];
-  const afterItems = [
-    "Document outcomes and unresolved questions.",
-    "Review verification items with the right internal owner.",
-    "Confirm the recommended next step.",
-  ];
+  const beforeItems = engagementFocus.before;
+  const duringItems = engagementFocus.during;
+  const afterItems = engagementFocus.after;
   const whatToSayItems = compactItems([
     role === "Instructor"
       ? "Today we are using sample equipment records to review how sprinkler systems, alarm/detection devices, and demonstration equipment fit into a fire protection discussion."
@@ -1737,6 +1865,7 @@ const ReadinessPacket = ({
     "The main goal is to understand what each system does, what documentation matters, and what details need to be verified before making site-specific claims.",
   ]).slice(0, 3);
   const recommendedNextSteps = compactItems([
+    ...engagementFocus.next,
     ...guidance.recommendedNextBestActions,
     "Confirm exact equipment model, serial number, and service status.",
     "Review missing documentation before the engagement.",
@@ -1800,12 +1929,6 @@ const ReadinessPacket = ({
             <h2 className="text-2xl font-black leading-tight text-brand-charcoal sm:text-3xl">
               Engagement Packet
             </h2>
-            <p className="hidden">
-              {sampleSite} · {role} · {roleEngagement}
-            </p>
-            <p className="hidden">
-              {assetText}
-            </p>
           </div>
           <div className="flex flex-wrap gap-2">
             <button
@@ -1938,7 +2061,7 @@ export default function Home() {
     useState<EngagementType>("Teach / train");
   const [role, setRole] = useState<UserRole>("Instructor");
   const [roleEngagement, setRoleEngagement] = useState<RoleEngagement>(
-    "Continuing Education Prep",
+    "Customer Training / Demonstration",
   );
   const [selectedTopics, setSelectedTopics] =
     useState<Topic[]>(instructorDefaultTopics);
@@ -1973,11 +2096,7 @@ export default function Home() {
     setGuidance(null);
 
     if (nextRole === "Instructor") {
-      setRoleEngagement(
-        roleEngagementOptions.Instructor.includes(roleEngagement)
-          ? roleEngagement
-          : "Continuing Education Prep",
-      );
+      setRoleEngagement("Customer Training / Demonstration");
       setEngagementType("Teach / train");
       setAudience("Instructor / Trainer");
       setBriefAction("training_prep");
@@ -1987,11 +2106,7 @@ export default function Home() {
     }
 
     if (nextRole === "Manager") {
-      setRoleEngagement(
-        roleEngagementOptions.Manager.includes(roleEngagement)
-          ? roleEngagement
-          : "Readiness Review",
-      );
+      setRoleEngagement("Documentation / Compliance Review");
       setEngagementType("Follow up / document");
       setAudience("Safety Coordinator");
       setBriefAction("follow_up_notes");
@@ -2000,11 +2115,7 @@ export default function Home() {
     }
 
     if (nextRole === "Sales / Account Manager") {
-      setRoleEngagement(
-        roleEngagementOptions["Sales / Account Manager"].includes(roleEngagement)
-          ? roleEngagement
-          : "Customer Meeting Prep",
-      );
+      setRoleEngagement("Customer Training / Demonstration");
       setEngagementType("Meet / discuss");
       setAudience("Prospective Customer");
       setBriefAction("customer_talking_points");
@@ -2012,11 +2123,16 @@ export default function Home() {
       return;
     }
 
-    setRoleEngagement(
-      roleEngagementOptions.Inspector.includes(roleEngagement)
-        ? roleEngagement
-        : "Inspection / Testing",
-    );
+    if (nextRole === "Service Manager") {
+      setRoleEngagement("Deficiency / Service Follow-Up");
+      setEngagementType("Follow up / document");
+      setAudience("Facility Manager");
+      setBriefAction("follow_up_notes");
+      setSelectedTopics(equipmentAssetsBySite[selectedSampleSite] ?? inspectorDefaultTopics);
+      return;
+    }
+
+    setRoleEngagement("Inspection / Testing / Maintenance");
     setEngagementType("Inspect / service");
     setAudience("Internal Inspector");
     setBriefAction("inspection_prep");
@@ -2193,14 +2309,14 @@ export default function Home() {
       });
       const payload = await response.json();
       if (!response.ok) {
-        throw new Error(payload.error || "Unable to generate field brief right now.");
+        throw new Error(payload.error || "Unable to generate the engagement packet right now.");
       }
       setGuidance(payload.guidance);
     } catch (error) {
       setSummaryError(
         error instanceof Error
           ? error.message
-          : "Unable to generate field brief right now.",
+          : "Unable to generate the engagement packet right now.",
       );
     } finally {
       setSummarizingId("");
@@ -2210,7 +2326,7 @@ export default function Home() {
   const startNewPacket = () => {
     setEngagementType("Teach / train");
     setRole("Instructor");
-    setRoleEngagement("Continuing Education Prep");
+    setRoleEngagement("Customer Training / Demonstration");
     setSelectedTopics(instructorDefaultTopics);
     setAudience("Instructor / Trainer");
     setSelectedSampleSite("Fire Department Recruit Training Site");
@@ -2235,7 +2351,7 @@ export default function Home() {
               className="h-auto w-32 shrink-0 sm:w-44"
             />
             <div>
-              <h1 className="text-[23px] font-black leading-tight text-brand-charcoal sm:text-[32px]">
+              <h1 className="text-[22px] font-extrabold leading-tight text-brand-green sm:text-[30px]">
                 Engagement Assistant
               </h1>
               <p className="mt-1 text-sm leading-6 text-brand-gray700 sm:text-base">
@@ -2250,10 +2366,10 @@ export default function Home() {
       </header>
 
       <div className="mx-auto max-w-3xl px-4 py-3 sm:px-6">
-        <section className="rounded-2xl border border-brand-gray200 bg-white p-3 shadow-sm sm:p-5">
+        <section className="rounded-2xl border border-t-4 border-brand-gray200 border-t-brand-orange bg-white p-3 shadow-sm sm:p-5">
           <div className="grid gap-4">
             <div>
-              <h2 className="text-lg font-black text-brand-charcoal">
+              <h2 className="text-lg font-black text-brand-greenDark">
                 1. Select Client / Site
               </h2>
               <p className="mt-1 text-xs font-semibold text-brand-gray500">
@@ -2288,7 +2404,7 @@ export default function Home() {
 
             <div className="grid gap-5 md:grid-cols-[0.8fr_1.2fr]">
               <div>
-                <h2 className="text-lg font-black text-brand-charcoal">2. Select Role</h2>
+                <h2 className="text-lg font-black text-brand-greenDark">2. Select Role</h2>
                 <p className="mt-1 text-xs font-semibold text-brand-gray500">
                   Choose the employee perspective for the packet.
                 </p>
@@ -2314,14 +2430,14 @@ export default function Home() {
               </div>
 
               <div>
-                <h2 className="text-lg font-black text-brand-charcoal">
+                <h2 className="text-lg font-black text-brand-greenDark">
                   3. Select Engagement Type
                 </h2>
                 <p className="mt-1 text-xs font-semibold text-brand-gray500">
                   Choose what the employee is preparing to do.
                 </p>
                 <div className="mt-2 grid gap-2 sm:grid-cols-3 md:grid-cols-1 lg:grid-cols-3">
-                  {roleEngagementOptions[role].map((item) => {
+                  {roleEngagementOptions.map((item) => {
                     const selected = roleEngagement === item;
                     return (
                       <button
@@ -2350,7 +2466,7 @@ export default function Home() {
                 Using sample context for: {selectedSampleSite} · {role} · {roleEngagement}
               </p>
               <p className="mt-0.5 text-xs font-semibold text-brand-gray700">
-                The packet will use sample site, equipment, documentation, and training context for this selected engagement.
+                This demo uses sample files and records to represent information that could come from connected CRM, equipment, documentation, and training systems.
               </p>
             </div>
 

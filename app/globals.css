@@ -7,6 +7,7 @@
 :root {
   --color-green: #009a44;
   --color-green-dark: #007a36;
+  --color-orange: #f28c28;
   --color-red: #c41230;
   --color-red-dark: #8f1024;
   --color-charcoal: #1f3428;
@@ -68,7 +69,7 @@ h2,
 h3,
 h4,
 .panel-title {
-  color: #1f3428;
+  color: #007a36;
   font-family: var(--font-display);
   font-weight: 800;
   letter-spacing: 0;

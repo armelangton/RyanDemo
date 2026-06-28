@@ -8,6 +8,7 @@ const config: Config = {
         brand: {
           green: "#009a44",
           greenDark: "#007a36",
+          orange: "#f28c28",
           red: "#c41230",
           redDark: "#8f1024",
           charcoal: "#1f3428",

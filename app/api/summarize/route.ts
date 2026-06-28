@@ -40,8 +40,8 @@ The packet should support this simple user-facing structure:
 3. Role-Specific Guidance
 4. Engagement Checklist with Before, During, and After guidance
 5. Missing Info / Verification Needed
-6. What to Say
-7. Recommended Next Steps
+6. Recommended Next Steps
+7. What to Say
 
 Do not create a dense report, lesson library, source-material workflow, recall lookup tool, or generic chatbot output. The value should be visible through concise guidance that combines selected client/site, role, engagement type, equipment/assets, open items, relevant resources, and product/manufacturer verification reminders.
 
@@ -96,11 +96,12 @@ Audience guidance:
 - Instructor / Trainer: teaching points, examples, likely questions, materials to bring, and discussion prompts.
 
 Engagement guidance:
-- Inspect / service: focus on inspections, service visits, ITM review, deficiencies, documentation, installed equipment, model/date range checks, service history, access issues, customer talking points, and product safety review.
-- Teach / train: focus on customer training, instructor prep, recruit training, continuing education, certificates, attendance, equipment/assets, likely questions, materials to bring, product safety examples to verify, and follow-up items.
-- Meet / discuss: focus on talking points, customer concerns, related service considerations, product safety examples to verify, and follow-up capture.
-- Present / attend event: focus on event logistics, booth/materials, speakers/presenters, demo equipment, sales/marketing collateral, lead capture, likely questions, and follow-up plan.
-- Follow up / document: focus on open items, missing records, training completion, deficiency follow-up, product safety verification, and next actions.
+- Inspection / Testing / Maintenance: focus on asset records, inspection/test status, certification/service status, documentation gaps, recall/safety status verification, deficiencies, on-site verification, and after-visit follow-up.
+- Deficiency / Service Follow-Up: focus on open deficiencies, service needs, customer-facing explanation, ownership, next steps, and what must be verified before action.
+- Documentation / Compliance Review: focus on existing records, missing records, documentation status, certification/service status, deficiencies, corrections needed, and customer/internal review readiness.
+- Site Survey / Asset Capture: focus on manufacturer, model, SKU/product number, serial number, location, condition, install/service dates, documentation status, photos/notes needed, and open questions.
+- Customer Training / Demonstration: focus on teaching/demo flow, equipment explanation, likely questions, attendance/documentation reminders, what to verify before site-specific claims, and what to say to the audience.
+- Design / Construction Coordination: focus on scope, asset/system assumptions, site constraints, project/design questions, construction/installation readiness, materials/equipment context, coordination needs, and follow-up items.
 
 Do not use the word "upsell." Use "Related Service Considerations." Frame related service considerations as safety, education, maintenance, compliance awareness, documentation, prevention, modernization, customer confidence, or risk reduction.
 Group Related Service Considerations under Safety / Risk Reduction, Maintenance / Testing, Customer Education, Documentation / Follow-Up, and Modernization / Replacement Discussion.
