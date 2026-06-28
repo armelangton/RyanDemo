@@ -2366,7 +2366,7 @@ export default function Home() {
       </header>
 
       <div className="mx-auto max-w-3xl px-4 py-3 sm:px-6">
-        <section className="rounded-2xl border border-t-4 border-brand-gray200 border-t-brand-orange bg-white p-3 shadow-sm sm:p-5">
+        <section className="rounded-2xl border border-t-2 border-brand-gray200 border-t-brand-orange bg-white p-3 shadow-sm sm:p-5">
           <div className="grid gap-4">
             <div>
               <h2 className="text-lg font-black text-brand-greenDark">
@@ -2389,10 +2389,10 @@ export default function Home() {
                         );
                         setGuidance(null);
                       }}
-                      className={`min-h-10 rounded-xl border px-3 py-2.5 text-left text-sm font-extrabold leading-5 transition ${
+                      className={`min-h-10 rounded-xl border px-3 py-2.5 text-left text-sm font-extrabold leading-5 transition [font-family:var(--font-display)] ${
                         selected
-                          ? "border-brand-green bg-brand-green text-white"
-                          : "border-brand-gray200 bg-white text-brand-charcoal hover:border-brand-green hover:bg-green-50"
+                          ? "border-brand-green bg-brand-greenSoft text-brand-greenDark"
+                          : "border-brand-gray200 bg-white text-brand-charcoal hover:border-brand-green hover:bg-brand-greenSoft"
                       }`}
                     >
                       {item.label}
@@ -2416,10 +2416,10 @@ export default function Home() {
                         key={item}
                         type="button"
                         onClick={() => applyRole(item)}
-                        className={`min-h-10 rounded-xl border px-3 py-2.5 text-center text-sm font-extrabold transition ${
+                        className={`min-h-10 rounded-xl border px-3 py-2.5 text-center text-sm font-extrabold transition [font-family:var(--font-display)] ${
                           selected
-                            ? "border-brand-green bg-brand-green text-white"
-                            : "border-brand-gray200 bg-white text-brand-charcoal hover:border-brand-green hover:bg-green-50"
+                            ? "border-brand-green bg-brand-greenSoft text-brand-greenDark"
+                            : "border-brand-gray200 bg-white text-brand-charcoal hover:border-brand-green hover:bg-brand-greenSoft"
                         }`}
                       >
                         {item}
@@ -2447,10 +2447,10 @@ export default function Home() {
                           setRoleEngagement(item);
                           setGuidance(null);
                         }}
-                        className={`min-h-10 rounded-xl border px-3 py-2.5 text-left text-sm font-extrabold leading-5 transition ${
+                        className={`min-h-10 rounded-xl border px-3 py-2.5 text-left text-sm font-extrabold leading-5 transition [font-family:var(--font-display)] ${
                           selected
-                            ? "border-brand-green bg-brand-green text-white"
-                            : "border-brand-gray200 bg-white text-brand-charcoal hover:border-brand-green hover:bg-green-50"
+                            ? "border-brand-green bg-brand-greenSoft text-brand-greenDark"
+                            : "border-brand-gray200 bg-white text-brand-charcoal hover:border-brand-green hover:bg-brand-greenSoft"
                         }`}
                       >
                         {item}
@@ -2536,7 +2536,7 @@ export default function Home() {
               type="button"
               onClick={() => void generateSummary(null, briefAction)}
               disabled={Boolean(summarizingId)}
-              className="w-full rounded-xl bg-brand-green px-5 py-4 text-center text-base font-black text-white transition hover:bg-brand-greenDark disabled:cursor-not-allowed disabled:bg-brand-gray500 sm:w-auto"
+              className="w-full rounded-xl bg-brand-green px-5 py-4 text-center text-base font-black text-white transition hover:bg-brand-greenDark disabled:cursor-not-allowed disabled:bg-brand-gray500 sm:w-auto [font-family:var(--font-display)]"
             >
               {summarizingId
                 ? "Generating Packet..."

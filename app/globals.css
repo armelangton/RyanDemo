@@ -5,23 +5,23 @@
 @tailwind utilities;
 
 :root {
-  --color-green: #009a44;
-  --color-green-dark: #007a36;
-  --color-orange: #f28c28;
+  --color-green: #009444;
+  --color-green-dark: #123c2a;
+  --color-orange: #e45f2b;
   --color-red: #c41230;
   --color-red-dark: #8f1024;
-  --color-charcoal: #1f3428;
-  --color-black: #111315;
-  --color-gray-900: #2d3237;
-  --color-gray-700: #5f666d;
-  --color-gray-500: #8c939a;
-  --color-gray-200: #e7e9eb;
+  --color-charcoal: #163b2d;
+  --color-black: #163b2d;
+  --color-gray-900: #163b2d;
+  --color-gray-700: #4b5563;
+  --color-gray-500: #6b7280;
+  --color-gray-200: #d9dee3;
   --color-gray-100: #f4f5f6;
   --color-white: #ffffff;
-  --color-success: #009a44;
+  --color-success: #009444;
   --color-warning: #a86612;
   --font-display: "Envie", "Roboto Slab", "Arvo", Georgia, serif;
-  color: #1f3428;
+  color: #163b2d;
   background: #f4f5f6;
 }
 
@@ -37,7 +37,7 @@ body {
   margin: 0;
   min-height: 100vh;
   background-color: #f4f5f6;
-  color: #1f3428;
+  color: #4b5563;
   font-family:
     "Inter",
     ui-sans-serif,
@@ -69,7 +69,7 @@ h2,
 h3,
 h4,
 .panel-title {
-  color: #007a36;
+  color: #123c2a;
   font-family: var(--font-display);
   font-weight: 800;
   letter-spacing: 0;
@@ -83,6 +83,6 @@ textarea {
 
 button:focus-visible,
 input:focus-visible {
-  outline: 3px solid rgba(196, 18, 48, 0.24);
+  outline: 3px solid rgba(0, 148, 68, 0.24);
   outline-offset: 2px;
 }
