@@ -6,23 +6,23 @@
 
 :root {
   --color-green: #009444;
-  --color-green-dark: #16804a;
+  --color-green-dark: #123c2a;
   --color-orange: #e45f2b;
   --color-red: #c41230;
   --color-red-dark: #8f1024;
-  --color-charcoal: #24513c;
-  --color-black: #24513c;
-  --color-gray-900: #24513c;
-  --color-gray-700: #5f6873;
-  --color-gray-500: #747d88;
-  --color-gray-200: #d8dee4;
-  --color-gray-100: #f4f6f7;
+  --color-charcoal: #163b2d;
+  --color-black: #163b2d;
+  --color-gray-900: #163b2d;
+  --color-gray-700: #4b5563;
+  --color-gray-500: #6b7280;
+  --color-gray-200: #d9dee3;
+  --color-gray-100: #f4f5f6;
   --color-white: #ffffff;
   --color-success: #009444;
   --color-warning: #a86612;
   --font-display: "Envie", "Roboto Slab", "Arvo", Georgia, serif;
-  color: #24513c;
-  background: #f4f6f7;
+  color: #163b2d;
+  background: #f4f5f6;
 }
 
 * {
@@ -36,8 +36,8 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
-  background-color: #f4f6f7;
-  color: #5f6873;
+  background-color: #f4f5f6;
+  color: #4b5563;
   font-family:
     "Inter",
     ui-sans-serif,
@@ -52,9 +52,9 @@ body {
 pre,
 code,
 .developer-terminal {
-  border: 1px solid #d8dee4;
+  border: 1px solid #e7e9eb;
   border-radius: 12px;
-  background-color: #f4f6f7;
+  background-color: #f4f5f6;
   padding: 14px;
   font-family:
     "Source Code Pro",
@@ -69,7 +69,7 @@ h2,
 h3,
 h4,
 .panel-title {
-  color: #24513c;
+  color: #123c2a;
   font-family: var(--font-display);
   font-weight: 800;
   letter-spacing: 0;
