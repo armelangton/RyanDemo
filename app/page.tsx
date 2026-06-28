@@ -1560,15 +1560,10 @@ const buildRecordReview = (
     }))
     .filter((item) => item.missingFields.length > 0);
 
-  const totalFieldsChecked = equipmentRecords.length * requiredRecordFields.length;
   const missingFieldCount = missingByRecord.reduce(
     (total, item) => total + item.missingFields.length,
     0,
   );
-  const completeFieldCount = Math.max(totalFieldsChecked - missingFieldCount, 0);
-  const completenessPercentage = totalFieldsChecked
-    ? Math.round((completeFieldCount / totalFieldsChecked) * 100)
-    : 0;
 
   const possibleIssues = equipmentRecords.flatMap((record) => {
     const issues: string[] = [];
@@ -1631,11 +1626,7 @@ const buildRecordReview = (
   ].slice(0, 4);
 
   return {
-    totalEquipmentRecords: equipmentRecords.length,
-    totalFieldsChecked,
-    completeFieldCount,
     missingFieldCount,
-    completenessPercentage,
     missingByRecord,
     possibleIssues: possibleIssues.slice(0, 5),
     historicalNotes,
@@ -1847,7 +1838,6 @@ const ReadinessPacket = ({
   sampleSite,
   automaticSafetyReview,
   clientRecord,
-  onStartNew,
 }: {
   guidance: AiGuidance | null;
   role: UserRole;
@@ -1857,7 +1847,6 @@ const ReadinessPacket = ({
   sampleSite: string;
   automaticSafetyReview: AutomaticSafetyReview;
   clientRecord: ClientRecord;
-  onStartNew: () => void;
 }) => {
   if (!guidance) return null;
 
@@ -2235,96 +2224,6 @@ const ReadinessPacket = ({
     recordReview,
     recommendedNextSteps,
   );
-  const packetText = [
-    "Engagement Packet",
-    "Record Review",
-    `${recordReview.totalEquipmentRecords} equipment records reviewed`,
-    `${recordReview.totalFieldsChecked} required fields checked`,
-    `${recordReview.completeFieldCount} fields complete`,
-    `${recordReview.missingFieldCount} fields missing or need verification`,
-    `Record Completeness: ${recordReview.completenessPercentage}%`,
-    "",
-    "Missing / Incomplete Fields",
-    ...recordReview.missingByRecord.flatMap((item) => [
-      `- ${item.record.name}`,
-      ...item.missingFields.map((field) => `  - ${field}`),
-    ]),
-    "",
-    "Possible Record Issues",
-    ...recordReview.possibleIssues.map((item) => `- ${item}`),
-    "",
-    "Historical Notes",
-    ...recordReview.historicalNotes.map((item) => `- ${item}`),
-    "",
-    "Service / Quote Prep Items",
-    ...recordReview.serviceQuotePrepItems.map((item) => `- ${item}`),
-    "",
-    "Engagement Summary",
-    engagementSummaryText,
-    "",
-    "Equipment / Asset Records",
-    ...equipmentRecords.flatMap((record) => [
-      `- ${record.name}`,
-      `  Category: ${record.category}`,
-      `  Manufacturer: ${record.manufacturer}`,
-      `  Model: ${record.model}`,
-      `  SKU / Product Number: ${record.sku}`,
-      `  Serial Number: ${record.serialNumber}`,
-      `  Location: ${record.location}`,
-      `  Last Inspection / Test Date: ${record.lastInspectionTestDate}`,
-      `  Certification / Service Status: ${record.certificationServiceStatus}`,
-      `  Recall / Safety Status: ${record.recallSafetyStatus}`,
-      `  Documentation Status: ${record.documentationStatus}`,
-      `  Deficiency Status: ${record.deficiencyStatus}`,
-      `  Description: ${record.description}`,
-      `  Verification Needed: ${record.verificationNeeded}`,
-    ]),
-    "",
-    "Role-Specific Guidance",
-    ...roleGuidanceItems.map((item) => `- ${item}`),
-    "",
-    "Questions to Ask",
-    ...Object.entries(questionsToAsk).flatMap(([group, items]) => [
-      `- ${group}`,
-      ...items.map((item) => `  - ${item}`),
-    ]),
-    "",
-    "Questions to Avoid Answering Until Verified",
-    ...questionsToAvoid.flatMap((item) => [
-      `- ${item.question}`,
-      `  Reason: ${item.reason}`,
-    ]),
-    "",
-    "What Changed / Historical Context",
-    ...historicalContextItems.map((item) => `- ${item.text}`),
-    "",
-    "Engagement Checklist",
-    ...["Before", ...beforeItems, "During", ...duringItems, "After", ...afterItems].map((item) => `- ${item}`),
-    "",
-    "Missing Info / Verification Needed",
-    ...aiFlaggedItems.slice(0, 5).map((item) => `- ${item}`),
-    "",
-    "Recommended Next Steps",
-    ...recommendedNextSteps.map((item, index) => `${index + 1}. ${item}`),
-    "",
-    "What to Say",
-    ...whatToSayItems.map((item) => `- ${item}`),
-    "",
-    "Draft Follow-Up Note",
-    draftFollowUpNote,
-  ].join("\n");
-  const copyText = (text: string) => {
-    if (typeof navigator === "undefined" || !navigator.clipboard) return;
-    void navigator.clipboard.writeText(text);
-  };
-  const shareText = (text: string) => {
-    if (typeof navigator !== "undefined" && "share" in navigator) {
-      void navigator.share({ title: "Engagement Packet", text });
-      return;
-    }
-    copyText(text);
-  };
-
   return (
     <section className="rounded-[16px] border border-brand-gray200 bg-white p-4 shadow-sm sm:p-5">
       <div className="border-b border-brand-gray200 pb-4">
@@ -2334,139 +2233,80 @@ const ReadinessPacket = ({
               Engagement Packet
             </h2>
           </div>
-          <div className="flex flex-wrap gap-2">
-            <button
-              type="button"
-              onClick={() => copyText(packetText)}
-              className="rounded-xl border border-brand-gray200 bg-white px-3 py-2 text-sm font-extrabold text-brand-charcoal transition hover:bg-brand-gray100"
-            >
-              Copy Packet
-            </button>
-            <button
-              type="button"
-              onClick={() => shareText(packetText)}
-              className="rounded-xl border border-brand-gray200 bg-white px-3 py-2 text-sm font-extrabold text-brand-charcoal transition hover:bg-brand-gray100"
-            >
-              Share
-            </button>
-            <button
-              type="button"
-              onClick={() => window.print()}
-              className="rounded-xl border border-brand-gray200 bg-white px-3 py-2 text-sm font-extrabold text-brand-charcoal transition hover:bg-brand-gray100"
-            >
-              Print Packet
-            </button>
-            <button
-              type="button"
-              onClick={onStartNew}
-              className="rounded-xl border border-brand-gray200 bg-white px-3 py-2 text-sm font-extrabold text-brand-gray700 transition hover:bg-brand-gray100"
-            >
-              Start New Packet
-            </button>
-          </div>
         </div>
       </div>
 
       <section className="border-b border-brand-gray200 py-4">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <h3 className="text-xl font-extrabold leading-tight text-brand-greenDark">
-              Record Review
-            </h3>
-            <p className="mt-1 text-xs font-semibold leading-5 text-brand-gray500">
-              These record checks are calculated from sample records for demonstration purposes. They are not code, safety, compliance, inspection, or engineering determinations.
-            </p>
-          </div>
-          <span className="w-fit rounded-lg bg-brand-orange px-2.5 py-1 text-xs font-extrabold text-white">
-            Operational check
-          </span>
-        </div>
+        <h3 className="text-xl font-extrabold leading-tight text-brand-greenDark">
+          Record Review
+        </h3>
+        <p className="mt-1 text-xs font-semibold leading-5 text-brand-gray500">
+          These record checks are based on sample records for demonstration purposes. They are not code, safety, compliance, inspection, or engineering determinations.
+        </p>
 
-        <div className="mt-4 grid gap-3">
-          <article className="rounded-xl border border-brand-gray200 bg-white p-3">
-            <p className="text-xs font-extrabold uppercase tracking-wide text-brand-gray500">
-              Record Completeness
-            </p>
-            <div className="mt-2 flex flex-wrap items-end gap-x-3 gap-y-1">
-              <span className="text-3xl font-extrabold leading-none text-brand-green">
-                {recordReview.completenessPercentage}%
-              </span>
-              <span className="pb-0.5 text-sm font-semibold text-brand-gray700">
-                {recordReview.completeFieldCount} of {recordReview.totalFieldsChecked} fields complete
-              </span>
-            </div>
-            <div className="mt-3 h-2.5 overflow-hidden rounded-md bg-brand-gray200">
-              <div
-                className="h-full rounded-md bg-brand-green"
-                style={{ width: `${recordReview.completenessPercentage}%` }}
-              />
+        <div className="mt-4 space-y-4">
+          <article className="border-l-4 border-l-brand-orange pl-4">
+            <h4 className="text-sm font-extrabold text-brand-greenDark">
+              Missing / Incomplete Fields
+            </h4>
+            <div className="mt-2 space-y-3 text-sm leading-6 text-brand-gray700">
+              {recordReview.missingByRecord.slice(0, 4).map((item) => (
+                <div key={item.record.serialNumber}>
+                  <p className="font-extrabold text-brand-charcoal">{item.record.name}</p>
+                  <ul className="mt-1 list-disc space-y-1 pl-5">
+                    {item.missingFields.slice(0, 4).map((field) => (
+                      <li key={field}>{field}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+              {!recordReview.missingByRecord.length ? (
+                <p>No incomplete required fields were found in this sample check.</p>
+              ) : null}
             </div>
           </article>
 
-          <div className="grid gap-3 sm:grid-cols-2">
-            <article className="rounded-xl border border-orange-100 border-l-4 border-l-brand-orange bg-orange-50/60 p-3">
-              <h4 className="text-sm font-extrabold text-brand-greenDark">
-                Missing / Incomplete Fields
-              </h4>
-              <div className="mt-2 space-y-2 text-sm leading-5 text-brand-gray700">
-                {recordReview.missingByRecord.slice(0, 3).map((item) => (
-                  <div key={item.record.serialNumber}>
-                    <p className="font-extrabold text-brand-charcoal">{item.record.name}</p>
-                    <ul className="mt-1 list-disc space-y-1 pl-5">
-                      {item.missingFields.slice(0, 3).map((field) => (
-                        <li key={field}>{field}</li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
-                {!recordReview.missingByRecord.length ? (
-                  <p>No incomplete required fields were found in this sample check.</p>
-                ) : null}
-              </div>
-            </article>
+          <article className="border-l-4 border-l-brand-orange pl-4">
+            <h4 className="text-sm font-extrabold text-brand-greenDark">
+              Possible Record Issues
+            </h4>
+            <PacketList
+              items={
+                recordReview.possibleIssues.length
+                  ? recordReview.possibleIssues.slice(0, 4)
+                  : ["No possible record issues surfaced from the sample checks."]
+              }
+              tone={recordReview.possibleIssues.length ? "amber" : "neutral"}
+            />
+          </article>
 
-            <article className="rounded-xl border border-orange-100 border-l-4 border-l-brand-orange bg-orange-50/60 p-3">
-              <h4 className="text-sm font-extrabold text-brand-greenDark">
-                Possible Record Issues
-              </h4>
-              <PacketList
-                items={
-                  recordReview.possibleIssues.length
-                    ? recordReview.possibleIssues.slice(0, 4)
-                    : ["No possible record issues surfaced from the sample checks."]
-                }
-                tone={recordReview.possibleIssues.length ? "amber" : "neutral"}
-              />
-            </article>
+          <article className="border-l-4 border-l-brand-gray200 pl-4">
+            <h4 className="text-sm font-extrabold text-brand-greenDark">
+              Historical Context
+            </h4>
+            <PacketList
+              items={
+                recordReview.historicalNotes.length
+                  ? recordReview.historicalNotes.slice(0, 4)
+                  : ["No sample history notes were provided for this record."]
+              }
+              tone="neutral"
+            />
+          </article>
 
-            <article className="rounded-xl border border-brand-gray200 bg-brand-gray100 p-3">
-              <h4 className="text-sm font-extrabold text-brand-greenDark">
-                Historical Notes
-              </h4>
-              <PacketList
-                items={
-                  recordReview.historicalNotes.length
-                    ? recordReview.historicalNotes.slice(0, 4)
-                    : ["No sample history notes were provided for this record."]
-                }
-                tone="neutral"
-              />
-            </article>
-
-            <article className="rounded-xl border border-orange-100 border-l-4 border-l-brand-orange bg-orange-50/60 p-3">
-              <h4 className="text-sm font-extrabold text-brand-greenDark">
-                Service / Quote Prep Items
-              </h4>
-              <PacketList
-                items={
-                  recordReview.serviceQuotePrepItems.length
-                    ? recordReview.serviceQuotePrepItems.slice(0, 4)
-                    : ["No service or quote prep items surfaced from this sample record."]
-                }
-                tone="amber"
-              />
-            </article>
-          </div>
+          <article className="border-l-4 border-l-brand-orange pl-4">
+            <h4 className="text-sm font-extrabold text-brand-greenDark">
+              Service / Quote Prep Items
+            </h4>
+            <PacketList
+              items={
+                recordReview.serviceQuotePrepItems.length
+                  ? recordReview.serviceQuotePrepItems.slice(0, 4)
+                  : ["No service or quote prep items surfaced from this sample record."]
+              }
+              tone="amber"
+            />
+          </article>
         </div>
       </section>
 
@@ -3175,7 +3015,6 @@ export default function Home() {
                 sampleSite={selectedSampleSite}
                 automaticSafetyReview={automaticSafetyReview}
                 clientRecord={selectedClientRecord}
-                onStartNew={startNewPacket}
               />
             ) : null}
           </div>
