@@ -5,23 +5,24 @@
 @tailwind utilities;
 
 :root {
-  --color-green: #009444;
-  --color-green-dark: #123c2a;
-  --color-orange: #e45f2b;
+  --color-green: #0b9049;
+  --color-green-dark: #08733b;
+  --color-green-light: #eaf6ef;
+  --color-orange: #e95d2a;
   --color-red: #c41230;
   --color-red-dark: #8f1024;
-  --color-charcoal: #163b2d;
-  --color-black: #163b2d;
-  --color-gray-900: #163b2d;
-  --color-gray-700: #4b5563;
-  --color-gray-500: #6b7280;
-  --color-gray-200: #d9dee3;
+  --color-charcoal: #173b2d;
+  --color-black: #173b2d;
+  --color-gray-900: #173b2d;
+  --color-gray-700: #334155;
+  --color-gray-500: #64748b;
+  --color-gray-200: #d6dee3;
   --color-gray-100: #f4f5f6;
   --color-white: #ffffff;
-  --color-success: #009444;
+  --color-success: #0b9049;
   --color-warning: #a86612;
   --font-display: "Envie", "Roboto Slab", "Arvo", Georgia, serif;
-  color: #163b2d;
+  color: #173b2d;
   background: #f4f5f6;
 }
 
@@ -37,7 +38,7 @@ body {
   margin: 0;
   min-height: 100vh;
   background-color: #f4f5f6;
-  color: #4b5563;
+  color: #334155;
   font-family:
     "Inter",
     ui-sans-serif,
@@ -52,7 +53,7 @@ body {
 pre,
 code,
 .developer-terminal {
-  border: 1px solid #e7e9eb;
+  border: 1px solid #d6dee3;
   border-radius: 12px;
   background-color: #f4f5f6;
   padding: 14px;
@@ -69,7 +70,7 @@ h2,
 h3,
 h4,
 .panel-title {
-  color: #123c2a;
+  color: #173b2d;
   font-family: var(--font-display);
   font-weight: 800;
   letter-spacing: 0;
@@ -83,6 +84,6 @@ textarea {
 
 button:focus-visible,
 input:focus-visible {
-  outline: 3px solid rgba(0, 148, 68, 0.24);
+  outline: 3px solid rgba(11, 144, 73, 0.24);
   outline-offset: 2px;
 }
