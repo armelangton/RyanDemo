@@ -2514,18 +2514,15 @@ export default function Home() {
 
             <div className="rounded-xl border border-brand-green/30 bg-brand-greenSoft px-3 py-3 text-sm leading-6 text-brand-gray700">
               <p className="font-extrabold text-brand-charcoal">
-                Your preparation packet may include:
+                Your packet includes:
               </p>
               <ul className="mt-2 grid gap-x-4 gap-y-1 sm:grid-cols-2">
                 {[
-                  "Customer and site overview",
+                  "Site overview",
                   "Equipment summary",
-                  "Product information and safety notices",
                   "Preparation checklist",
+                  "Product guidance",
                   "Discussion points",
-                  "Documentation to review",
-                  "Recommended follow-up",
-                  "Information requiring verification",
                 ].map((item) => (
                   <li key={item} className="flex gap-2">
                     <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-green" aria-hidden="true" />
@@ -2646,9 +2643,6 @@ export default function Home() {
       </div>
 
       <footer className="mx-auto mt-1 max-w-3xl px-5 pb-5 pt-1 text-center text-[11px] leading-4 text-brand-gray500 sm:px-6">
-        <p className="mb-2">
-          This demonstration uses sample information to represent data that could come from connected CRM, documentation, equipment, and training systems.
-        </p>
         © 2026 Amy Melangton. Proof of concept for demonstration purposes only.
       </footer>
     </main>
