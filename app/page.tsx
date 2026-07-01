@@ -3207,7 +3207,7 @@ export default function Home() {
             <div className="grid gap-3 sm:gap-5">
               <div>
                 <h3 className="text-[13px] font-extrabold text-brand-greenDark sm:text-sm">
-                  Select Department
+                  Select Team
                 </h3>
                 <div className="mt-1.5 grid grid-cols-2 gap-1.5 sm:mt-2 sm:grid-cols-3 sm:gap-2">
                   {([
@@ -3240,7 +3240,7 @@ export default function Home() {
 
               <div>
                 <h3 className="text-[13px] font-extrabold text-brand-greenDark sm:text-sm">
-                  Select Facility
+                  Select Account
                 </h3>
                 <div className="mt-1.5 grid grid-cols-2 gap-1.5 sm:mt-2 sm:gap-2">
                   {visibleSiteOptions.map((item) => {
@@ -3272,7 +3272,7 @@ export default function Home() {
 
               <div>
                 <h3 className="text-[13px] font-extrabold text-brand-greenDark sm:text-sm">
-                  Select Engagement
+                  Select Engagement Type
                 </h3>
                 <div className="mt-1.5 grid grid-cols-2 gap-1.5 sm:mt-2 sm:grid-cols-3 sm:gap-2">
                   {roleEngagementOptions.map((item) => {
