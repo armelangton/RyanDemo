@@ -37,7 +37,7 @@ type UserRole =
   | "Training"
   | "Sales"
   | "Design & Engineering"
-  | "Projects & Construction"
+  | "Construction"
   | "Management & Review";
 
 type RoleEngagement =
@@ -45,10 +45,10 @@ type RoleEngagement =
   | "Deficiency Follow-Up"
   | "Service Visit"
   | "Training Session"
-  | "Sales & Proposal Meeting"
+  | "Sales Meetings"
   | "Site Survey"
-  | "Design & Project Review"
-  | "Documentation & Report Review";
+  | "Design Review"
+  | "Documentation Review";
 
 type Topic =
   | "Fire Sprinkler System"
@@ -114,7 +114,7 @@ const visibleSiteOptions = [
   { label: "Municipal Building", value: "Municipal Building" },
   { label: "Warehouse & Industrial Site", value: "Warehouse & Industrial Site" },
   { label: "Construction Project Site", value: "Construction Project Site" },
-  { label: "Internal Training Space", value: "Internal Training Space" },
+  { label: "Training Facility", value: "Training Facility" },
 ];
 
 const locationSampleMap: Record<string, string> = {
@@ -125,7 +125,7 @@ const locationSampleMap: Record<string, string> = {
   "Municipal Building": "Municipal Facilities Account",
   "Warehouse & Industrial Site": "Industrial Special Hazards Site",
   "Construction Project Site": "Commercial Office",
-  "Internal Training Space": "Fire Department Recruit Training Site",
+  "Training Facility": "Fire Department Recruit Training Site",
 };
 
 const roleEngagementOptions: RoleEngagement[] = [
@@ -133,13 +133,13 @@ const roleEngagementOptions: RoleEngagement[] = [
   "Deficiency Follow-Up",
   "Service Visit",
   "Training Session",
-  "Sales & Proposal Meeting",
+  "Sales Meetings",
   "Site Survey",
-  "Design & Project Review",
-  "Documentation & Report Review",
+  "Design Review",
+  "Documentation Review",
 ];
 
-const setupFocusByRole: Record<UserRole, string[]> = {
+const teamFocusMap: Record<UserRole, string[]> = {
   Inspection: [
     "location and inspection context",
     "systems to inspect",
@@ -170,7 +170,7 @@ const setupFocusByRole: Record<UserRole, string[]> = {
     "drawing and specification questions",
     "field coordination needs",
   ],
-  "Projects & Construction": [
+  Construction: [
     "scope and schedule readiness",
     "coordination needs",
     "materials or fabrication status",
@@ -184,15 +184,26 @@ const setupFocusByRole: Record<UserRole, string[]> = {
   ],
 };
 
-const setupFocusByEngagement: Record<RoleEngagement, string[]> = {
-  "Inspection": ["inspection scope", "documentation status", "customer explanation points"],
-  "Deficiency Follow-Up": ["open deficiencies", "customer communication", "follow-up ownership"],
-  "Service Visit": ["reported issue", "service history", "repair follow-up"],
-  "Training Session": ["training flow", "reference materials", "likely questions"],
-  "Sales & Proposal Meeting": ["meeting talking points", "proposal assumptions", "next steps"],
-  "Site Survey": ["asset details to capture", "facility conditions", "open field questions"],
-  "Design & Project Review": ["design assumptions", "site constraints", "project coordination"],
-  "Documentation & Report Review": ["records to review", "documentation gaps", "follow-up ownership"],
+const engagementTypeFocusMap: Record<RoleEngagement, string[]> = {
+  Inspection: ["inspection scope", "customer explanation points"],
+  "Deficiency Follow-Up": ["open deficiency status", "follow-up ownership"],
+  "Service Visit": ["arrival plan", "repair documentation"],
+  "Training Session": ["session flow", "reference materials"],
+  "Sales Meetings": ["meeting talking points", "proposal assumptions"],
+  "Site Survey": ["asset details to capture", "open field questions"],
+  "Design Review": ["design assumptions", "project coordination"],
+  "Documentation Review": ["records to review", "documentation gaps"],
+};
+
+const environmentFocusMap: Record<string, string[]> = {
+  "Fire Department": ["department training context", "recruit or responder questions"],
+  "Manufacturing Facility": ["industrial hazards", "production continuity concerns"],
+  "School Campus": ["campus safety expectations", "staff communication needs"],
+  "Healthcare Facility": ["documentation sensitivity", "critical facility continuity"],
+  "Municipal Building": ["public facility operations", "multi-building coordination"],
+  "Warehouse & Industrial Site": ["access and storage conditions", "industrial system context"],
+  "Construction Project Site": ["project phase details", "installation coordination"],
+  "Training Facility": ["training environment setup", "demonstration materials"],
 };
 
 const inspectorDefaultTopics: Topic[] = [
@@ -1842,7 +1853,7 @@ const ReadinessPacket = ({
   ].slice(0, 5);
   const clientContextItems = compactItems([
     `Facility: ${sampleSite}.`,
-    `Department: ${role}.`,
+    `Team: ${role}.`,
     `Engagement: ${roleEngagement}.`,
     ...guidance.deficiencyDocumentationFollowUp,
   ]);
@@ -2108,7 +2119,7 @@ const ReadinessPacket = ({
           ],
         };
       case "Site Survey":
-      case "Design & Project Review":
+      case "Design Review":
         return {
           guidance: [
             "Use the visit to close gaps in asset details and field conditions.",
@@ -2162,7 +2173,7 @@ const ReadinessPacket = ({
             "Prepare customer-friendly talking points and follow-up notes.",
           ],
         };
-      case "Documentation & Report Review":
+      case "Documentation Review":
         return {
           guidance: [
             "Use the review to separate verified records from open questions.",
@@ -2189,7 +2200,7 @@ const ReadinessPacket = ({
             "Prepare follow-up notes after internal review.",
           ],
         };
-      case "Sales & Proposal Meeting":
+      case "Sales Meetings":
         return {
           guidance: [
             "Use recent activity and open items to shape the conversation.",
@@ -2283,20 +2294,20 @@ const ReadinessPacket = ({
           during: "During the Session",
           after: "After the Session",
         };
-      case "Sales & Proposal Meeting":
+      case "Sales Meetings":
         return {
           before: "Before the Meeting",
           during: "During the Meeting",
           after: "After the Meeting",
         };
-      case "Documentation & Report Review":
+      case "Documentation Review":
         return {
           before: "Before the Review",
           during: "During the Review",
           after: "After the Review",
         };
       case "Site Survey":
-      case "Design & Project Review":
+      case "Design Review":
         return {
           before: "Before the Survey",
           during: "During the Survey",
@@ -2317,10 +2328,11 @@ const ReadinessPacket = ({
     "Review missing documentation before the engagement.",
     "Assign follow-up ownership for open verification items.",
   ]).slice(0, 5);
+  const packetEnvironmentFocusItems = (environmentFocusMap[sampleSite] ?? []).slice(0, 2);
   const readinessSummaryItems = (() => {
     const roleLead =
       role === "Training"
-        ? "This brief should help turn facility systems into teachable examples without overstating unverified details."
+        ? "This packet should help turn facility systems into teachable examples without overstating unverified details."
         : role === "Inspection"
           ? "The main value is knowing which records, systems, and deficiencies deserve attention first."
           : role === "Service"
@@ -2329,7 +2341,11 @@ const ReadinessPacket = ({
               ? "The operational risk is unclear ownership of open work, resources, or customer priorities."
               : "The meeting should center on verified customer history, open questions, and clear next steps.";
     return compactItems([
+      `The ${role} team is preparing for ${roleEngagement} in the ${sampleSite} environment.`,
       roleLead,
+      packetEnvironmentFocusItems[0]
+        ? `Environment context: ${packetEnvironmentFocusItems.join("; ")}.`
+        : "",
       role === "Training"
         ? "Product, manufacturer, and recall context should be treated as source material to verify before instruction."
         : "Anything involving code, compliance, safety, recall, or manufacturer guidance should stay in verification until confirmed.",
@@ -2374,6 +2390,7 @@ const ReadinessPacket = ({
 
     return compactItems([
       ...rolePriorities,
+      ...packetEnvironmentFocusItems.map((item) => `Account for ${item}.`),
       engagementFocus.next[0],
     ]).slice(0, 4);
   })();
@@ -2880,19 +2897,19 @@ export default function Home() {
       return;
     }
 
-    if (nextEngagement === "Documentation & Report Review") {
+    if (nextEngagement === "Documentation Review") {
       setEngagementType("Documentation Review Prep");
       setBriefAction("follow_up_notes");
       return;
     }
 
-    if (nextEngagement === "Sales & Proposal Meeting") {
+    if (nextEngagement === "Sales Meetings") {
       setEngagementType("Customer Meeting Prep");
       setBriefAction("customer_talking_points");
       return;
     }
 
-    if (nextEngagement === "Design & Project Review") {
+    if (nextEngagement === "Design Review") {
       setEngagementType("Site Survey Prep");
       setBriefAction("customer_talking_points");
       return;
@@ -2916,7 +2933,7 @@ export default function Home() {
     }
 
     if (nextRole === "Sales") {
-      setRoleEngagement("Sales & Proposal Meeting");
+      setRoleEngagement("Sales Meetings");
       setEngagementType("Customer Meeting Prep");
       setAudience("Prospective Customer");
       setBriefAction("customer_talking_points");
@@ -2925,7 +2942,7 @@ export default function Home() {
     }
 
     if (nextRole === "Management & Review") {
-      setRoleEngagement("Documentation & Report Review");
+      setRoleEngagement("Documentation Review");
       setEngagementType("Documentation Review Prep");
       setAudience("Facility Manager");
       setBriefAction("follow_up_notes");
@@ -2943,7 +2960,7 @@ export default function Home() {
     }
 
     if (nextRole === "Design & Engineering") {
-      setRoleEngagement("Design & Project Review");
+      setRoleEngagement("Design Review");
       setEngagementType("Site Survey Prep");
       setAudience("Facility Manager");
       setBriefAction("customer_talking_points");
@@ -2951,8 +2968,8 @@ export default function Home() {
       return;
     }
 
-    if (nextRole === "Projects & Construction") {
-      setRoleEngagement("Design & Project Review");
+    if (nextRole === "Construction") {
+      setRoleEngagement("Design Review");
       setEngagementType("Site Survey Prep");
       setAudience("Facility Manager");
       setBriefAction("follow_up_notes");
@@ -2969,7 +2986,7 @@ export default function Home() {
   };
   const sourceContextUsed = [
     "Automatic product safety review based on selected facility equipment",
-    `Department: ${role}`,
+    `Team: ${role}`,
     `Engagement: ${roleEngagement}`,
     `Equipment and Assets: ${selectedTopics.join(", ") || "None selected"}`,
     "Packet is based on selected engagement, facility context, equipment records, documentation needs, and training context.",
@@ -2979,11 +2996,17 @@ export default function Home() {
     `Audience: ${audience}`,
     "Demo source notes: service environment brief, source hierarchy, documentation/deficiency follow-up logic, and training/event prep frameworks",
   ];
+  const teamFocusItems = (teamFocusMap[role] ?? teamFocusMap.Training).slice(0, 2);
+  const environmentFocusItems = (environmentFocusMap[selectedSampleSite] ?? []).slice(0, 2);
+  const engagementFocusItems = (
+    engagementTypeFocusMap[roleEngagement] ??
+    engagementTypeFocusMap["Training Session"]
+  ).slice(0, 2);
   const setupFocusItems = Array.from(
     new Set([
-      ...(setupFocusByRole[role] ?? setupFocusByRole.Training),
-      ...(setupFocusByEngagement[roleEngagement] ??
-        setupFocusByEngagement["Training Session"]),
+      ...teamFocusItems,
+      ...environmentFocusItems,
+      ...engagementFocusItems,
       ...selectedClientRecord.openItems.slice(0, 1).map((item) => item.toLowerCase()),
     ]),
   ).slice(0, 6);
@@ -3196,7 +3219,7 @@ export default function Home() {
             Spend less time searching. More time preparing.
           </h2>
           <p className="mt-1 text-[13px] leading-5 text-brand-gray700 sm:mt-2 sm:text-base sm:leading-6">
-            Select the facility, team, and engagement type. The assistant organizes the most relevant preparation details before work starts.
+            Select the team, environment, and engagement type. The assistant organizes the most relevant preparation details before work starts.
           </p>
         </div>
       </header>
@@ -3206,7 +3229,7 @@ export default function Home() {
           <div>
             <div className="grid gap-3 sm:gap-5">
               <div>
-                <h3 className="text-[13px] font-extrabold text-brand-greenDark sm:text-sm">
+                <h3 className="text-sm font-extrabold text-brand-greenDark sm:text-[15px]">
                   Select Team
                 </h3>
                 <div className="mt-1.5 grid grid-cols-2 gap-1.5 sm:mt-2 sm:grid-cols-3 sm:gap-2">
@@ -3216,7 +3239,7 @@ export default function Home() {
                     "Training",
                     "Sales",
                     "Design & Engineering",
-                    "Projects & Construction",
+                    "Construction",
                     "Management & Review",
                   ] as UserRole[]).map((item) => {
                     const selected = role === item;
@@ -3239,8 +3262,8 @@ export default function Home() {
               </div>
 
               <div>
-                <h3 className="text-[13px] font-extrabold text-brand-greenDark sm:text-sm">
-                  Select Account
+                <h3 className="text-sm font-extrabold text-brand-greenDark sm:text-[15px]">
+                  Select Environment
                 </h3>
                 <div className="mt-1.5 grid grid-cols-2 gap-1.5 sm:mt-2 sm:gap-2">
                   {visibleSiteOptions.map((item) => {
@@ -3271,7 +3294,7 @@ export default function Home() {
               </div>
 
               <div>
-                <h3 className="text-[13px] font-extrabold text-brand-greenDark sm:text-sm">
+                <h3 className="text-sm font-extrabold text-brand-greenDark sm:text-[15px]">
                   Select Engagement Type
                 </h3>
                 <div className="mt-1.5 grid grid-cols-2 gap-1.5 sm:mt-2 sm:grid-cols-3 sm:gap-2">
@@ -3298,7 +3321,7 @@ export default function Home() {
 
             <div className="mt-3 rounded-xl border border-brand-green/25 bg-brand-greenSoft/70 px-2.5 py-2 text-[13px] leading-5 text-brand-gray700 sm:mt-4 sm:px-3 sm:py-3 sm:text-sm sm:leading-6">
               <p className="font-extrabold text-brand-charcoal">
-                Your brief will focus on:
+                This packet will focus on:
               </p>
               <ul className="mt-1.5 grid gap-x-4 gap-y-0.5 sm:mt-2 sm:grid-cols-2 sm:gap-y-1">
                 {setupFocusItems.map((item) => (
