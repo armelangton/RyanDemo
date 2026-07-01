@@ -37,7 +37,7 @@ type UserRole =
   | "Account Manager";
 
 type RoleEngagement =
-  | "Inspection Readiness"
+  | "Inspection"
   | "Service Follow-up"
   | "Documentation Review"
   | "Asset Survey"
@@ -108,7 +108,7 @@ const visibleSiteOptions = [
 ];
 
 const roleEngagementOptions: RoleEngagement[] = [
-  "Inspection Readiness",
+  "Inspection",
   "Service Follow-up",
   "Documentation Review",
   "Asset Survey",
@@ -632,7 +632,7 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
       "Sprinkler inspection follow-up",
     ],
     relatedServiceLenses: [
-      "Inspection Readiness",
+      "Inspection",
       "Documentation Follow-up",
       "Fire Extinguishers",
       "Fire Alarm and Detection",
@@ -834,7 +834,7 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
       "Deficiency follow-up",
     ],
     relatedServiceLenses: [
-      "Inspection Readiness",
+      "Inspection",
       "Fire Alarm and Detection",
       "Fire Sprinklers",
       "Documentation Follow-up",
@@ -1030,7 +1030,7 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
       "Fire Extinguishers",
       "Fire Alarm and Detection",
       "Fire Sprinklers",
-      "Inspection Readiness",
+      "Inspection",
     ],
     relatedService:
       "Extinguisher training; emergency lighting inspection; alarm testing review; sprinkler inspection; recurring reminders",
@@ -1123,7 +1123,7 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
       "Preventive maintenance",
     ],
     relatedServiceLenses: [
-      "Inspection Readiness",
+      "Inspection",
       "Customer Training",
       "Fire Extinguishers",
       "Fire Sprinklers",
@@ -1684,7 +1684,7 @@ const ReadinessPacket = ({
   ).slice(0, 5);
   const engagementFocus = (() => {
     switch (roleEngagement) {
-      case "Inspection Readiness":
+      case "Inspection":
         return {
           guidance: [
             "Review inspection and test dates, service status, and documentation gaps.",
@@ -2136,7 +2136,7 @@ export default function Home() {
       return;
     }
 
-    setRoleEngagement("Inspection Readiness");
+    setRoleEngagement("Inspection");
     setEngagementType("Inspection Prep");
     setAudience("Internal Inspector");
     setBriefAction("inspection_prep");
