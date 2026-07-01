@@ -1663,16 +1663,17 @@ const ReadinessPacket = ({
           `Assets: ${selectedTopics.slice(0, 3).join(", ")}.`,
         ],
   ).slice(0, 3);
-  const engagementSummaryText =
+  const engagementSummaryItems = compactItems([
+    `Purpose: ${roleEngagement}.`,
+    `Audience: ${audience}.`,
     role === "Instructor"
-      ? `This brief helps the instructor prepare a clear training conversation around ${selectedTopics.slice(0, 3).join(", ")}. Focus on practical explanations, likely audience questions, safe demonstration boundaries, documentation needs, and details that should be verified before teaching.`
+      ? "Primary objective: prepare clear teaching points and safe discussion boundaries."
       : role === "Inspector"
-        ? "This brief helps the inspector enter the engagement with a clear view of equipment, documentation gaps, field checks, and follow-up items. Focus on what can be verified onsite and what needs qualified review before any official conclusion."
-        : role === "Service Manager"
-          ? "This brief helps the service manager coordinate readiness, ownership, documentation status, and follow-up. Focus on open items, service priorities, customer communication needs, and who owns the next action."
-          : role === "Sales / Account Manager"
-            ? "This brief helps the account lead prepare a customer-facing conversation that stays practical, safety-focused, and grounded in verified information. Focus on open questions, clear next steps, and avoiding unconfirmed claims."
-            : "This brief helps the manager understand readiness, risks, open items, ownership, documentation status, and the next internal or customer follow-up. Focus on what needs attention before the engagement moves forward.";
+        ? "Primary objective: verify field conditions, documentation gaps, and follow-up needs."
+        : "Primary objective: clarify readiness, ownership, and customer communication needs.",
+    `Key equipment: ${selectedTopics.slice(0, 3).join(", ") || "selected site equipment"}.`,
+    aiFlaggedItems[0] ? `Verify: ${aiFlaggedItems[0]}` : "Verify model, documentation, and official source details.",
+  ]);
   const keyResources = resourcesToReview.slice(0, 4);
   const nextStep = followUpItems.slice(0, 1);
   const equipmentRecordSummary = compactItems(
@@ -1891,33 +1892,37 @@ const ReadinessPacket = ({
   const packetText = [
     "AI Preparation Brief",
     "Engagement Summary",
-    engagementSummaryText,
+    ...engagementSummaryItems.map((item) => `- ${item}`),
     "",
     "Equipment Briefing",
     ...equipmentRecords.flatMap((record) => [
       `- ${record.name}`,
-      `  Status: ${cleanBriefText(record.certificationServiceStatus)}; ${cleanBriefText(record.deficiencyStatus)}`,
+      `  Manufacturer: ${cleanBriefText(record.manufacturer)}`,
+      `  Model: ${cleanBriefText(record.model)}`,
       `  Location: ${cleanBriefText(record.location)}`,
-      `  Manufacturer / Model: ${cleanBriefText(record.manufacturer)} / ${cleanBriefText(record.model)}`,
-      `  Training or Inspection Notes: ${cleanBriefText(record.description)}`,
-      `  Documentation to Review: ${cleanBriefText(record.documentationStatus)}`,
-      `  Items Requiring Verification: ${cleanBriefText(record.verificationNeeded)}`,
+      `  Last Inspection / Service: ${cleanBriefText(record.lastInspectionTestDate)}`,
+      `  Documentation Status: ${cleanBriefText(record.documentationStatus)}`,
+      `  Recall / Safety Status: ${cleanBriefText(record.recallSafetyStatus)}`,
+      `  Deficiency Status: ${cleanBriefText(record.deficiencyStatus)}`,
+      `  Certification Status: ${cleanBriefText(record.certificationServiceStatus)}`,
+      `  Role-Specific Note: ${roleSpecificAssetNote(role, roleEngagement, record)}`,
+      `  Description: ${cleanBriefText(record.description)}`,
+      `  SKU: ${cleanBriefText(record.sku)}`,
+      `  Serial Number: ${cleanBriefText(record.serialNumber)}`,
     ]),
     "",
-    "Role-Specific Guidance",
+    "Preparation Notes",
     ...roleGuidanceItems.map((item) => `- ${item}`),
-    "",
-    "Engagement Checklist",
     ...["Before", ...beforeItems, "During", ...duringItems, "After", ...afterItems].map((item) => `- ${item}`),
     "",
-    "Missing Info / Verification Needed",
+    "Discussion Points",
+    ...whatToSayItems.map((item) => `- ${item}`),
+    "",
+    "Items to Verify",
     ...aiFlaggedItems.slice(0, 5).map((item) => `- ${item}`),
     "",
-    "Recommended Next Steps",
+    "Recommended Follow-up",
     ...recommendedNextSteps.map((item, index) => `${index + 1}. ${item}`),
-    "",
-    "What to Say",
-    ...whatToSayItems.map((item) => `- ${item}`),
   ].join("\n");
   const copyText = (text: string) => {
     if (typeof navigator === "undefined" || !navigator.clipboard) return;
@@ -1934,41 +1939,12 @@ const ReadinessPacket = ({
   return (
     <section className="rounded-[16px] border border-brand-gray200 bg-white p-3 shadow-sm sm:p-4">
       <div className="border-b border-brand-gray200/80 pb-3">
-        <div className="flex flex-col gap-2 lg:flex-row lg:items-start lg:justify-between">
-          <div>
-            <h2 className="text-xl font-extrabold leading-tight text-brand-charcoal sm:text-2xl">
-              AI Preparation Brief
-            </h2>
-            <p className="mt-1 text-xs font-semibold text-brand-gray500">
-              A practical briefing for what to review, verify, and discuss before the engagement.
-            </p>
-          </div>
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm font-extrabold text-brand-gray700">
-            <button
-              type="button"
-              onClick={() => shareText(packetText)}
-              className="transition hover:text-brand-green"
-            >
-              Share
-            </button>
-            <span className="text-brand-gray200" aria-hidden="true">|</span>
-            <button
-              type="button"
-              onClick={() => window.print()}
-              className="transition hover:text-brand-green"
-            >
-              Print
-            </button>
-            <span className="text-brand-gray200" aria-hidden="true">|</span>
-            <button
-              type="button"
-              onClick={onStartNew}
-              className="transition hover:text-brand-green"
-            >
-              New Packet
-            </button>
-          </div>
-        </div>
+        <h2 className="text-xl font-extrabold leading-tight text-brand-charcoal sm:text-2xl">
+          AI Preparation Brief
+        </h2>
+        <p className="mt-1 text-sm font-semibold leading-5 text-brand-gray600">
+          What to review, verify, and discuss before walking into the engagement.
+        </p>
       </div>
 
       <div className="space-y-0.5">
@@ -1976,58 +1952,43 @@ const ReadinessPacket = ({
           title="Engagement Summary"
           tone="green"
         >
-          <p className="mb-3 rounded-xl border border-brand-gray200 bg-brand-gray100/70 p-3 text-xs font-semibold leading-5 text-brand-gray500">
-            This demonstration uses representative sample information to illustrate how AI can organize preparation materials from connected business systems.
-          </p>
-          <p className="leading-6 text-brand-gray700">{engagementSummaryText}</p>
+          <PacketList items={engagementSummaryItems} tone="green" />
         </PrepBriefSection>
 
         <PrepBriefSection title="Equipment Briefing" tone="neutral">
-          <div className="grid gap-2 sm:grid-cols-2">
+          <div className="grid gap-3">
             {equipmentRecords.map((record) => (
               <article
                 key={record.serialNumber}
-                className="rounded-xl border border-brand-gray200 bg-white p-3 shadow-[0_8px_18px_rgba(23,59,45,0.04)]"
+                className="rounded-xl border border-brand-gray200 bg-white p-3"
               >
-                <h4 className="text-sm font-extrabold leading-5 text-brand-charcoal sm:text-base">
+                <h4 className="text-base font-extrabold leading-5 text-brand-charcoal">
                   {record.name}
                 </h4>
-                <dl className="mt-2 grid gap-2 text-sm text-brand-gray700">
+                <dl className="mt-3 grid gap-x-5 gap-y-2 text-sm text-brand-gray700 sm:grid-cols-2">
                   {[
                     ["Status", `${cleanBriefText(record.certificationServiceStatus)}; ${cleanBriefText(record.deficiencyStatus)}`],
+                    ["Manufacturer", cleanBriefText(record.manufacturer)],
+                    ["Model", cleanBriefText(record.model)],
                     ["Location", cleanBriefText(record.location)],
-                    ["Manufacturer / Model", `${cleanBriefText(record.manufacturer)} / ${cleanBriefText(record.model)}`],
-                    ["Training or Inspection Notes", cleanBriefText(record.description)],
-                    ["Documentation to Review", cleanBriefText(record.documentationStatus)],
-                    ["Items Requiring Verification", cleanBriefText(record.verificationNeeded)],
+                    ["Last Inspection / Service", cleanBriefText(record.lastInspectionTestDate)],
+                    ["Documentation Status", cleanBriefText(record.documentationStatus)],
+                    ["Recall / Safety Status", cleanBriefText(record.recallSafetyStatus)],
+                    ["Deficiency Status", cleanBriefText(record.deficiencyStatus)],
+                    ["Certification Status", cleanBriefText(record.certificationServiceStatus)],
+                    ["Role-Specific Note", roleSpecificAssetNote(role, roleEngagement, record)],
+                    ["Description", cleanBriefText(record.description)],
+                    ["SKU", cleanBriefText(record.sku)],
+                    ["Serial Number", cleanBriefText(record.serialNumber)],
                   ].map(([label, value]) => (
-                    <div key={label} className="rounded-lg bg-brand-gray100/60 px-2.5 py-2">
-                      <dt className="text-[11px] font-extrabold text-brand-gray500">
+                    <div key={label} className="grid grid-cols-[8rem_1fr] gap-2 border-t border-brand-gray200/80 pt-1.5 first:border-t-0 first:pt-0 sm:grid-cols-[9.5rem_1fr]">
+                      <dt className="text-xs font-extrabold text-brand-gray500">
                         {label}
                       </dt>
                       <dd className="mt-0.5 text-brand-gray700">{value}</dd>
                     </div>
                   ))}
                 </dl>
-                <details className="mt-2 rounded-lg border border-brand-gray200 px-2.5 py-2 text-sm text-brand-gray700">
-                  <summary className="cursor-pointer font-extrabold text-brand-charcoal">
-                    Additional Details
-                  </summary>
-                  <dl className="mt-2 grid gap-2">
-                    {[
-                      ["Category", cleanBriefText(record.category)],
-                      ["SKU / Product Number", cleanBriefText(record.sku)],
-                      ["Serial Number", cleanBriefText(record.serialNumber)],
-                      ["Last Inspection / Test Date", cleanBriefText(record.lastInspectionTestDate)],
-                      ["Recall / Safety Status", cleanBriefText(record.recallSafetyStatus)],
-                    ].map(([label, value]) => (
-                      <div key={label} className="border-t border-brand-gray200/70 pt-1.5 first:border-t-0 first:pt-0">
-                        <dt className="text-[11px] font-extrabold text-brand-gray500">{label}</dt>
-                        <dd className="mt-0.5">{value}</dd>
-                      </div>
-                    ))}
-                  </dl>
-                </details>
               </article>
             ))}
             {!equipmentRecords.length ? (
@@ -2036,12 +1997,9 @@ const ReadinessPacket = ({
           </div>
         </PrepBriefSection>
 
-        <PrepBriefSection title="Role-Specific Guidance" tone="green">
+        <PrepBriefSection title="Preparation Notes" tone="green">
           <PacketList items={roleGuidanceItems} tone="green" />
-        </PrepBriefSection>
-
-        <PrepBriefSection title="Engagement Checklist" tone="neutral">
-          <div className="grid gap-2 sm:grid-cols-3">
+          <div className="mt-3 grid gap-2 sm:grid-cols-3">
             <div className="rounded-xl border border-brand-gray200 bg-brand-gray100/60 p-3">
               <p className="mb-2 text-sm font-extrabold text-brand-charcoal">Before</p>
               <PacketList items={beforeItems} tone="neutral" />
@@ -2057,10 +2015,14 @@ const ReadinessPacket = ({
           </div>
         </PrepBriefSection>
 
+        <PrepBriefSection title="Discussion Points" tone="neutral">
+          <PacketList items={whatToSayItems} tone="neutral" />
+        </PrepBriefSection>
+
         <section className="border-t border-brand-gray200/80 py-3">
           <div className="rounded-xl border border-brand-orange/30 bg-brand-orange/5 p-3">
             <h3 className="text-base font-extrabold leading-tight text-brand-charcoal sm:text-lg">
-              Missing Info / Verification Needed
+              Items to Verify
             </h3>
             <div className="mt-2 text-sm leading-5 text-brand-gray700 sm:text-[15px]">
               <PacketList items={aiFlaggedItems.slice(0, 5)} tone="red" />
@@ -2068,7 +2030,7 @@ const ReadinessPacket = ({
           </div>
         </section>
 
-        <PrepBriefSection title="Recommended Next Steps" tone="green">
+        <PrepBriefSection title="Recommended Follow-up" tone="green">
           <ol className="list-decimal space-y-2 pl-5 leading-5">
             {recommendedNextSteps.map((item) => (
               <li key={item}>{item}</li>
@@ -2076,10 +2038,35 @@ const ReadinessPacket = ({
           </ol>
         </PrepBriefSection>
 
-        <PrepBriefSection title="What to Say" tone="neutral">
-          <PacketList items={whatToSayItems} tone="neutral" />
-        </PrepBriefSection>
+        <p className="border-t border-brand-gray200/80 pt-3 text-xs font-semibold leading-5 text-brand-gray500">
+          This demonstration uses representative sample information to illustrate how AI can organize preparation materials from connected business systems.
+        </p>
 
+        <div className="flex flex-wrap items-center justify-end gap-x-3 gap-y-1 border-t border-brand-gray200/80 pt-3 text-sm font-extrabold text-brand-gray700">
+          <button
+            type="button"
+            onClick={() => shareText(packetText)}
+            className="transition hover:text-brand-green"
+          >
+            Share
+          </button>
+          <span className="text-brand-gray200" aria-hidden="true">|</span>
+          <button
+            type="button"
+            onClick={() => window.print()}
+            className="transition hover:text-brand-green"
+          >
+            Print
+          </button>
+          <span className="text-brand-gray200" aria-hidden="true">|</span>
+          <button
+            type="button"
+            onClick={onStartNew}
+            className="transition hover:text-brand-green"
+          >
+            New Packet
+          </button>
+        </div>
       </div>
     </section>
   );
