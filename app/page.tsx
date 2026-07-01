@@ -1656,9 +1656,9 @@ const PacketList = ({
   }[tone];
 
   return (
-    <ul className="space-y-2">
+    <ul className="space-y-1.5 sm:space-y-2">
       {items.map((item) => (
-        <li key={item} className="flex gap-2.5">
+        <li key={item} className="flex gap-2 sm:gap-2.5">
           <span className={`mt-2 h-1.5 w-1.5 shrink-0 rounded-full ${dotClass}`} />
           <span className="leading-5">{item}</span>
         </li>
@@ -1741,11 +1741,11 @@ const PrepBriefSection = ({
   }[tone];
 
   return (
-    <section className="border-t border-brand-gray200/80 py-3">
-      <h3 className={`text-base font-extrabold leading-tight sm:text-lg ${headingClass}`}>
+    <section className="border-t border-brand-gray200/80 py-2 sm:py-3">
+      <h3 className={`text-[15px] font-extrabold leading-tight sm:text-lg ${headingClass}`}>
         {title}
       </h3>
-      <div className="mt-2 text-sm leading-5 text-brand-gray700 sm:text-[15px]">{children}</div>
+      <div className="mt-1.5 text-[13px] leading-5 text-brand-gray700 sm:mt-2 sm:text-[15px]">{children}</div>
     </section>
   );
 };
@@ -2620,12 +2620,12 @@ const ReadinessPacket = ({
   };
 
   return (
-    <section className="rounded-[16px] border border-brand-gray200 bg-white p-3 shadow-sm sm:p-4">
-      <div className="border-b border-brand-gray200/80 pb-3">
-        <h2 className="text-xl font-extrabold leading-tight text-brand-charcoal sm:text-2xl">
+    <section className="rounded-[16px] border border-brand-gray200 bg-white p-2.5 shadow-sm sm:p-4">
+      <div className="border-b border-brand-gray200/80 pb-2 sm:pb-3">
+        <h2 className="text-lg font-extrabold leading-tight text-brand-charcoal sm:text-2xl">
           AI Engagement Readiness Packet
         </h2>
-        <p className="mt-1 text-sm font-semibold leading-5 text-brand-gray600">
+        <p className="mt-1 text-xs font-semibold leading-5 text-brand-gray600 sm:text-sm">
           What to review, verify, and discuss before walking into the engagement.
         </p>
       </div>
@@ -2639,18 +2639,18 @@ const ReadinessPacket = ({
           <PacketList items={preparationPriorityItems} tone="green" />
         </PrepBriefSection>
 
-        <section className="border-t border-brand-gray200/80 py-3">
-          <div className="grid gap-3 lg:grid-cols-3">
+        <section className="border-t border-brand-gray200/80 py-2 sm:py-3">
+          <div className="grid gap-2 sm:gap-3 lg:grid-cols-3">
             {[
               [actionLabels.before, beforeItems],
               [actionLabels.during, duringItems],
               [actionLabels.after, afterItems],
             ].map(([label, items]) => (
-              <article key={label as string} className="rounded-xl border border-brand-gray200 bg-white p-3">
-                <h3 className="text-base font-extrabold leading-tight text-brand-charcoal">
+              <article key={label as string} className="rounded-xl border border-brand-gray200 bg-white p-2.5 sm:p-3">
+                <h3 className="text-[15px] font-extrabold leading-tight text-brand-charcoal sm:text-base">
                   {label as string}
                 </h3>
-                <div className="mt-2 text-sm leading-5 text-brand-gray700">
+                <div className="mt-1.5 text-[13px] leading-5 text-brand-gray700 sm:mt-2 sm:text-sm">
                   <PacketList items={items as string[]} tone="neutral" />
                 </div>
               </article>
@@ -2658,12 +2658,12 @@ const ReadinessPacket = ({
           </div>
         </section>
 
-        <section className="border-t border-brand-gray200/80 py-3">
-          <div className="rounded-xl border border-brand-orange/30 bg-brand-orange/5 p-3">
-            <h3 className="text-base font-extrabold leading-tight text-brand-charcoal sm:text-lg">
+        <section className="border-t border-brand-gray200/80 py-2 sm:py-3">
+          <div className="rounded-xl border border-brand-orange/30 bg-brand-orange/5 p-2.5 sm:p-3">
+            <h3 className="text-[15px] font-extrabold leading-tight text-brand-charcoal sm:text-lg">
               Items Requiring Verification
             </h3>
-            <div className="mt-2 text-sm leading-5 text-brand-gray700 sm:text-[15px]">
+            <div className="mt-1.5 text-[13px] leading-5 text-brand-gray700 sm:mt-2 sm:text-[15px]">
               <PacketList items={roleBriefConfig.verifyItems} tone="red" />
             </div>
           </div>
@@ -2671,7 +2671,7 @@ const ReadinessPacket = ({
 
         {roleBriefConfig.showEquipment ? (
           <PrepBriefSection title="Equipment Briefing" tone="neutral">
-            <div className="grid gap-3">
+            <div className="grid gap-2 sm:gap-3">
               {equipmentRecords.map((record) => {
                 const recallStatus = recallStatusForRecord(record);
                 const hasPossibleRecall = recallStatus.startsWith("Possible");
@@ -2682,14 +2682,14 @@ const ReadinessPacket = ({
                 return (
                   <article
                     key={record.serialNumber}
-                    className="rounded-xl border border-brand-gray200 bg-white p-3"
+                    className="rounded-xl border border-brand-gray200 bg-white p-2.5 sm:p-3"
                   >
-                    <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                    <div className="flex flex-col gap-1.5 sm:flex-row sm:items-start sm:justify-between sm:gap-2">
                       <div>
-                        <h4 className="text-base font-extrabold leading-5 text-brand-charcoal">
+                        <h4 className="text-[15px] font-extrabold leading-5 text-brand-charcoal sm:text-base">
                           {record.name}
                         </h4>
-                        <p className="mt-1 text-sm font-semibold text-brand-gray600">
+                        <p className="mt-0.5 text-xs font-semibold text-brand-gray600 sm:mt-1 sm:text-sm">
                           {cleanBriefText(record.manufacturer)} - {cleanBriefText(record.location)}
                         </p>
                       </div>
@@ -2706,12 +2706,12 @@ const ReadinessPacket = ({
                       </p>
                     </div>
 
-                    <p className="mt-2 text-sm leading-5 text-brand-gray700">
+                    <p className="mt-1.5 text-[13px] leading-5 text-brand-gray700 sm:mt-2 sm:text-sm">
                       {engagementReason}
                     </p>
 
                     {attentionItems.length ? (
-                      <ul className="mt-2 space-y-1 text-sm leading-5 text-brand-gray700">
+                      <ul className="mt-1.5 space-y-1 text-[13px] leading-5 text-brand-gray700 sm:mt-2 sm:text-sm">
                         {attentionItems.map((item) => (
                           <li key={item} className="flex gap-2">
                             <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-orange" aria-hidden="true" />
@@ -2721,11 +2721,11 @@ const ReadinessPacket = ({
                       </ul>
                     ) : null}
 
-                    <details className="mt-3 rounded-lg border border-brand-gray200 bg-brand-gray100/60 px-3 py-2 text-sm text-brand-gray700">
+                    <details className="mt-2 rounded-lg border border-brand-gray200 bg-brand-gray100/60 px-2.5 py-2 text-[13px] text-brand-gray700 sm:mt-3 sm:px-3 sm:text-sm">
                       <summary className="cursor-pointer font-extrabold text-brand-greenDark">
                         Show details
                       </summary>
-                      <dl className="mt-3 grid gap-x-5 gap-y-2 sm:grid-cols-2">
+                      <dl className="mt-2 grid gap-x-5 gap-y-1.5 sm:mt-3 sm:grid-cols-2 sm:gap-y-2">
                         {detailItems.map(([label, value]) => (
                           <div key={label} className="border-t border-brand-gray200/80 pt-1.5 first:border-t-0 first:pt-0">
                             <dt className="text-xs font-extrabold text-brand-gray500">
@@ -2758,11 +2758,11 @@ const ReadinessPacket = ({
           </ol>
         </PrepBriefSection>
 
-        <p className="border-t border-brand-gray200/80 pt-3 text-xs font-semibold leading-5 text-brand-gray500">
+        <p className="border-t border-brand-gray200/80 pt-2 text-[11px] font-semibold leading-4 text-brand-gray500 sm:pt-3 sm:text-xs sm:leading-5">
           This demonstration uses representative sample information to illustrate how AI can organize preparation materials from connected business systems.
         </p>
 
-        <div className="flex flex-wrap items-center justify-end gap-x-3 gap-y-1 border-t border-brand-gray200/80 pt-3 text-sm font-extrabold text-brand-gray700">
+        <div className="flex flex-wrap items-center justify-end gap-x-2.5 gap-y-1 border-t border-brand-gray200/80 pt-2 text-xs font-extrabold text-brand-gray700 sm:gap-x-3 sm:pt-3 sm:text-sm">
           <button
             type="button"
             onClick={() => shareText(packetText)}
@@ -3176,40 +3176,40 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-brand-gray100 text-brand-charcoal">
       <header className="bg-white">
-        <div className="mx-auto max-w-3xl px-4 py-3 sm:px-6 sm:py-4">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+        <div className="mx-auto max-w-3xl px-4 py-2 sm:px-6 sm:py-4">
+          <div className="flex items-center gap-2 sm:gap-3">
             <Image
               src="/ryan-logo.png"
               alt="Ryan Fire Protection, Inc."
               width={1280}
               height={551}
               priority
-              className="h-auto w-32 shrink-0 sm:w-44"
+              className="h-auto w-24 shrink-0 sm:w-44"
             />
             <div>
-              <h1 className="text-[22px] font-extrabold leading-tight text-brand-green sm:text-[30px]">
+              <h1 className="text-[20px] font-extrabold leading-tight text-brand-green sm:text-[30px]">
                 Engagement Assistant
               </h1>
             </div>
           </div>
-          <h2 className="mt-3 text-xl font-extrabold leading-tight text-brand-charcoal sm:text-2xl">
+          <h2 className="mt-2 text-lg font-extrabold leading-tight text-brand-charcoal sm:mt-3 sm:text-2xl">
             Spend less time searching. More time preparing.
           </h2>
-          <p className="mt-2 text-sm leading-6 text-brand-gray700 sm:text-base">
+          <p className="mt-1 text-[13px] leading-5 text-brand-gray700 sm:mt-2 sm:text-base sm:leading-6">
             Select the facility, team, and engagement type. The assistant organizes the most relevant preparation details before work starts.
           </p>
         </div>
       </header>
 
-      <div className="mx-auto max-w-3xl px-4 py-3 sm:px-6">
-        <section className="rounded-[16px] border border-brand-gray200 bg-white p-3 shadow-sm sm:p-5">
+      <div className="mx-auto max-w-3xl px-4 py-2 sm:px-6 sm:py-3">
+        <section className="rounded-[16px] border border-brand-gray200 bg-white p-2.5 shadow-sm sm:p-5">
           <div>
-            <div className="grid gap-5">
+            <div className="grid gap-3 sm:gap-5">
               <div>
-                <h3 className="text-sm font-extrabold text-brand-greenDark">
+                <h3 className="text-[13px] font-extrabold text-brand-greenDark sm:text-sm">
                   Select Department
                 </h3>
-                <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3">
+                <div className="mt-1.5 grid grid-cols-2 gap-1.5 sm:mt-2 sm:grid-cols-3 sm:gap-2">
                   {([
                     "Inspection",
                     "Service",
@@ -3225,7 +3225,7 @@ export default function Home() {
                         key={item}
                         type="button"
                         onClick={() => applyRole(item)}
-                        className={`min-h-10 rounded-xl border px-3 py-2.5 text-center text-sm font-extrabold transition [font-family:var(--font-display)] ${
+                        className={`min-h-9 rounded-xl border px-2 py-2 text-center text-[13px] font-extrabold transition [font-family:var(--font-display)] sm:min-h-10 sm:px-3 sm:py-2.5 sm:text-sm ${
                           selected
                             ? "border-brand-green bg-brand-green text-white"
                             : "border-brand-gray200 bg-white text-brand-charcoal hover:border-brand-green hover:bg-brand-greenSoft"
@@ -3239,10 +3239,10 @@ export default function Home() {
               </div>
 
               <div>
-                <h3 className="text-sm font-extrabold text-brand-greenDark">
-                  Select Location
+                <h3 className="text-[13px] font-extrabold text-brand-greenDark sm:text-sm">
+                  Select Facility
                 </h3>
-                <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                <div className="mt-1.5 grid grid-cols-2 gap-1.5 sm:mt-2 sm:gap-2">
                   {visibleSiteOptions.map((item) => {
                     const selected = selectedSampleSite === item.value;
                     return (
@@ -3257,7 +3257,7 @@ export default function Home() {
                           );
                           setGuidance(null);
                         }}
-                        className={`min-h-10 rounded-xl border px-3 py-2.5 text-left text-sm font-extrabold leading-5 transition [font-family:var(--font-display)] ${
+                        className={`min-h-9 rounded-xl border px-2 py-2 text-left text-[13px] font-extrabold leading-4 transition [font-family:var(--font-display)] sm:min-h-10 sm:px-3 sm:py-2.5 sm:text-sm sm:leading-5 ${
                           selected
                             ? "border-brand-green bg-brand-green text-white"
                             : "border-brand-gray200 bg-white text-brand-charcoal hover:border-brand-green hover:bg-brand-greenSoft"
@@ -3271,10 +3271,10 @@ export default function Home() {
               </div>
 
               <div>
-                <h3 className="text-sm font-extrabold text-brand-greenDark">
+                <h3 className="text-[13px] font-extrabold text-brand-greenDark sm:text-sm">
                   Select Engagement
                 </h3>
-                <div className="mt-2 grid gap-2 sm:grid-cols-3">
+                <div className="mt-1.5 grid grid-cols-2 gap-1.5 sm:mt-2 sm:grid-cols-3 sm:gap-2">
                   {roleEngagementOptions.map((item) => {
                     const selected = roleEngagement === item;
                     return (
@@ -3282,7 +3282,7 @@ export default function Home() {
                         key={item}
                         type="button"
                         onClick={() => applyRoleEngagement(item)}
-                        className={`min-h-10 rounded-xl border px-3 py-2.5 text-left text-sm font-extrabold leading-5 transition [font-family:var(--font-display)] ${
+                        className={`min-h-9 rounded-xl border px-2 py-2 text-left text-[13px] font-extrabold leading-4 transition [font-family:var(--font-display)] sm:min-h-10 sm:px-3 sm:py-2.5 sm:text-sm sm:leading-5 ${
                           selected
                             ? "border-brand-green bg-brand-green text-white"
                             : "border-brand-gray200 bg-white text-brand-charcoal hover:border-brand-green hover:bg-brand-greenSoft"
@@ -3296,11 +3296,11 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="mt-4 rounded-xl border border-brand-green/25 bg-brand-greenSoft/70 px-3 py-3 text-sm leading-6 text-brand-gray700">
+            <div className="mt-3 rounded-xl border border-brand-green/25 bg-brand-greenSoft/70 px-2.5 py-2 text-[13px] leading-5 text-brand-gray700 sm:mt-4 sm:px-3 sm:py-3 sm:text-sm sm:leading-6">
               <p className="font-extrabold text-brand-charcoal">
                 Your brief will focus on:
               </p>
-              <ul className="mt-2 grid gap-x-4 gap-y-1 sm:grid-cols-2">
+              <ul className="mt-1.5 grid gap-x-4 gap-y-0.5 sm:mt-2 sm:grid-cols-2 sm:gap-y-1">
                 {setupFocusItems.map((item) => (
                   <li key={item} className="flex gap-2">
                     <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-green" aria-hidden="true" />
@@ -3371,12 +3371,12 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="mt-5 flex justify-center sm:justify-end">
+          <div className="mt-4 flex justify-center sm:mt-5 sm:justify-end">
             <button
               type="button"
               onClick={() => void generateSummary(null, briefAction)}
               disabled={Boolean(summarizingId)}
-              className="w-full rounded-xl bg-brand-green px-5 py-4 text-center text-base font-extrabold text-white transition hover:bg-brand-greenDark disabled:cursor-not-allowed disabled:bg-brand-gray500 sm:w-auto [font-family:var(--font-display)]"
+              className="w-full rounded-xl bg-brand-green px-5 py-3 text-center text-[15px] font-extrabold text-white transition hover:bg-brand-greenDark disabled:cursor-not-allowed disabled:bg-brand-gray500 sm:w-auto sm:py-4 sm:text-base [font-family:var(--font-display)]"
             >
               {summarizingId
                 ? "Generating Brief..."
@@ -3385,23 +3385,23 @@ export default function Home() {
           </div>
 
           {summarizingId === "engagement-packet" ? (
-            <div className="mt-5 rounded-xl border border-brand-gray200 bg-white p-4">
+            <div className="mt-4 rounded-xl border border-brand-gray200 bg-white p-3 sm:mt-5 sm:p-4">
               <div className="h-2 w-full overflow-hidden rounded-full bg-brand-gray100">
                 <div className="h-full w-1/2 animate-pulse rounded-full bg-brand-green" />
               </div>
-              <p className="mt-3 text-sm font-extrabold text-brand-charcoal">
+              <p className="mt-2 text-sm font-extrabold text-brand-charcoal sm:mt-3">
                 Building a preparation brief from the selected facility, team, and engagement.
               </p>
             </div>
           ) : null}
 
           {summaryError ? (
-            <div className="mt-4 rounded-xl border border-red-200 bg-red-50 p-4 text-sm font-bold text-brand-red">
+            <div className="mt-3 rounded-xl border border-red-200 bg-red-50 p-3 text-sm font-bold text-brand-red sm:mt-4 sm:p-4">
               {summaryError}
             </div>
           ) : null}
 
-          <div className="mt-6">
+          <div className="mt-4 sm:mt-6">
             {guidance ? (
               <ReadinessPacket
                 guidance={guidance}
