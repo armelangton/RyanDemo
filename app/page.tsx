@@ -1946,14 +1946,6 @@ const ReadinessPacket = ({
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm font-extrabold text-brand-gray700">
             <button
               type="button"
-              onClick={() => copyText(packetText)}
-              className="transition hover:text-brand-green"
-            >
-              Copy
-            </button>
-            <span className="text-brand-gray200" aria-hidden="true">|</span>
-            <button
-              type="button"
               onClick={() => shareText(packetText)}
               className="transition hover:text-brand-green"
             >
@@ -2028,7 +2020,6 @@ const ReadinessPacket = ({
                       ["Serial Number", cleanBriefText(record.serialNumber)],
                       ["Last Inspection / Test Date", cleanBriefText(record.lastInspectionTestDate)],
                       ["Recall / Safety Status", cleanBriefText(record.recallSafetyStatus)],
-                      ["Role-specific Note", roleSpecificAssetNote(role, roleEngagement, record)],
                     ].map(([label, value]) => (
                       <div key={label} className="border-t border-brand-gray200/70 pt-1.5 first:border-t-0 first:pt-0">
                         <dt className="text-[11px] font-extrabold text-brand-gray500">{label}</dt>
@@ -2409,8 +2400,11 @@ export default function Home() {
           <div className="grid gap-5">
             <div>
               <h2 className="text-lg font-extrabold text-brand-greenDark">
-                1. Scenario
+                1. Choose Sample Scenario
               </h2>
+              <p className="mt-1 text-xs font-semibold text-brand-gray500">
+                Select the sample engagement context for the readiness packet.
+              </p>
               <div className="mt-3 grid gap-2 sm:grid-cols-2">
                 {visibleSiteOptions.map((item) => {
                   const selected = selectedSampleSite === item.value;
@@ -2447,7 +2441,10 @@ export default function Home() {
 
             <div className="grid gap-5 md:grid-cols-[0.8fr_1.2fr]">
               <div>
-                <h2 className="text-lg font-extrabold text-brand-greenDark">2. Perspective</h2>
+                <h2 className="text-lg font-extrabold text-brand-greenDark">2. Choose Role</h2>
+                <p className="mt-1 text-xs font-semibold text-brand-gray500">
+                  Select the employee role this packet should support.
+                </p>
                 <div className="mt-3 grid grid-cols-2 gap-2">
                   {(["Instructor", "Inspector", "Service Manager", "Manager", "Sales / Account Manager"] as UserRole[]).map((item) => {
                     const selected = role === item;
@@ -2478,8 +2475,11 @@ export default function Home() {
 
               <div>
                 <h2 className="text-lg font-extrabold text-brand-greenDark">
-                  3. Engagement
+                  3. Choose Engagement Type
                 </h2>
+                <p className="mt-1 text-xs font-semibold text-brand-gray500">
+                  Select what the employee is preparing to do.
+                </p>
                 <div className="mt-3 grid gap-2 sm:grid-cols-3 md:grid-cols-1 lg:grid-cols-3">
                   {roleEngagementOptions.map((item) => {
                     const selected = roleEngagement === item;
