@@ -59,7 +59,7 @@ Role-specific output:
 - If role is "Inspector", focus on site and inspection context, systems to inspect, prior inspection history, open deficiencies, relevant procedures/documentation, items to verify onsite, customer-facing explanation points, and recommended follow-up. Do not over-focus on generic equipment information unless it supports inspection readiness.
 - If role is "Instructor", focus on audience profile, learning objectives, class/topic outline, teaching points, demonstration ideas, reference materials, likely questions, and follow-up resources. Do not assume instructors need customer inspection history or prior deficiencies unless the selected scenario is site-specific training.
 - If role is "Service Technician", focus on work order/service context, reported issue, prior service history, relevant equipment/manuals, likely parts or documentation, troubleshooting considerations, safety or verification steps, and recommended follow-up.
-- If role is "Sales / Account Manager", focus on customer/account summary, recent service or inspection activity, open issues or deficiencies, upcoming work, relationship notes, meeting talking points, suggested questions, and follow-up opportunities. Do not make this overly technical unless the engagement requires it.
+- If role is "Sales", focus on customer/account summary, recent service or inspection activity, open issues or deficiencies, upcoming work, relationship notes, meeting talking points, suggested questions, and follow-up opportunities. Do not make this overly technical unless the engagement requires it.
 - If role is "Service Manager", focus on operational summary, schedule/job status, open work or escalations, technician/resource concerns, customer priority items, risks/blockers, and recommended next actions. Do not make this a field inspection packet.
 - Mention attendance or documentation only if it appears in the selected sample context.
 - Do not invent official standard numbers, certification requirements, or credit rules unless source text is provided.
@@ -91,12 +91,12 @@ Audience guidance:
 - Instructor / Trainer: teaching points, examples, likely questions, materials to bring, and discussion prompts.
 
 Engagement guidance:
-- Inspection / Testing / Maintenance: focus on asset records, inspection/test status, certification/service status, documentation gaps, recall/safety status verification, deficiencies, on-site verification, and after-visit follow-up.
-- Deficiency / Service Follow-Up: focus on open deficiencies, service needs, customer-facing explanation, ownership, next steps, and what must be verified before action.
-- Documentation / Compliance Review: focus on existing records, missing records, documentation status, certification/service status, deficiencies, corrections needed, and customer/internal review readiness.
-- Site Survey / Asset Capture: focus on manufacturer, model, SKU/product number, serial number, location, condition, install/service dates, documentation status, photos/notes needed, and open questions.
-- Customer Training / Demonstration: focus on teaching/demo flow, equipment explanation, likely questions, attendance/documentation reminders, what to verify before site-specific claims, and what to say to the audience.
-- Design / Construction Coordination: focus on scope, asset/system assumptions, site constraints, project/design questions, construction/installation readiness, materials/equipment context, coordination needs, and follow-up items.
+- Inspection: focus on inspection scope, asset records, inspection/test status, documentation gaps, deficiencies, on-site verification, and after-visit follow-up.
+- Service Visit: focus on reported issue or service need, open deficiencies, prior service history, troubleshooting context, customer-facing explanation, ownership, next steps, and what must be verified before action.
+- Customer Training: focus on teaching flow, equipment explanation, likely questions, attendance/documentation reminders, what to verify before site-specific claims, and what to say to the audience.
+- Site Survey: focus on facility conditions, manufacturer, model, SKU/product number, serial number, location, condition, install/service dates, documentation status, photos/notes needed, and open questions.
+- Documentation Review: focus on existing records, missing records, documentation status, certification/service status, deficiencies, corrections needed, ownership, and customer/internal review readiness.
+- Customer Meeting: focus on customer/account summary, recent activity, open issues, upcoming work, relationship notes, meeting talking points, suggested questions, and follow-up opportunities.
 
 Do not use the word "upsell." Use "Related Service Considerations." Frame related service considerations as safety, education, maintenance, compliance awareness, documentation, prevention, modernization, customer confidence, or risk reduction.
 Group Related Service Considerations under Safety / Risk Reduction, Maintenance / Testing, Customer Education, Documentation / Follow-Up, and Modernization / Replacement Discussion.
@@ -616,7 +616,7 @@ const fallbackPacket = ({
             "Confirm safety and verification steps before work.",
           ],
         };
-      case "Sales / Account Manager":
+      case "Sales":
         return {
           flags: [
             "Recent customer activity should be reviewed",
@@ -652,6 +652,106 @@ const fallbackPacket = ({
           brief:
             "Focus on the selected role, engagement, facility context, open items, and preparation needs.",
           actions: ["Review the selected context with the appropriate internal owner."],
+        };
+    }
+  })();
+  const engagementFocus = (() => {
+    switch (roleEngagement) {
+      case "Inspection":
+        return {
+          flags: [
+            "Inspection scope should be confirmed",
+            "Open deficiencies need review",
+            "Onsite verification required",
+          ],
+          brief:
+            "Activity focus: inspection readiness, systems to inspect, documentation gaps, deficiencies, and onsite verification.",
+          actions: [
+            "Review inspection scope and prior findings.",
+            "Confirm systems, records, and deficiencies to verify onsite.",
+            "Document unresolved items and follow-up ownership.",
+          ],
+        };
+      case "Service Visit":
+        return {
+          flags: [
+            "Reported issue should be confirmed",
+            "Prior service history should be reviewed",
+            "Troubleshooting context may be needed",
+          ],
+          brief:
+            "Activity focus: service readiness, reported issue, prior service history, relevant equipment/manuals, troubleshooting notes, and safety checks.",
+          actions: [
+            "Confirm reported issue and access needs.",
+            "Review prior service notes and relevant documentation.",
+            "Prepare troubleshooting and safety verification steps.",
+          ],
+        };
+      case "Customer Training":
+        return {
+          flags: [
+            "Training objectives should be confirmed",
+            "Audience level should be verified",
+            "Reference materials should be reviewed",
+          ],
+          brief:
+            "Activity focus: training readiness, audience needs, learning objectives, teaching points, demonstration ideas, likely questions, and follow-up resources.",
+          actions: [
+            "Confirm training objectives, audience level, and materials.",
+            "Prepare teaching points, demonstration ideas, and likely questions.",
+            "Review product or manufacturer context before teaching.",
+          ],
+        };
+      case "Site Survey":
+        return {
+          flags: [
+            "Facility conditions should be reviewed",
+            "Asset details may need capture",
+            "Open field questions should be prepared",
+          ],
+          brief:
+            "Activity focus: site survey readiness, facility conditions, asset details, manufacturer/model verification, documentation gaps, and open questions.",
+          actions: [
+            "Prepare asset and location verification questions.",
+            "Capture missing manufacturer, model, and condition details.",
+            "Assign follow-up ownership for incomplete records.",
+          ],
+        };
+      case "Documentation Review":
+        return {
+          flags: [
+            "Missing records should be reviewed",
+            "Open documentation gaps need ownership",
+            "Customer-facing conclusions require verification",
+          ],
+          brief:
+            "Activity focus: documentation review readiness, missing records, documentation gaps, deficiencies, status questions, and follow-up ownership.",
+          actions: [
+            "Review existing records and missing documentation.",
+            "Confirm open deficiencies and status gaps.",
+            "Assign owners for unresolved documentation items.",
+          ],
+        };
+      case "Customer Meeting":
+        return {
+          flags: [
+            "Recent customer activity should be reviewed",
+            "Open issues need clear talking points",
+            "Technical claims need verification first",
+          ],
+          brief:
+            "Activity focus: customer meeting readiness, account context, recent activity, open issues, relationship notes, talking points, and next steps.",
+          actions: [
+            "Review recent customer activity and open issues.",
+            "Prepare customer-facing talking points and questions.",
+            "Capture follow-up items and internal handoffs.",
+          ],
+        };
+      default:
+        return {
+          flags: ["Engagement context should be confirmed"],
+          brief: "Activity focus: selected engagement, preparation context, and next steps.",
+          actions: ["Confirm the selected engagement and preparation needs."],
         };
     }
   })();
@@ -705,6 +805,7 @@ const fallbackPacket = ({
     selectedTopics,
     keyAttentionFlags: [
       ...roleFocus.flags,
+      ...engagementFocus.flags,
       "Manufacturer instructions should be checked",
       "Human review required",
       upcomingReminder !== "No reminder selected"
@@ -714,7 +815,7 @@ const fallbackPacket = ({
         ? "Training or education opportunity"
         : "Missing training context",
     ],
-    internalFieldBrief: `For ${role || "employee"} ${roleEngagement || engagementType}, prepare for ${sampleSite}. ${roleFocus.brief} ${hasRecall ? `Product/manufacturer context: "${title}" lists manufacturer/company as ${manufacturer}, product context as ${product}, hazard as ${hazard}, and remedy as ${remedy}.` : "Product and manufacturer details need verification before use."}`,
+    internalFieldBrief: `For ${role || "employee"} ${roleEngagement || engagementType}, prepare for ${sampleSite}. ${roleFocus.brief} ${engagementFocus.brief} ${hasRecall ? `Product/manufacturer context: "${title}" lists manufacturer/company as ${manufacturer}, product context as ${product}, hazard as ${hazard}, and remedy as ${remedy}.` : "Product and manufacturer details need verification before use."}`,
     standardsObjectiveAlignment:
       role === "Instructor"
         ? [
@@ -834,6 +935,7 @@ const fallbackPacket = ({
     },
     recommendedNextBestActions: [
       ...roleFocus.actions,
+      ...engagementFocus.actions,
       audienceContext.nextAction,
       hasRecall
         ? "Verify exact product model and affected date range."
@@ -867,7 +969,7 @@ const fallbackPacket = ({
 export async function POST(request: Request) {
   let recall: Record<string, unknown> = {};
   let role = "Inspector";
-  let roleEngagement = "Inspection / Testing";
+  let roleEngagement = "Inspection";
   let selectedTopics: string[] = [
     "Sprinkler Systems",
     "Extinguishers",
