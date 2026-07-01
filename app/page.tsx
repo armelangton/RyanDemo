@@ -11,11 +11,11 @@ import type {
 } from "./types";
 
 type EngagementType =
-  | "Inspect / service"
-  | "Teach / train"
-  | "Meet / discuss"
-  | "Present / attend event"
-  | "Follow up / document";
+  | "Inspection Prep"
+  | "Training Prep"
+  | "Customer Meeting"
+  | "Event Prep"
+  | "Documentation Follow-up";
 
 type Audience =
   | "Facility Manager"
@@ -23,37 +23,36 @@ type Audience =
   | "Municipality"
   | "Building Owner"
   | "Internal Inspector"
-  | "Instructor / Trainer"
+  | "Instructor"
   | "Recruit Class"
   | "Safety Coordinator"
   | "Convention Attendee"
-  | "Internal Sales / Marketing Team"
+  | "Internal Sales Team"
   | "Prospective Customer";
 
 type UserRole =
   | "Inspector"
   | "Instructor"
   | "Service Manager"
-  | "Manager"
-  | "Sales / Account Manager";
+  | "Account Manager";
 
 type RoleEngagement =
-  | "Inspection / Testing / Maintenance"
-  | "Deficiency / Service Follow-Up"
-  | "Documentation / Compliance Review"
-  | "Site Survey / Asset Capture"
-  | "Customer Training / Demonstration"
-  | "Design / Construction Coordination";
+  | "Inspection Readiness"
+  | "Service Follow-up"
+  | "Documentation Review"
+  | "Asset Survey"
+  | "Customer Training"
+  | "Construction Coordination";
 
 type Topic =
   | "Fire Sprinkler System"
-  | "Fire Alarm / Detection"
+  | "Fire Alarm and Detection"
   | "Fire Extinguishers"
   | "Emergency Lighting"
   | "Fire Hydrants"
   | "Fire Pump"
   | "Special Hazards"
-  | "Training Props / Demonstration Equipment";
+  | "Training Demonstration Equipment";
 
 type BriefAction =
   | "inspection_prep"
@@ -109,12 +108,12 @@ const visibleSiteOptions = [
 ];
 
 const roleEngagementOptions: RoleEngagement[] = [
-  "Inspection / Testing / Maintenance",
-  "Deficiency / Service Follow-Up",
-  "Documentation / Compliance Review",
-  "Site Survey / Asset Capture",
-  "Customer Training / Demonstration",
-  "Design / Construction Coordination",
+  "Inspection Readiness",
+  "Service Follow-up",
+  "Documentation Review",
+  "Asset Survey",
+  "Customer Training",
+  "Construction Coordination",
 ];
 
 const inspectorDefaultTopics: Topic[] = [
@@ -126,8 +125,8 @@ const inspectorDefaultTopics: Topic[] = [
 
 const instructorDefaultTopics: Topic[] = [
   "Fire Sprinkler System",
-  "Fire Alarm / Detection",
-  "Training Props / Demonstration Equipment",
+  "Fire Alarm and Detection",
+  "Training Demonstration Equipment",
 ];
 
 const equipmentAssetsBySite: Record<string, Topic[]> = {
@@ -140,18 +139,18 @@ const equipmentAssetsBySite: Record<string, Topic[]> = {
   ],
   "Fire Department Recruit Training Site": [
     "Fire Sprinkler System",
-    "Fire Alarm / Detection",
-    "Training Props / Demonstration Equipment",
+    "Fire Alarm and Detection",
+    "Training Demonstration Equipment",
   ],
   "Healthcare Facility ITM Review": [
     "Fire Sprinkler System",
-    "Fire Alarm / Detection",
+    "Fire Alarm and Detection",
     "Special Hazards",
     "Emergency Lighting",
     "Fire Pump",
   ],
   "Education Campus Facilities Training": [
-    "Fire Alarm / Detection",
+    "Fire Alarm and Detection",
     "Fire Extinguishers",
     "Emergency Lighting",
     "Fire Sprinkler System",
@@ -198,7 +197,7 @@ const equipmentRecordLibrary: Record<string, EquipmentAssetRecord> = {
     model: "Demo model unknown",
     sku: "VIK-WP-DEMO-001",
     serialNumber: "DEMO-SPR-1042",
-    location: "Training wing / mechanical room",
+    location: "Training wing and mechanical room",
     installDate: "Demo date unknown",
     lastInspectionTestDate: "Sample record: annual ITM due this quarter",
     certificationServiceStatus: "Sample record needs verification",
@@ -213,14 +212,14 @@ const equipmentRecordLibrary: Record<string, EquipmentAssetRecord> = {
     verificationNeeded:
       "Confirm exact system type, valve locations, manufacturer details, inspection history, and site-specific restrictions.",
   },
-  "Fire Alarm / Detection": {
-    name: "Fire Alarm / Detection System",
+  "Fire Alarm and Detection": {
+    name: "Fire Alarm and Detection System",
     category: "Alarm and detection",
     manufacturer: "Honeywell",
     model: "Demo panel unknown",
     sku: "HON-ALM-DEMO-002",
     serialNumber: "DEMO-ALM-2088",
-    location: "Main facility / alarm panel area",
+    location: "Main facility alarm panel area",
     installDate: "Demo date unknown",
     lastInspectionTestDate: "Sample record: testing documentation needs review",
     certificationServiceStatus: "Sample record needs verification",
@@ -229,7 +228,7 @@ const equipmentRecordLibrary: Record<string, EquipmentAssetRecord> = {
     documentationStatus: "Sample record: testing documentation needs review",
     deficiencyStatus: "Sample record: open documentation question",
     description:
-      "Alarm/detection system used to discuss detection, notification, monitoring, and response.",
+      "Alarm and detection system used to discuss detection, notification, monitoring, and response.",
     notes:
       "Useful for explaining the difference between detection, notification, and sprinkler response.",
     verificationNeeded:
@@ -242,23 +241,23 @@ const equipmentRecordLibrary: Record<string, EquipmentAssetRecord> = {
     model: "Demo extinguisher type unknown",
     sku: "AMX-EXT-DEMO-003",
     serialNumber: "DEMO-EXT-3175",
-    location: "Hallway / training area examples",
+    location: "Hallway and training area examples",
     installDate: "Demo date unknown",
     lastInspectionTestDate: "Sample record: monthly visual check status unknown",
     certificationServiceStatus: "Sample record needs verification",
     recallSafetyStatus:
       "Sample record: no confirmed recall match. Verify exact model, date code, and official documentation before relying on this.",
     documentationStatus: "Sample record: inspection tag status unknown",
-    deficiencyStatus: "Sample record: access/location needs confirmation",
+    deficiencyStatus: "Sample record: access and location needs confirmation",
     description:
-      "Portable extinguishers used for first-response awareness and customer/facility education.",
+      "Portable extinguishers used for first-response awareness and customer and facility education.",
     notes:
       "Useful for explaining extinguisher access, hazard suitability, inspection tags, and employee training.",
     verificationNeeded:
-      "Confirm extinguisher type/class, location, inspection tag, maintenance status, and training requirements.",
+      "Confirm extinguisher type and class, location, inspection tag, maintenance status, and training requirements.",
   },
   "Emergency Lighting": {
-    name: "Emergency Lighting / Exit Signs",
+    name: "Emergency Lighting and Exit Signs",
     category: "Emergency lighting",
     manufacturer: "Lithonia",
     model: "Demo model unknown",
@@ -276,11 +275,11 @@ const equipmentRecordLibrary: Record<string, EquipmentAssetRecord> = {
       "Emergency lighting and exit signs used to discuss egress visibility and periodic testing.",
     notes: "Useful for facility training, walkthroughs, and documentation review.",
     verificationNeeded:
-      "Confirm device locations, visibility, battery/test records, and documentation status.",
+      "Confirm device locations, visibility, battery and test records, and documentation status.",
   },
   "Fire Hydrants": {
     name: "Exterior Fire Hydrant",
-    category: "Water supply / hydrant",
+    category: "Water supply and hydrant",
     manufacturer: "Mueller",
     model: "Demo hydrant model unknown",
     sku: "MUL-HYD-DEMO-006",
@@ -319,7 +318,7 @@ const equipmentRecordLibrary: Record<string, EquipmentAssetRecord> = {
     notes:
       "Useful for explaining that some systems depend on water supply, pressure, testing, and documentation.",
     verificationNeeded:
-      "Confirm pump role, test records, maintenance history, alarms/monitoring, and qualified review requirements.",
+      "Confirm pump role, test records, maintenance history, alarms and monitoring, and qualified review requirements.",
   },
   "Special Hazards": {
     name: "Special Hazard System",
@@ -342,8 +341,8 @@ const equipmentRecordLibrary: Record<string, EquipmentAssetRecord> = {
     verificationNeeded:
       "Confirm hazard type, agent/system details, service history, and qualified review requirements.",
   },
-  "Training Props / Demonstration Equipment": {
-    name: "Training Props / Demonstration Equipment",
+  "Training Demonstration Equipment": {
+    name: "Training Demonstration Equipment",
     category: "Training equipment",
     manufacturer: "Demo training kit",
     model: "Demo model unknown",
@@ -398,7 +397,7 @@ const clientRecords: Record<string, ClientRecord> = {
       },
       {
         title: "Product Safety Data",
-        type: "Safety / Recall Context",
+        type: "Safety and Recall Context",
         description: "Verification reminders based on assets.",
         action: "Sample context",
       },
@@ -447,7 +446,7 @@ const clientRecords: Record<string, ClientRecord> = {
       },
       {
         title: "Product Safety Data",
-        type: "Safety / Recall Context",
+        type: "Safety and Recall Context",
         description: "Recall verification reminders.",
         action: "Sample context",
       },
@@ -536,21 +535,21 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
     profileType: "Sample profile",
     locationType: "Municipal public buildings",
     shortSummary:
-      "Multiple public buildings with extinguishers, smoke alarms/detection devices, emergency lighting, sprinklers, hydrants, and upcoming annual inspection needs.",
+      "Multiple public buildings with extinguishers, smoke alarms and detection devices, emergency lighting, sprinklers, hydrants, and upcoming annual inspection needs.",
     label: "Municipal Facilities Account",
     type: "Municipality",
-    primaryAudience: "Municipality / facilities leadership",
+    primaryAudience: "Municipality facilities leadership",
     knownSystems: [
       "Fire extinguishers",
       "Fire alarm and detection",
-      "Emergency lighting / exit signs",
+      "Emergency lighting and exit signs",
       "Sprinkler system",
       "Hydrants near public buildings",
     ],
     systems: [
       "Fire extinguishers",
       "Fire alarm and detection",
-      "Emergency lighting / exit signs",
+      "Emergency lighting and exit signs",
       "Sprinkler system",
       "Hydrants near public buildings",
     ],
@@ -569,7 +568,7 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
       },
       {
         category: "smoke alarm",
-        productName: "Smoke alarms / detection devices",
+        productName: "Smoke alarms and detection devices",
         manufacturer: "First Alert",
         model: "Demo model unknown",
         locationContext: "Administrative areas and public spaces",
@@ -589,7 +588,7 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
         documentationNote:
           "Confirm test records, battery backup condition, and deficiency status",
         trainingRelevance:
-          "Explain monthly/annual testing expectations in plain language",
+          "Explain monthly and annual testing expectations in plain language",
       },
       {
         category: "sprinkler",
@@ -609,9 +608,9 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
         manufacturer: "Mueller",
         model: "Demo model unknown",
         locationContext: "Exterior public access areas",
-        serviceStatus: "Flow/testing history should be reviewed",
-        documentationNote: "Confirm last flow test and access/obstruction notes",
-        trainingRelevance: "Useful for municipality/public safety discussion",
+        serviceStatus: "Flow testing history should be reviewed",
+        documentationNote: "Confirm last flow test and access and obstruction notes",
+        trainingRelevance: "Useful for municipality and public safety discussion",
       },
     ],
     upcomingReminder: "Annual inspection cycle due in 28 days.",
@@ -633,10 +632,10 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
       "Sprinkler inspection follow-up",
     ],
     relatedServiceLenses: [
-      "Inspection, Testing & Maintenance",
-      "Documentation / Deficiency Follow-Up",
+      "Inspection Readiness",
+      "Documentation Follow-up",
       "Fire Extinguishers",
-      "Fire Alarm & Detection",
+      "Fire Alarm and Detection",
       "Fire Hydrants",
     ],
     relatedService:
@@ -652,9 +651,9 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
     profileType: "Sample profile",
     locationType: "Fire department training facility",
     shortSummary:
-      "Recruit training context with sprinkler, fire pump, alarm/detection, hydrant, and extinguisher examples for response-awareness instruction.",
+      "Recruit training context with sprinkler, fire pump, alarm and detection, hydrant, and extinguisher examples for response-awareness instruction.",
     label: "Fire Department Recruit Training Site",
-    type: "Fire Department / recruit training",
+    type: "Fire Department recruit training",
     primaryAudience: "Fire Department",
     knownSystems: [
       "Sprinkler system demonstration",
@@ -693,7 +692,7 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
       },
       {
         category: "alarm panel",
-        productName: "Fire alarm panel / detection examples",
+        productName: "Fire alarm panel and detection examples",
         manufacturer: "Honeywell",
         model: "Demo model unknown",
         locationContext: "Alarm response awareness segment",
@@ -703,7 +702,7 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
       },
       {
         category: "hydrant",
-        productName: "Training hydrant / flow discussion example",
+        productName: "Training hydrant and flow discussion example",
         manufacturer: "Mueller",
         model: "Demo model unknown",
         locationContext: "Outdoor recruit training discussion",
@@ -733,7 +732,7 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
     documentationNeed:
       "Instructor outline, system diagram, photos of common components, likely recruit questions, official source reminders",
     relatedServiceConsiderations: [
-      "Hydrant inspection / flow testing conversation",
+      "Hydrant flow testing conversation",
       "Sprinkler system education",
       "Alarm response awareness",
       "Customer training follow-up",
@@ -742,10 +741,10 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
       "Customer Training",
       "Fire Sprinklers",
       "Fire Hydrants",
-      "Fire Alarm & Detection",
+      "Fire Alarm and Detection",
     ],
     relatedService:
-      "Hydrant inspection / flow testing conversation; sprinkler system education; alarm response awareness; additional customer training opportunities",
+      "Hydrant flow testing conversation; sprinkler system education; alarm response awareness; additional customer training opportunities",
     serviceHistoryNotes:
       "Instructor notes include recurring recruit questions about alarm panels, sprinkler activation, pump operation, and what responders should report after an incident.",
     recommendedPrepFocus:
@@ -757,10 +756,10 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
     profileType: "Sample profile",
     locationType: "Healthcare facility",
     shortSummary:
-      "Healthcare facility review with alarm/detection, sprinklers, emergency lighting, extinguishers, and documentation-heavy inspection needs.",
+      "Healthcare facility review with alarm and detection, sprinklers, emergency lighting, extinguishers, and documentation-heavy inspection needs.",
     label: "Healthcare Facility ITM Review",
     type: "Healthcare facility",
-    primaryAudience: "Facility Manager / Building Owner",
+    primaryAudience: "Facility Manager and Building Owner",
     knownSystems: [
       "Fire alarm and detection",
       "Sprinkler system",
@@ -798,7 +797,7 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
       },
       {
         category: "emergency light",
-        productName: "Emergency lighting / exit signs",
+        productName: "Emergency lighting and exit signs",
         manufacturer: "Lithonia Lighting",
         model: "Demo model unknown",
         locationContext: "Egress paths and patient/public areas",
@@ -835,17 +834,17 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
       "Deficiency follow-up",
     ],
     relatedServiceLenses: [
-      "Inspection, Testing & Maintenance",
-      "Fire Alarm & Detection",
+      "Inspection Readiness",
+      "Fire Alarm and Detection",
       "Fire Sprinklers",
-      "Documentation / Deficiency Follow-Up",
+      "Documentation Follow-up",
     ],
     relatedService:
       "Documentation review; emergency lighting inspection; alarm testing review; preventive maintenance; deficiency follow-up",
     serviceHistoryNotes:
       "Service history notes emphasize documentation completeness, deficiency follow-up, and clear escalation paths for facility leadership.",
     recommendedPrepFocus:
-      "Review inspection/testing records, prepare deficiency follow-up questions, and verify exact equipment before discussing product safety findings.",
+      "Review inspection and testing records, prepare deficiency follow-up questions, and verify exact equipment before discussing product safety findings.",
   },
   "Industrial Special Hazards Site": {
     id: "industrial-special-hazards",
@@ -853,10 +852,10 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
     profileType: "Sample profile",
     locationType: "Industrial facility",
     shortSummary:
-      "Industrial site with special hazard suppression, extinguishers, alarm/detection, emergency lighting, and higher need for manufacturer/manual verification.",
+      "Industrial site with special hazard suppression, extinguishers, alarm and detection, emergency lighting, and higher need for manufacturer and manual verification.",
     label: "Industrial Special Hazards Site",
-    type: "Industrial / special hazards",
-    primaryAudience: "Facility Manager / Internal Inspector",
+    type: "Industrial special hazards",
+    primaryAudience: "Facility Manager and Internal Inspector",
     knownSystems: [
       "Special hazard suppression system",
       "Fire extinguishers",
@@ -894,7 +893,7 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
       },
       {
         category: "fire alarm",
-        productName: "Industrial alarm / detection system",
+        productName: "Industrial alarm and detection system",
         manufacturer: "Honeywell",
         model: "Demo model unknown",
         locationContext: "Industrial production and special hazard areas",
@@ -920,9 +919,9 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
     trainingNeed:
       "Internal prep around system-specific documentation, qualified review, and customer communication",
     documentationDeficiencyContext:
-      "Manufacturer manuals, inspection/testing records, service history, deficiency photos/notes, exact product/model details.",
+      "Manufacturer manuals, inspection and testing records, service history, deficiency photos and notes, exact product and model details.",
     documentationNeed:
-      "Manufacturer manuals, inspection/testing records, service history, deficiency photos/notes, exact product/model details",
+      "Manufacturer manuals, inspection and testing records, service history, deficiency photos and notes, exact product and model details",
     relatedServiceConsiderations: [
       "Special hazard system review",
       "Clean foam testing discussion if applicable",
@@ -934,14 +933,14 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
       "Special Hazards",
       "Clean Foam Testing",
       "Emergency Service",
-      "Documentation / Deficiency Follow-Up",
+      "Documentation Follow-up",
     ],
     relatedService:
       "Special hazard system review; clean foam testing discussion if applicable; documentation review; emergency service readiness; preventive maintenance",
     serviceHistoryNotes:
       "Service notes mention system-specific documentation questions and the need to route technical determinations through qualified internal review.",
     recommendedPrepFocus:
-      "Prepare source hierarchy reminders, confirm manuals/service history, and flag exact model verification before any customer-facing discussion.",
+      "Prepare source hierarchy reminders, confirm manuals and service history, and flag exact model verification before any customer-facing discussion.",
   },
   "Education Campus Facilities Training": {
     id: "education-campus-training",
@@ -951,8 +950,8 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
     shortSummary:
       "Campus facilities training context with extinguishers, alarm panels, sprinklers, emergency lighting, and exit signs before a semester readiness cycle.",
     label: "Education Campus Facilities Training",
-    type: "Education / campus facilities",
-    primaryAudience: "Facility Manager / Instructor or Trainer",
+    type: "Education campus facilities",
+    primaryAudience: "Facility Manager and Instructor",
     knownSystems: [
       "Fire extinguishers",
       "Alarm panels",
@@ -1029,9 +1028,9 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
     relatedServiceLenses: [
       "Customer Training",
       "Fire Extinguishers",
-      "Fire Alarm & Detection",
+      "Fire Alarm and Detection",
       "Fire Sprinklers",
-      "Inspection, Testing & Maintenance",
+      "Inspection Readiness",
     ],
     relatedService:
       "Extinguisher training; emergency lighting inspection; alarm testing review; sprinkler inspection; recurring reminders",
@@ -1046,10 +1045,10 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
     profileType: "Sample profile",
     locationType: "Distribution warehouse",
     shortSummary:
-      "Warehouse inspection prep with extinguishers, sprinklers, alarm/detection, emergency lighting, and possible special hazard areas.",
+      "Warehouse inspection prep with extinguishers, sprinklers, alarm and detection, emergency lighting, and possible special hazard areas.",
     label: "Distribution Warehouse Inspection Prep",
-    type: "Commercial / distribution warehouse",
-    primaryAudience: "Facility Manager / Building Owner",
+    type: "Commercial distribution warehouse",
+    primaryAudience: "Facility Manager and Building Owner",
     knownSystems: [
       "Fire extinguishers",
       "Sprinkler system",
@@ -1097,7 +1096,7 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
       },
       {
         category: "fire alarm",
-        productName: "Warehouse fire alarm / detection system",
+        productName: "Warehouse fire alarm and detection system",
         manufacturer: "Honeywell",
         model: "Demo model unknown",
         locationContext: "Warehouse, loading dock, and office areas",
@@ -1124,11 +1123,11 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
       "Preventive maintenance",
     ],
     relatedServiceLenses: [
-      "Inspection, Testing & Maintenance",
+      "Inspection Readiness",
       "Customer Training",
       "Fire Extinguishers",
       "Fire Sprinklers",
-      "Fire Alarm & Detection",
+      "Fire Alarm and Detection",
     ],
     relatedService:
       "Extinguisher training; emergency lighting inspection; alarm testing review; sprinkler inspection; preventive maintenance",
@@ -1137,26 +1136,26 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
     recommendedPrepFocus:
       "Review inspection records, prepare equipment-specific verification list, and identify customer-friendly follow-up points.",
   },
-  "Convention / Trade Show Demo Booth": {
+  "Convention Trade Show Demo Booth": {
     id: "convention-demo-booth",
-    name: "Convention / Trade Show Demo Booth",
+    name: "Convention Trade Show Demo Booth",
     profileType: "Sample profile",
     locationType: "Convention or trade show booth",
     shortSummary:
       "Event booth context with demonstration equipment, customer education materials, and common questions about inspections, training, and product safety.",
-    label: "Convention / Trade Show Demo Booth",
-    type: "Convention / trade show",
-    primaryAudience: "Building Owner / Facility Manager",
+    label: "Convention Trade Show Demo Booth",
+    type: "Convention trade show",
+    primaryAudience: "Building Owner and Facility Manager",
     knownSystems: [
       "Fire extinguishers",
-      "Smoke alarm / detection examples",
+      "Smoke alarm and detection examples",
       "Emergency lighting examples",
       "Sprinkler component examples",
       "Special hazard discussion materials",
     ],
     systems: [
       "Fire extinguishers",
-      "Smoke alarm / detection examples",
+      "Smoke alarm and detection examples",
       "Emergency lighting examples",
       "Sprinkler component examples",
       "Special hazard discussion materials",
@@ -1174,7 +1173,7 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
       },
       {
         category: "smoke alarm",
-        productName: "Smoke alarm / detection examples",
+        productName: "Smoke alarm and detection examples",
         manufacturer: "First Alert",
         model: "Demo model unknown",
         locationContext: "Product safety talking point examples",
@@ -1184,12 +1183,12 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
       },
       {
         category: "emergency lighting",
-        productName: "Emergency lighting / exit sign examples",
+        productName: "Emergency lighting and exit sign examples",
         manufacturer: "Lithonia Lighting",
         model: "Demo model unknown",
         locationContext: "Booth discussion examples",
         serviceStatus: "Prepare documentation talking points",
-        documentationNote: "Confirm monthly/annual testing talking points.",
+        documentationNote: "Confirm monthly and annual testing talking points.",
         trainingRelevance: "Supports customer-friendly explanation of inspection expectations.",
       },
       {
@@ -1223,9 +1222,9 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
     relatedServiceLenses: [
       "Customer Training",
       "Fire Extinguishers",
-      "Fire Alarm & Detection",
+      "Fire Alarm and Detection",
       "Special Hazards",
-      "Documentation / Deficiency Follow-Up",
+      "Documentation Follow-up",
     ],
     relatedService:
       "Customer education; inspection planning; documentation review; training follow-up; modernization discussion when safety-related",
@@ -1264,7 +1263,7 @@ const prepByEngagement: Record<
     notes: string;
   }
 > = {
-  "Inspect / service": {
+  "Inspection Prep": {
     materials: ["Tablet or inspection forms", "Customer asset list", "Recent service notes"],
     checklist: [
       "Confirm site address and contact",
@@ -1279,7 +1278,7 @@ const prepByEngagement: Record<
     followUp: "Send findings and any recall-related notes to the service manager for review.",
     notes: "Use company inspection procedures and applicable code requirements as the authority.",
   },
-  "Teach / train": {
+  "Training Prep": {
     materials: ["Training outline", "Sign-in sheet", "Device examples or photos"],
     checklist: [
       "Confirm audience and training objective",
@@ -1295,7 +1294,7 @@ const prepByEngagement: Record<
     notes:
       "Use this for customer training, recruit training, continuing education, certificates, attendance, selected services, and likely questions.",
   },
-  "Meet / discuss": {
+  "Customer Meeting": {
     materials: ["Account notes", "Open service items", "Product safety examples to verify"],
     checklist: [
       "Confirm meeting goal and audience",
@@ -1311,7 +1310,7 @@ const prepByEngagement: Record<
     notes:
       "Use this for customer meetings, facility manager conversations, municipality discussions, and customer-facing talking points.",
   },
-  "Present / attend event": {
+  "Event Prep": {
     materials: ["Public safety talking points", "Inspection schedule notes", "Approved service literature"],
     checklist: [
       "Confirm event objective, booth, or presentation plan",
@@ -1327,7 +1326,7 @@ const prepByEngagement: Record<
     notes:
       "Use this for conventions, trade shows, public safety events, presentations, and outreach conversations.",
   },
-  "Follow up / document": {
+  "Documentation Follow-up": {
     materials: ["Account notes", "Open service items", "Training records or handouts"],
     checklist: [
       "Review open deficiencies and documentation gaps",
@@ -1439,7 +1438,7 @@ const compactItems = (items: string[], fallback: string[] = []) =>
         !lower.includes("manual product safety") &&
         !lower.includes("automatic product safety") &&
         !lower.includes("additional notes") &&
-        !lower.includes("client/site profile, installed equipment, prep context") &&
+        !lower.includes("client site profile, installed equipment, prep context") &&
         !lower.includes("official cpsc") &&
         !lower.includes("cpsc recall")
       );
@@ -1477,7 +1476,7 @@ const roleSpecificAssetNote = (
   if (role === "Service Manager") {
     return `Use this ${record.category.toLowerCase()} record to coordinate ownership, service readiness, documentation status, and follow-up for ${engagement}.`;
   }
-  if (role === "Sales / Account Manager") {
+  if (role === "Account Manager") {
     return `Use this ${record.category.toLowerCase()} record for customer-facing context, open questions, next steps, and safety-focused follow-up for ${engagement}.`;
   }
   return `Use this ${record.category.toLowerCase()} record to summarize readiness, risks, open items, ownership, and follow-up for ${engagement}.`;
@@ -1550,9 +1549,9 @@ const ReadinessPacket = ({
       ? guidance.simpleLessonPlan
       : [
           "0-5 min: Introduction, audience expectations, and safety boundaries.",
-          `5-15 min: Core concept review for ${selectedTopics.join(", ") || "selected equipment/assets"}.`,
+          `5-15 min: Core concept review for ${selectedTopics.join(", ") || "selected equipment and assets"}.`,
           "15-25 min: Demonstration or scenario discussion using approved examples.",
-          "25-35 min: Guided practice or Q&A.",
+          "25-35 min: Guided practice or Questions.",
           "35-42 min: Knowledge check.",
           "42-45 min: Wrap-up, attendance documentation, and follow-up reminder.",
         ];
@@ -1600,7 +1599,7 @@ const ReadinessPacket = ({
     ...guidance.recommendedNextBestActions,
   ].slice(0, 5);
   const clientContextItems = compactItems([
-    `Client/site: ${sampleSite}.`,
+    `Client site: ${sampleSite}.`,
     `Role: ${role}.`,
     `Engagement: ${roleEngagement}.`,
     ...guidance.deficiencyDocumentationFollowUp,
@@ -1613,7 +1612,7 @@ const ReadinessPacket = ({
     ...guidance.keyAttentionFlags,
     ...missingInformation,
     hasPossibleMatches
-      ? "Confirm recall match with model/date code."
+      ? "Confirm recall match with model and date code."
       : "Verify official product safety sources.",
   ]).slice(0, 5);
   const checklistItems = compactItems([
@@ -1626,8 +1625,8 @@ const ReadinessPacket = ({
   ]);
   const resourcesToReview = compactItems([
     ...guidance.knownSourceFacts,
-    "Client/site record.",
-    "Equipment/asset list.",
+    "Client site record.",
+    "Equipment and asset list.",
     "Training or service history.",
     "Manufacturer instructions.",
     "Applicable codes and NFPA standards.",
@@ -1649,7 +1648,7 @@ const ReadinessPacket = ({
     ? [guidance.followUpNoteDraft]
     : ["Document unresolved questions, product verification needs, and the internal owner for follow-up."];
   const gptFollowUpPrompt =
-    `Expand this into a 45-minute lesson plan for ${sampleSite}. Include learning objectives, instructor notes, equipment/products to cover, demo steps, questions to ask, safety reminders, attendance documentation, and follow-up items. Use this client/site record, equipment/assets, continuing education context, product safety context, and relevant resources.`;
+    `Expand this into a 45-minute lesson plan for ${sampleSite}. Include learning objectives, instructor notes, equipment and products to cover, demo steps, questions to ask, safety reminders, attendance documentation, and follow-up items. Use this client site record, equipment and assets, continuing education context, product safety context, and relevant resources.`;
   const previewSnapshot = compactItems(
     role === "Instructor"
       ? [
@@ -1658,7 +1657,7 @@ const ReadinessPacket = ({
           `Audience: ${audience}.`,
         ]
       : [
-          `Client/site: ${sampleSite}.`,
+          `Client site: ${sampleSite}.`,
           `Engagement: ${roleEngagement}.`,
           `Assets: ${selectedTopics.slice(0, 3).join(", ")}.`,
         ],
@@ -1685,16 +1684,16 @@ const ReadinessPacket = ({
   ).slice(0, 5);
   const engagementFocus = (() => {
     switch (roleEngagement) {
-      case "Inspection / Testing / Maintenance":
+      case "Inspection Readiness":
         return {
           guidance: [
-            "Review inspection/test dates, service status, and documentation gaps.",
+            "Review inspection and test dates, service status, and documentation gaps.",
             "Verify certification, deficiency, and safety status before conclusions.",
             "Confirm model, serial, and location details while onsite.",
           ],
           before: [
             "Review equipment records and open documentation gaps.",
-            "Check last inspection/test dates and service status.",
+            "Check last inspection and test dates and service status.",
             "Prepare model, serial, and location verification questions.",
           ],
           during: [
@@ -1704,7 +1703,7 @@ const ReadinessPacket = ({
           ],
           after: [
             "Update documentation gaps and follow-up owners.",
-            "Route safety/manufacturer questions for qualified review.",
+            "Route safety and manufacturer questions for qualified review.",
             "Confirm the next service or customer communication step.",
           ],
           next: [
@@ -1713,7 +1712,7 @@ const ReadinessPacket = ({
             "Capture unresolved deficiencies and assign follow-up ownership.",
           ],
         };
-      case "Deficiency / Service Follow-Up":
+      case "Service Follow-up":
         return {
           guidance: [
             "Start with open deficiencies and affected equipment.",
@@ -1741,11 +1740,11 @@ const ReadinessPacket = ({
             "Prepare a customer-facing explanation after internal review.",
           ],
         };
-      case "Documentation / Compliance Review":
+      case "Documentation Review":
         return {
           guidance: [
             "Focus on missing records and documentation readiness.",
-            "Check certification/service status against available records.",
+            "Check certification and service status against available records.",
             "Flag records needing correction or qualified review.",
           ],
           before: [
@@ -1769,7 +1768,7 @@ const ReadinessPacket = ({
             "Assign follow-up ownership for unresolved documentation gaps.",
           ],
         };
-      case "Site Survey / Asset Capture":
+      case "Asset Survey":
         return {
           guidance: [
             "Prioritize complete asset details and field notes.",
@@ -1778,7 +1777,7 @@ const ReadinessPacket = ({
           ],
           before: [
             "Prepare the asset capture list and open questions.",
-            "Review which systems need manufacturer/model confirmation.",
+            "Review which systems need manufacturer and model confirmation.",
             "Plan photos or notes for missing equipment details.",
           ],
           during: [
@@ -1797,7 +1796,7 @@ const ReadinessPacket = ({
             "Update the sample asset record with verified information.",
           ],
         };
-      case "Customer Training / Demonstration":
+      case "Customer Training":
         return {
           guidance: [
             "Turn equipment records into plain-language teaching points.",
@@ -1821,11 +1820,11 @@ const ReadinessPacket = ({
           ],
           next: [
             "Confirm training objectives, materials, and attendance needs.",
-            "Review product/manufacturer context before instruction.",
+            "Review product and manufacturer context before instruction.",
             "Prepare customer-friendly talking points and follow-up notes.",
           ],
         };
-      case "Design / Construction Coordination":
+      case "Construction Coordination":
       default:
         return {
           guidance: [
@@ -1850,7 +1849,7 @@ const ReadinessPacket = ({
           ],
           next: [
             "Confirm scope assumptions and site constraints.",
-            "Verify equipment/material details before coordination.",
+            "Verify equipment and material details before coordination.",
             "Assign owners for open design or construction questions.",
           ],
         };
@@ -1863,8 +1862,6 @@ const ReadinessPacket = ({
         ? "Use onsite guidance for field verification and documentation."
         : role === "Service Manager"
           ? "Use service coordination guidance for readiness, ownership, documentation, and follow-up."
-          : role === "Manager"
-          ? "Use readiness guidance for ownership, risk, and follow-up."
           : "Use customer-facing guidance for open questions and next steps.",
     ...engagementFocus.guidance,
     ...guidance.audienceSpecificTalkingPoints,
@@ -1874,10 +1871,10 @@ const ReadinessPacket = ({
   const afterItems = engagementFocus.after;
   const whatToSayItems = compactItems([
     role === "Instructor"
-      ? "Today we are using the available equipment information to review how sprinkler systems, alarm/detection devices, and demonstration equipment fit into a fire protection discussion."
+      ? "Today we are using the available equipment information to review how sprinkler systems, alarm and detection devices, and demonstration equipment fit into a fire protection discussion."
       : role === "Inspector"
         ? "I am reviewing sample equipment and documentation context, and I will verify model, service, and documentation details before making any official conclusion."
-        : role === "Sales / Account Manager"
+        : role === "Account Manager"
           ? "This conversation should focus on what the available information shows, what still needs verification, and the next practical step for a safety-focused follow-up."
           : "This review should clarify readiness, open verification items, documentation status, and who owns the next follow-up step.",
     "The main goal is to understand what each system does, what documentation matters, and what details need to be verified before making site-specific claims.",
@@ -1900,9 +1897,9 @@ const ReadinessPacket = ({
       `  Manufacturer: ${cleanBriefText(record.manufacturer)}`,
       `  Model: ${cleanBriefText(record.model)}`,
       `  Location: ${cleanBriefText(record.location)}`,
-      `  Last Inspection / Service: ${cleanBriefText(record.lastInspectionTestDate)}`,
+      `  Last Inspection or Service: ${cleanBriefText(record.lastInspectionTestDate)}`,
       `  Documentation Status: ${cleanBriefText(record.documentationStatus)}`,
-      `  Recall / Safety Status: ${cleanBriefText(record.recallSafetyStatus)}`,
+      `  Recall and Safety Status: ${cleanBriefText(record.recallSafetyStatus)}`,
       `  Deficiency Status: ${cleanBriefText(record.deficiencyStatus)}`,
       `  Certification Status: ${cleanBriefText(record.certificationServiceStatus)}`,
       `  Role-Specific Note: ${roleSpecificAssetNote(role, roleEngagement, record)}`,
@@ -1971,9 +1968,9 @@ const ReadinessPacket = ({
                     ["Manufacturer", cleanBriefText(record.manufacturer)],
                     ["Model", cleanBriefText(record.model)],
                     ["Location", cleanBriefText(record.location)],
-                    ["Last Inspection / Service", cleanBriefText(record.lastInspectionTestDate)],
+                    ["Last Inspection or Service", cleanBriefText(record.lastInspectionTestDate)],
                     ["Documentation Status", cleanBriefText(record.documentationStatus)],
-                    ["Recall / Safety Status", cleanBriefText(record.recallSafetyStatus)],
+                    ["Recall and Safety Status", cleanBriefText(record.recallSafetyStatus)],
                     ["Deficiency Status", cleanBriefText(record.deficiencyStatus)],
                     ["Certification Status", cleanBriefText(record.certificationServiceStatus)],
                     ["Role-Specific Note", roleSpecificAssetNote(role, roleEngagement, record)],
@@ -2074,14 +2071,14 @@ const ReadinessPacket = ({
 
 export default function Home() {
   const [engagementType, setEngagementType] =
-    useState<EngagementType>("Teach / train");
+    useState<EngagementType>("Training Prep");
   const [role, setRole] = useState<UserRole>("Instructor");
   const [roleEngagement, setRoleEngagement] = useState<RoleEngagement>(
-    "Customer Training / Demonstration",
+    "Customer Training",
   );
   const [selectedTopics, setSelectedTopics] =
     useState<Topic[]>(instructorDefaultTopics);
-  const [audience, setAudience] = useState<Audience>("Instructor / Trainer");
+  const [audience, setAudience] = useState<Audience>("Instructor");
   const [selectedSampleSite, setSelectedSampleSite] = useState(
     "Fire Department Recruit Training Site",
   );
@@ -2112,27 +2109,18 @@ export default function Home() {
     setGuidance(null);
 
     if (nextRole === "Instructor") {
-      setRoleEngagement("Customer Training / Demonstration");
-      setEngagementType("Teach / train");
-      setAudience("Instructor / Trainer");
+      setRoleEngagement("Customer Training");
+      setEngagementType("Training Prep");
+      setAudience("Instructor");
       setBriefAction("training_prep");
       setSelectedTopics(instructorDefaultTopics);
       setSelectedSampleSite("Fire Department Recruit Training Site");
       return;
     }
 
-    if (nextRole === "Manager") {
-      setRoleEngagement("Documentation / Compliance Review");
-      setEngagementType("Follow up / document");
-      setAudience("Safety Coordinator");
-      setBriefAction("follow_up_notes");
-      setSelectedTopics(equipmentAssetsBySite[selectedSampleSite] ?? inspectorDefaultTopics);
-      return;
-    }
-
-    if (nextRole === "Sales / Account Manager") {
-      setRoleEngagement("Customer Training / Demonstration");
-      setEngagementType("Meet / discuss");
+    if (nextRole === "Account Manager") {
+      setRoleEngagement("Customer Training");
+      setEngagementType("Customer Meeting");
       setAudience("Prospective Customer");
       setBriefAction("customer_talking_points");
       setSelectedTopics(equipmentAssetsBySite[selectedSampleSite] ?? inspectorDefaultTopics);
@@ -2140,16 +2128,16 @@ export default function Home() {
     }
 
     if (nextRole === "Service Manager") {
-      setRoleEngagement("Deficiency / Service Follow-Up");
-      setEngagementType("Follow up / document");
+      setRoleEngagement("Service Follow-up");
+      setEngagementType("Documentation Follow-up");
       setAudience("Facility Manager");
       setBriefAction("follow_up_notes");
       setSelectedTopics(equipmentAssetsBySite[selectedSampleSite] ?? inspectorDefaultTopics);
       return;
     }
 
-    setRoleEngagement("Inspection / Testing / Maintenance");
-    setEngagementType("Inspect / service");
+    setRoleEngagement("Inspection Readiness");
+    setEngagementType("Inspection Prep");
     setAudience("Internal Inspector");
     setBriefAction("inspection_prep");
     setSelectedTopics(inspectorDefaultTopics);
@@ -2159,9 +2147,9 @@ export default function Home() {
     "Automatic product safety review based on selected site equipment",
     `Role: ${role}`,
     `Engagement: ${roleEngagement}`,
-    `Equipment / Assets: ${selectedTopics.join(", ") || "None selected"}`,
+    `Equipment and Assets: ${selectedTopics.join(", ") || "None selected"}`,
     "Packet is based on selected engagement, sample site context, equipment records, documentation needs, and training context.",
-    `Customer/Site Profile: ${selectedSiteDetails.label}`,
+    `Customer Site Profile: ${selectedSiteDetails.label}`,
     `Preparation focus: ${selectedServiceLens.label}`,
     `Engagement type: ${engagementType}`,
     `Audience: ${audience}`,
@@ -2306,7 +2294,7 @@ export default function Home() {
             ),
             responsibleAiLabels: knowledgeBase.responsibleAiLabels,
             sourceHierarchy: [
-              "Official product/manufacturer notices",
+              "Official product and manufacturer notices",
               "Manufacturer instructions and product documentation",
               "Applicable codes and NFPA standards",
               "Company procedures and qualified internal review",
@@ -2340,11 +2328,11 @@ export default function Home() {
   };
 
   const startNewPacket = () => {
-    setEngagementType("Teach / train");
+    setEngagementType("Training Prep");
     setRole("Instructor");
-    setRoleEngagement("Customer Training / Demonstration");
+    setRoleEngagement("Customer Training");
     setSelectedTopics(instructorDefaultTopics);
-    setAudience("Instructor / Trainer");
+    setAudience("Instructor");
     setSelectedSampleSite("Fire Department Recruit Training Site");
     setSelectedServiceLensId(serviceLenses[0].id);
     setBriefAction("training_prep");
@@ -2433,7 +2421,7 @@ export default function Home() {
                   Select the employee role this packet should support.
                 </p>
                 <div className="mt-3 grid grid-cols-2 gap-2">
-                  {(["Instructor", "Inspector", "Service Manager", "Manager", "Sales / Account Manager"] as UserRole[]).map((item) => {
+                  {(["Instructor", "Inspector", "Service Manager", "Account Manager"] as UserRole[]).map((item) => {
                     const selected = role === item;
                     return (
                       <button
@@ -2528,10 +2516,10 @@ export default function Home() {
               </p>
               <div className="mt-2 grid gap-2 text-sm text-brand-gray700 sm:grid-cols-2">
                 {[
-                  ["Equipment / Assets", selectedClientRecord.equipmentAssets],
-                  ["Service / Training History", selectedClientRecord.serviceTrainingHistory],
+                  ["Equipment and Assets", selectedClientRecord.equipmentAssets],
+                  ["Service and Training History", selectedClientRecord.serviceTrainingHistory],
                   ["Open Items", selectedClientRecord.openItems],
-                  ["Training / CE Context", selectedClientRecord.trainingContext],
+                  ["Training and CE Context", selectedClientRecord.trainingContext],
                 ].map(([label, values]) => (
                   <div
                     key={label as string}
