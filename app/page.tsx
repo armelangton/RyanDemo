@@ -32,19 +32,23 @@ type Audience =
   | "Prospective Customer";
 
 type UserRole =
-  | "Inspector"
-  | "Instructor"
-  | "Service Technician"
+  | "Inspection"
+  | "Service"
+  | "Training"
   | "Sales"
-  | "Service Manager";
+  | "Design & Engineering"
+  | "Projects & Construction"
+  | "Management & Review";
 
 type RoleEngagement =
   | "Inspection"
+  | "Deficiency Follow-Up"
   | "Service Visit"
-  | "Customer Training"
+  | "Training Session"
+  | "Sales & Proposal Meeting"
   | "Site Survey"
-  | "Documentation Review"
-  | "Customer Meeting";
+  | "Design & Project Review"
+  | "Documentation & Report Review";
 
 type Topic =
   | "Fire Sprinkler System"
@@ -99,45 +103,60 @@ const serviceLenses = knowledgeBase.serviceLenses as ServiceLens[];
 const visibleSiteOptions = [
   {
     label: "Fire Department",
-    value: "Fire Department Recruit Training Site",
+    value: "Fire Department",
   },
-  { label: "Healthcare Facility", value: "Healthcare Facility ITM Review" },
+  { label: "Manufacturing Facility", value: "Manufacturing Facility" },
   {
     label: "School Campus",
-    value: "Education Campus Facilities Training",
+    value: "School Campus",
   },
-  { label: "Municipal Building", value: "Municipal Facilities Account" },
-  { label: "Manufacturing Facility", value: "Industrial Special Hazards Site" },
-  { label: "Commercial Office", value: "Commercial Office" },
+  { label: "Healthcare Facility", value: "Healthcare Facility" },
+  { label: "Municipal Building", value: "Municipal Building" },
+  { label: "Warehouse & Industrial Site", value: "Warehouse & Industrial Site" },
+  { label: "Construction Project Site", value: "Construction Project Site" },
+  { label: "Internal Training Space", value: "Internal Training Space" },
 ];
+
+const locationSampleMap: Record<string, string> = {
+  "Fire Department": "Fire Department Recruit Training Site",
+  "Manufacturing Facility": "Industrial Special Hazards Site",
+  "School Campus": "Education Campus Facilities Training",
+  "Healthcare Facility": "Healthcare Facility ITM Review",
+  "Municipal Building": "Municipal Facilities Account",
+  "Warehouse & Industrial Site": "Industrial Special Hazards Site",
+  "Construction Project Site": "Commercial Office",
+  "Internal Training Space": "Fire Department Recruit Training Site",
+};
 
 const roleEngagementOptions: RoleEngagement[] = [
   "Inspection",
+  "Deficiency Follow-Up",
   "Service Visit",
-  "Customer Training",
+  "Training Session",
+  "Sales & Proposal Meeting",
   "Site Survey",
-  "Documentation Review",
-  "Customer Meeting",
+  "Design & Project Review",
+  "Documentation & Report Review",
 ];
 
 const setupFocusByRole: Record<UserRole, string[]> = {
-  Inspector: [
-    "site and inspection context",
+  Inspection: [
+    "location and inspection context",
     "systems to inspect",
     "prior findings or deficiencies",
     "items to verify onsite",
   ],
-  Instructor: [
-    "audience and learning objectives",
-    "teaching points",
-    "demonstration ideas",
-    "likely questions",
-  ],
-  "Service Technician": [
+  Service: [
     "reported issue or service need",
     "prior service history",
     "troubleshooting approach",
     "safety or verification steps",
+  ],
+  Training: [
+    "audience and learning objectives",
+    "teaching points",
+    "demonstration ideas",
+    "likely questions",
   ],
   Sales: [
     "customer discussion points",
@@ -145,7 +164,19 @@ const setupFocusByRole: Record<UserRole, string[]> = {
     "open questions",
     "follow-up opportunities",
   ],
-  "Service Manager": [
+  "Design & Engineering": [
+    "system requirements",
+    "site constraints",
+    "drawing and specification questions",
+    "field coordination needs",
+  ],
+  "Projects & Construction": [
+    "scope and schedule readiness",
+    "coordination needs",
+    "materials or fabrication status",
+    "installation risks",
+  ],
+  "Management & Review": [
     "operational priorities",
     "open work or escalations",
     "resource concerns",
@@ -154,12 +185,14 @@ const setupFocusByRole: Record<UserRole, string[]> = {
 };
 
 const setupFocusByEngagement: Record<RoleEngagement, string[]> = {
-  Inspection: ["inspection scope", "documentation status", "customer explanation points"],
-  "Service Visit": ["service history", "likely parts or documentation", "repair follow-up"],
-  "Customer Training": ["training flow", "reference materials", "follow-up resources"],
+  "Inspection": ["inspection scope", "documentation status", "customer explanation points"],
+  "Deficiency Follow-Up": ["open deficiencies", "customer communication", "follow-up ownership"],
+  "Service Visit": ["reported issue", "service history", "repair follow-up"],
+  "Training Session": ["training flow", "reference materials", "likely questions"],
+  "Sales & Proposal Meeting": ["meeting talking points", "proposal assumptions", "next steps"],
   "Site Survey": ["asset details to capture", "facility conditions", "open field questions"],
-  "Documentation Review": ["records to review", "documentation gaps", "follow-up ownership"],
-  "Customer Meeting": ["meeting talking points", "customer priorities", "next steps"],
+  "Design & Project Review": ["design assumptions", "site constraints", "project coordination"],
+  "Documentation & Report Review": ["records to review", "documentation gaps", "follow-up ownership"],
 };
 
 const inspectorDefaultTopics: Topic[] = [
@@ -833,7 +866,7 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
       "Customer training follow-up",
     ],
     relatedServiceLenses: [
-      "Customer Training",
+      "Training Session",
       "Fire Sprinklers",
       "Fire Hydrants",
       "Fire Alarm and Detection",
@@ -926,7 +959,7 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
       "Emergency lighting inspection",
       "Alarm testing review",
       "Preventive maintenance",
-      "Deficiency follow-up",
+      "Deficiency Follow-Up",
     ],
     relatedServiceLenses: [
       "Inspection",
@@ -1121,7 +1154,7 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
       "Recurring reminders",
     ],
     relatedServiceLenses: [
-      "Customer Training",
+      "Training Session",
       "Fire Extinguishers",
       "Fire Alarm and Detection",
       "Fire Sprinklers",
@@ -1219,7 +1252,7 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
     ],
     relatedServiceLenses: [
       "Inspection",
-      "Customer Training",
+      "Training Session",
       "Fire Extinguishers",
       "Fire Sprinklers",
       "Fire Alarm and Detection",
@@ -1315,7 +1348,7 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
       "Modernization discussion when safety-related",
     ],
     relatedServiceLenses: [
-      "Customer Training",
+      "Training Session",
       "Fire Extinguishers",
       "Fire Alarm and Detection",
       "Special Hazards",
@@ -1673,19 +1706,19 @@ const roleSpecificAssetNote = (
   engagement: RoleEngagement,
   record: EquipmentAssetRecord,
 ) => {
-  if (role === "Instructor") {
+  if (role === "Training") {
     return `Use this ${record.category.toLowerCase()} record for teaching points, likely questions, demonstration context, and documentation reminders for ${engagement}.`;
   }
-  if (role === "Inspector") {
+  if (role === "Inspection") {
     return `Use this ${record.category.toLowerCase()} record to focus field checks, documentation gaps, service status questions, and verification items for ${engagement}.`;
   }
-  if (role === "Service Technician") {
+  if (role === "Service") {
     return `Use this ${record.category.toLowerCase()} record to prepare service checks, documentation status, equipment access, and follow-up for ${engagement}.`;
   }
   if (role === "Sales") {
     return `Use this ${record.category.toLowerCase()} record for customer-facing context, open questions, next steps, and safety-focused follow-up for ${engagement}.`;
   }
-  if (role === "Service Manager") {
+  if (role === "Management & Review") {
     return `Use this ${record.category.toLowerCase()} record to identify operational risk, resource needs, customer priority items, and follow-up ownership for ${engagement}.`;
   }
   return `Use this ${record.category.toLowerCase()} record to summarize readiness, risks, open items, ownership, and follow-up for ${engagement}.`;
@@ -1809,7 +1842,7 @@ const ReadinessPacket = ({
   ].slice(0, 5);
   const clientContextItems = compactItems([
     `Facility: ${sampleSite}.`,
-    `Team: ${role}.`,
+    `Department: ${role}.`,
     `Engagement: ${roleEngagement}.`,
     ...guidance.deficiencyDocumentationFollowUp,
   ]);
@@ -1859,7 +1892,7 @@ const ReadinessPacket = ({
   const gptFollowUpPrompt =
     `Expand this into a 45-minute lesson plan for ${sampleSite}. Include learning objectives, instructor notes, equipment and products to cover, demo steps, questions to ask, safety reminders, attendance documentation, and follow-up items. Use this facility record, equipment and assets, continuing education context, product safety context, and relevant resources.`;
   const previewSnapshot = compactItems(
-    role === "Instructor"
+    role === "Training"
       ? [
           `Training site: ${sampleSite}.`,
           `Engagement: ${roleEngagement}.`,
@@ -1874,9 +1907,9 @@ const ReadinessPacket = ({
   const engagementSummaryItems = compactItems([
     `Purpose: ${roleEngagement}.`,
     `Audience: ${audience}.`,
-    role === "Instructor"
+    role === "Training"
       ? "Primary objective: prepare clear teaching points and safe discussion boundaries."
-      : role === "Inspector"
+      : role === "Inspection"
         ? "Primary objective: verify field conditions, documentation gaps, and follow-up needs."
         : "Primary objective: clarify readiness, ownership, and customer communication needs.",
     `Key equipment: ${selectedTopics.slice(0, 3).join(", ") || "selected site equipment"}.`,
@@ -1930,24 +1963,24 @@ const ReadinessPacket = ({
     hasPossibleRecall: boolean,
   ) => {
     const roleItems =
-      role === "Service Technician"
+      role === "Service"
         ? [
             cleanBriefText(record.notes),
             cleanBriefText(record.verificationNeeded),
             "Check relevant service documentation before arrival.",
           ]
-        : role === "Inspector"
+        : role === "Inspection"
           ? [
               cleanBriefText(record.deficiencyStatus),
               cleanBriefText(record.documentationStatus),
               cleanBriefText(record.verificationNeeded),
             ]
-          : role === "Instructor"
+          : role === "Training"
             ? [
                 cleanBriefText(record.description),
                 "Use this system only as verified teaching context.",
               ]
-            : role === "Service Manager"
+            : role === "Management & Review"
               ? [
                   cleanBriefText(record.deficiencyStatus),
                   "Confirm owner for unresolved operational follow-up.",
@@ -1966,16 +1999,16 @@ const ReadinessPacket = ({
     record: EquipmentAssetRecord,
     hasPossibleRecall: boolean,
   ) => {
-    if (role === "Instructor") {
+    if (role === "Training") {
       return `${record.name} gives the session a concrete example, but product-specific claims need source verification.`;
     }
-    if (role === "Service Technician") {
+    if (role === "Service") {
       return `${record.name} may shape the service approach, access needs, and documentation to check before work starts.`;
     }
     if (role === "Sales") {
       return `${record.name} is useful customer context only if open questions and technical details are verified first.`;
     }
-    if (role === "Service Manager") {
+    if (role === "Management & Review") {
       return `${record.name} may affect open work, resource planning, and customer priority decisions.`;
     }
     if (hasPossibleRecall) {
@@ -2046,6 +2079,7 @@ const ReadinessPacket = ({
             "Assign ownership for unresolved deficiencies.",
           ],
         };
+      case "Deficiency Follow-Up":
       case "Service Visit":
         return {
           guidance: [
@@ -2074,6 +2108,7 @@ const ReadinessPacket = ({
           ],
         };
       case "Site Survey":
+      case "Design & Project Review":
         return {
           guidance: [
             "Use the visit to close gaps in asset details and field conditions.",
@@ -2100,7 +2135,7 @@ const ReadinessPacket = ({
             "Update the sample asset record with verified information.",
           ],
         };
-      case "Customer Training":
+      case "Training Session":
         return {
           guidance: [
             "Turn facility systems into clear teaching examples.",
@@ -2127,7 +2162,7 @@ const ReadinessPacket = ({
             "Prepare customer-friendly talking points and follow-up notes.",
           ],
         };
-      case "Documentation Review":
+      case "Documentation & Report Review":
         return {
           guidance: [
             "Use the review to separate verified records from open questions.",
@@ -2154,7 +2189,7 @@ const ReadinessPacket = ({
             "Prepare follow-up notes after internal review.",
           ],
         };
-      case "Customer Meeting":
+      case "Sales & Proposal Meeting":
         return {
           guidance: [
             "Use recent activity and open items to shape the conversation.",
@@ -2212,13 +2247,13 @@ const ReadinessPacket = ({
     }
   })();
   const roleGuidanceItems = compactItems([
-    role === "Instructor"
+    role === "Training"
       ? "Use lesson-plan-style guidance for the selected training audience."
-      : role === "Inspector"
+      : role === "Inspection"
         ? "Use onsite guidance for field verification and documentation."
-        : role === "Service Technician"
+        : role === "Service"
           ? "Use service visit guidance for equipment access, service checks, documentation, and follow-up."
-          : role === "Service Manager"
+          : role === "Management & Review"
             ? "Use operational guidance for job status, escalations, resource concerns, and next actions."
             : "Use customer-facing guidance for account context, open questions, and next steps.",
     ...engagementFocus.guidance,
@@ -2235,31 +2270,33 @@ const ReadinessPacket = ({
           during: "During the Inspection",
           after: "After the Inspection",
         };
+      case "Deficiency Follow-Up":
       case "Service Visit":
         return {
           before: "Before Arrival",
           during: "During the Service Visit",
           after: "After the Service Visit",
         };
-      case "Customer Training":
+      case "Training Session":
         return {
           before: "Before the Session",
           during: "During the Session",
           after: "After the Session",
         };
-      case "Customer Meeting":
+      case "Sales & Proposal Meeting":
         return {
           before: "Before the Meeting",
           during: "During the Meeting",
           after: "After the Meeting",
         };
-      case "Documentation Review":
+      case "Documentation & Report Review":
         return {
           before: "Before the Review",
           during: "During the Review",
           after: "After the Review",
         };
       case "Site Survey":
+      case "Design & Project Review":
         return {
           before: "Before the Survey",
           during: "During the Survey",
@@ -2282,48 +2319,48 @@ const ReadinessPacket = ({
   ]).slice(0, 5);
   const readinessSummaryItems = (() => {
     const roleLead =
-      role === "Instructor"
+      role === "Training"
         ? "This brief should help turn facility systems into teachable examples without overstating unverified details."
-        : role === "Inspector"
+        : role === "Inspection"
           ? "The main value is knowing which records, systems, and deficiencies deserve attention first."
-          : role === "Service Technician"
+          : role === "Service"
             ? "The work hinges on understanding the reported issue, prior service context, and safe troubleshooting boundaries."
-            : role === "Service Manager"
+            : role === "Management & Review"
               ? "The operational risk is unclear ownership of open work, resources, or customer priorities."
               : "The meeting should center on verified customer history, open questions, and clear next steps.";
     return compactItems([
       roleLead,
-      role === "Instructor"
+      role === "Training"
         ? "Product, manufacturer, and recall context should be treated as source material to verify before instruction."
         : "Anything involving code, compliance, safety, recall, or manufacturer guidance should stay in verification until confirmed.",
       role === "Sales"
         ? "A useful outcome is a customer-ready conversation with internal follow-up ownership."
-        : role === "Service Manager"
+        : role === "Management & Review"
           ? "A useful outcome is a clear owner for each blocker or escalation."
           : "A useful outcome is knowing what to check, explain, and route for follow-up.",
     ]).slice(0, 3);
   })();
   const preparationPriorityItems = (() => {
     const rolePriorities =
-      role === "Instructor"
+      role === "Training"
         ? [
             "Match examples to the audience level and equipment being discussed.",
             "Bring approved references, photos, or demo materials.",
             "Plan likely questions and the safest answer boundaries.",
           ]
-        : role === "Inspector"
+        : role === "Inspection"
           ? [
               "Check prior deficiencies and documentation gaps before arrival.",
               "Identify systems that need field verification.",
               "Plan how to explain unresolved items in plain language.",
             ]
-          : role === "Service Technician"
+          : role === "Service"
             ? [
                 "Compare the reported issue with prior service history.",
                 "Check relevant manuals, parts, and access needs.",
                 "Plan the troubleshooting sequence and safety checks.",
               ]
-            : role === "Service Manager"
+            : role === "Management & Review"
               ? [
                   "Check open work, schedule status, and resource constraints.",
                   "Identify customer priority items and escalation risks.",
@@ -2341,7 +2378,7 @@ const ReadinessPacket = ({
     ]).slice(0, 4);
   })();
   const roleBriefConfig = (() => {
-    if (role === "Instructor") {
+    if (role === "Training") {
       return {
         summaryTitle: "Summary",
         contextTitle: "Audience and Learning Objectives",
@@ -2383,7 +2420,7 @@ const ReadinessPacket = ({
       };
     }
 
-    if (role === "Service Technician") {
+    if (role === "Service") {
       return {
         summaryTitle: "Summary",
         contextTitle: "Work Order and Service Context",
@@ -2462,7 +2499,7 @@ const ReadinessPacket = ({
       };
     }
 
-    if (role === "Service Manager") {
+    if (role === "Management & Review") {
       return {
         summaryTitle: "Summary",
         contextTitle: "Schedule and Job Status",
@@ -2758,15 +2795,15 @@ const ReadinessPacket = ({
 export default function Home() {
   const [engagementType, setEngagementType] =
     useState<EngagementType>("Training Prep");
-  const [role, setRole] = useState<UserRole>("Instructor");
+  const [role, setRole] = useState<UserRole>("Training");
   const [roleEngagement, setRoleEngagement] = useState<RoleEngagement>(
-    "Customer Training",
+    "Training Session",
   );
   const [selectedTopics, setSelectedTopics] =
     useState<Topic[]>(instructorDefaultTopics);
   const [audience, setAudience] = useState<Audience>("Fire Department");
   const [selectedSampleSite, setSelectedSampleSite] = useState(
-    "Fire Department Recruit Training Site",
+    "Fire Department",
   );
   const [selectedServiceLensId, setSelectedServiceLensId] = useState(serviceLenses[0].id);
   const [briefAction, setBriefAction] = useState<BriefAction>("training_prep");
@@ -2784,11 +2821,14 @@ export default function Home() {
   const [, setAutoReviewCheckedAt] = useState<Date | null>(null);
 
   const prep = prepByEngagement[engagementType];
-  const selectedSiteDetails = sampleSiteDetails[selectedSampleSite];
+  const selectedSampleSiteKey = locationSampleMap[selectedSampleSite] ?? selectedSampleSite;
+  const selectedSiteDetails =
+    sampleSiteDetails[selectedSampleSiteKey] ??
+    sampleSiteDetails["Fire Department Recruit Training Site"];
   const selectedClientRecord =
-    clientRecords[selectedSampleSite] ?? {
+    clientRecords[selectedSampleSiteKey] ?? {
       equipmentAssets:
-        equipmentAssetsBySite[selectedSampleSite] ?? selectedSiteDetails.knownSystems,
+        equipmentAssetsBySite[selectedSampleSiteKey] ?? selectedSiteDetails.knownSystems,
       serviceTrainingHistory: [selectedSiteDetails.serviceHistoryNotes],
       openItems: [
         selectedSiteDetails.documentationDeficiencyContext,
@@ -2825,26 +2865,35 @@ export default function Home() {
       return;
     }
 
-    if (nextEngagement === "Service Visit") {
+    if (
+      nextEngagement === "Deficiency Follow-Up" ||
+      nextEngagement === "Service Visit"
+    ) {
       setEngagementType("Service Prep");
       setBriefAction("follow_up_notes");
       return;
     }
 
-    if (nextEngagement === "Customer Training") {
+    if (nextEngagement === "Training Session") {
       setEngagementType("Training Prep");
       setBriefAction("training_prep");
       return;
     }
 
-    if (nextEngagement === "Documentation Review") {
+    if (nextEngagement === "Documentation & Report Review") {
       setEngagementType("Documentation Review Prep");
       setBriefAction("follow_up_notes");
       return;
     }
 
-    if (nextEngagement === "Customer Meeting") {
+    if (nextEngagement === "Sales & Proposal Meeting") {
       setEngagementType("Customer Meeting Prep");
+      setBriefAction("customer_talking_points");
+      return;
+    }
+
+    if (nextEngagement === "Design & Project Review") {
+      setEngagementType("Site Survey Prep");
       setBriefAction("customer_talking_points");
       return;
     }
@@ -2856,40 +2905,58 @@ export default function Home() {
     setRole(nextRole);
     setGuidance(null);
 
-    if (nextRole === "Instructor") {
-      setRoleEngagement("Customer Training");
+    if (nextRole === "Training") {
+      setRoleEngagement("Training Session");
       setEngagementType("Training Prep");
       setAudience("Fire Department");
       setBriefAction("training_prep");
       setSelectedTopics(instructorDefaultTopics);
-      setSelectedSampleSite("Fire Department Recruit Training Site");
+      setSelectedSampleSite("Fire Department");
       return;
     }
 
     if (nextRole === "Sales") {
-      setRoleEngagement("Customer Meeting");
+      setRoleEngagement("Sales & Proposal Meeting");
       setEngagementType("Customer Meeting Prep");
       setAudience("Prospective Customer");
       setBriefAction("customer_talking_points");
-      setSelectedTopics(equipmentAssetsBySite[selectedSampleSite] ?? inspectorDefaultTopics);
+      setSelectedTopics(equipmentAssetsBySite[selectedSampleSiteKey] ?? inspectorDefaultTopics);
       return;
     }
 
-    if (nextRole === "Service Manager") {
-      setRoleEngagement("Documentation Review");
+    if (nextRole === "Management & Review") {
+      setRoleEngagement("Documentation & Report Review");
       setEngagementType("Documentation Review Prep");
       setAudience("Facility Manager");
       setBriefAction("follow_up_notes");
-      setSelectedTopics(equipmentAssetsBySite[selectedSampleSite] ?? inspectorDefaultTopics);
+      setSelectedTopics(equipmentAssetsBySite[selectedSampleSiteKey] ?? inspectorDefaultTopics);
       return;
     }
 
-    if (nextRole === "Service Technician") {
+    if (nextRole === "Service") {
       setRoleEngagement("Service Visit");
       setEngagementType("Service Prep");
       setAudience("Facility Manager");
       setBriefAction("follow_up_notes");
-      setSelectedTopics(equipmentAssetsBySite[selectedSampleSite] ?? inspectorDefaultTopics);
+      setSelectedTopics(equipmentAssetsBySite[selectedSampleSiteKey] ?? inspectorDefaultTopics);
+      return;
+    }
+
+    if (nextRole === "Design & Engineering") {
+      setRoleEngagement("Design & Project Review");
+      setEngagementType("Site Survey Prep");
+      setAudience("Facility Manager");
+      setBriefAction("customer_talking_points");
+      setSelectedTopics(equipmentAssetsBySite[selectedSampleSiteKey] ?? inspectorDefaultTopics);
+      return;
+    }
+
+    if (nextRole === "Projects & Construction") {
+      setRoleEngagement("Design & Project Review");
+      setEngagementType("Site Survey Prep");
+      setAudience("Facility Manager");
+      setBriefAction("follow_up_notes");
+      setSelectedTopics(equipmentAssetsBySite[selectedSampleSiteKey] ?? inspectorDefaultTopics);
       return;
     }
 
@@ -2898,11 +2965,11 @@ export default function Home() {
     setAudience("Internal Inspector");
     setBriefAction("inspection_prep");
     setSelectedTopics(inspectorDefaultTopics);
-    setSelectedSampleSite("Municipal Facilities Account");
+    setSelectedSampleSite("Municipal Building");
   };
   const sourceContextUsed = [
     "Automatic product safety review based on selected facility equipment",
-    `Team: ${role}`,
+    `Department: ${role}`,
     `Engagement: ${roleEngagement}`,
     `Equipment and Assets: ${selectedTopics.join(", ") || "None selected"}`,
     "Packet is based on selected engagement, facility context, equipment records, documentation needs, and training context.",
@@ -2914,8 +2981,9 @@ export default function Home() {
   ];
   const setupFocusItems = Array.from(
     new Set([
-      ...setupFocusByRole[role],
-      ...setupFocusByEngagement[roleEngagement],
+      ...(setupFocusByRole[role] ?? setupFocusByRole.Training),
+      ...(setupFocusByEngagement[roleEngagement] ??
+        setupFocusByEngagement["Training Session"]),
       ...selectedClientRecord.openItems.slice(0, 1).map((item) => item.toLowerCase()),
     ]),
   ).slice(0, 6);
@@ -3093,11 +3161,11 @@ export default function Home() {
 
   const startNewPacket = () => {
     setEngagementType("Training Prep");
-    setRole("Instructor");
-    setRoleEngagement("Customer Training");
+    setRole("Training");
+    setRoleEngagement("Training Session");
     setSelectedTopics(instructorDefaultTopics);
     setAudience("Fire Department");
-    setSelectedSampleSite("Fire Department Recruit Training Site");
+    setSelectedSampleSite("Fire Department");
     setSelectedServiceLensId(serviceLenses[0].id);
     setBriefAction("training_prep");
     setGuidance(null);
@@ -3136,21 +3204,20 @@ export default function Home() {
       <div className="mx-auto max-w-3xl px-4 py-3 sm:px-6">
         <section className="rounded-[16px] border border-brand-gray200 bg-white p-3 shadow-sm sm:p-5">
           <div>
-            <h2 className="text-lg font-extrabold text-brand-greenDark">
-              Prepare an Engagement Packet
-            </h2>
-            <div className="mt-4 grid gap-5">
+            <div className="grid gap-5">
               <div>
                 <h3 className="text-sm font-extrabold text-brand-greenDark">
-                  Select role
+                  Select Department
                 </h3>
                 <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3">
                   {([
-                    "Inspector",
-                    "Service Technician",
-                    "Instructor",
+                    "Inspection",
+                    "Service",
+                    "Training",
                     "Sales",
-                    "Service Manager",
+                    "Design & Engineering",
+                    "Projects & Construction",
+                    "Management & Review",
                   ] as UserRole[]).map((item) => {
                     const selected = role === item;
                     return (
@@ -3173,7 +3240,7 @@ export default function Home() {
 
               <div>
                 <h3 className="text-sm font-extrabold text-brand-greenDark">
-                  Select location
+                  Select Location
                 </h3>
                 <div className="mt-2 grid gap-2 sm:grid-cols-2">
                   {visibleSiteOptions.map((item) => {
@@ -3185,7 +3252,8 @@ export default function Home() {
                         onClick={() => {
                           setSelectedSampleSite(item.value);
                           setSelectedTopics(
-                            equipmentAssetsBySite[item.value] ?? instructorDefaultTopics,
+                            equipmentAssetsBySite[locationSampleMap[item.value] ?? item.value] ??
+                              instructorDefaultTopics,
                           );
                           setGuidance(null);
                         }}
@@ -3204,7 +3272,7 @@ export default function Home() {
 
               <div>
                 <h3 className="text-sm font-extrabold text-brand-greenDark">
-                  Select engagement
+                  Select Engagement
                 </h3>
                 <div className="mt-2 grid gap-2 sm:grid-cols-3">
                   {roleEngagementOptions.map((item) => {
