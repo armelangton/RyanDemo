@@ -93,15 +93,17 @@ const serviceLenses = knowledgeBase.serviceLenses as ServiceLens[];
 
 const visibleSiteOptions = [
   {
-    label: "Fire Department Recruit Training Site",
+    label: "Fire Department",
     value: "Fire Department Recruit Training Site",
   },
-  { label: "Municipal Facilities Account", value: "Municipal Facilities Account" },
-  { label: "Healthcare Facility ITM Review", value: "Healthcare Facility ITM Review" },
+  { label: "Healthcare Facility", value: "Healthcare Facility ITM Review" },
   {
-    label: "Education Campus Training Profile",
+    label: "School Campus",
     value: "Education Campus Facilities Training",
   },
+  { label: "Municipal Building", value: "Municipal Facilities Account" },
+  { label: "Manufacturing Facility", value: "Industrial Special Hazards Site" },
+  { label: "Commercial Office", value: "Commercial Office" },
 ];
 
 const roleEngagementOptions: RoleEngagement[] = [
@@ -145,6 +147,18 @@ const equipmentAssetsBySite: Record<string, Topic[]> = {
     "Fire Pump",
   ],
   "Education Campus Facilities Training": [
+    "Fire Alarm and Detection",
+    "Fire Extinguishers",
+    "Emergency Lighting",
+    "Fire Sprinkler System",
+  ],
+  "Industrial Special Hazards Site": [
+    "Special Hazards",
+    "Fire Extinguishers",
+    "Fire Alarm and Detection",
+    "Emergency Lighting",
+  ],
+  "Commercial Office": [
     "Fire Alarm and Detection",
     "Fire Extinguishers",
     "Emergency Lighting",
@@ -424,7 +438,7 @@ const clientRecords: Record<string, ClientRecord> = {
       {
         title: "Site Record",
         type: "Client Context",
-        description: "Account, equipment, and open items.",
+        description: "Facility equipment and open items.",
         action: "Sample context",
       },
       {
@@ -517,6 +531,43 @@ const clientRecords: Record<string, ClientRecord> = {
         title: "Attendance Record Template",
         type: "Documentation",
         description: "Training completion reminder.",
+        action: "Sample context",
+      },
+    ],
+  },
+  "Commercial Office": {
+    equipmentAssets: equipmentAssetsBySite["Commercial Office"],
+    serviceTrainingHistory: [
+      "Tenant safety walkthrough requested",
+      "Emergency lighting and alarm documentation should be reviewed",
+    ],
+    openItems: [
+      "Confirm alarm panel details",
+      "Verify emergency lighting test dates",
+      "Review sprinkler inspection documentation",
+    ],
+    trainingContext: [
+      "Office facilities team",
+      "Tenant safety awareness",
+      "Documentation readiness",
+    ],
+    resources: [
+      {
+        title: "Office Facility Record",
+        type: "Facility Context",
+        description: "Sample office equipment and open items.",
+        action: "Sample context",
+      },
+      {
+        title: "Asset List",
+        type: "Equipment Context",
+        description: "Alarm, extinguisher, lighting, and sprinkler records.",
+        action: "Sample context",
+      },
+      {
+        title: "Product Safety Data",
+        type: "Safety and Recall Context",
+        description: "Verification reminders based on office equipment.",
         action: "Sample context",
       },
     ],
@@ -1228,6 +1279,101 @@ const sampleSiteDetails: Record<string, SiteProfile> = {
     recommendedPrepFocus:
       "Prepare short customer-friendly explanations, source verification reminders, and follow-up routing for technical questions.",
   },
+  "Commercial Office": {
+    id: "commercial-office",
+    name: "Commercial Office",
+    profileType: "Example facility",
+    locationType: "Commercial office",
+    shortSummary:
+      "Commercial office context with alarm and detection, extinguishers, emergency lighting, and sprinkler records for field preparation.",
+    label: "Commercial Office",
+    type: "Commercial office",
+    primaryAudience: "Facility Manager and Building Owner",
+    knownSystems: [
+      "Fire alarm and detection",
+      "Fire extinguishers",
+      "Emergency lighting",
+      "Sprinkler system",
+    ],
+    systems: [
+      "Fire alarm and detection",
+      "Fire extinguishers",
+      "Emergency lighting",
+      "Sprinkler system",
+    ],
+    installedEquipment: [
+      {
+        category: "fire alarm",
+        productName: "Office fire alarm and detection system",
+        manufacturer: "Honeywell",
+        model: "Demo model unknown",
+        locationContext: "Lobby, tenant areas, and shared corridors",
+        serviceStatus: "Alarm testing records should be reviewed",
+        documentationNote: "Confirm panel model, test history, and open issues.",
+        trainingRelevance: "Supports office safety and tenant communication.",
+      },
+      {
+        category: "fire extinguisher",
+        productName: "Office fire extinguishers",
+        manufacturer: "Amerex",
+        model: "Demo model unknown",
+        locationContext: "Tenant areas and corridors",
+        serviceStatus: "Annual inspection status needs confirmation",
+        documentationNote: "Verify tags, locations, and inspection history.",
+        trainingRelevance: "Supports basic tenant and facilities awareness.",
+      },
+      {
+        category: "emergency lighting",
+        productName: "Emergency lighting and exit signs",
+        manufacturer: "Lithonia Lighting",
+        model: "Demo model unknown",
+        locationContext: "Stairwells, exits, and common areas",
+        serviceStatus: "Test documentation needs review",
+        documentationNote: "Confirm emergency lighting test documentation.",
+        trainingRelevance: "Supports egress and facility readiness discussion.",
+      },
+      {
+        category: "sprinkler",
+        productName: "Office sprinkler system",
+        manufacturer: "Victaulic",
+        model: "Demo model unknown",
+        locationContext: "Office floors and mechanical areas",
+        serviceStatus: "Annual inspection due this quarter",
+        documentationNote: "Review inspection notes and open deficiencies.",
+        trainingRelevance: "Supports plain-language sprinkler discussion.",
+      },
+    ],
+    upcomingReminder: "Annual inspection and documentation review due this quarter.",
+    reminder: "Annual inspection and documentation review due this quarter.",
+    trainingEducationNeed:
+      "Facilities team may need plain-language guidance on documentation, reporting, and safety awareness.",
+    trainingNeed:
+      "Facilities team may need plain-language guidance on documentation, reporting, and safety awareness",
+    documentationDeficiencyContext:
+      "Alarm testing records, emergency lighting documentation, extinguisher tags, sprinkler inspection notes, and open deficiencies.",
+    documentationNeed:
+      "Alarm testing records, emergency lighting documentation, extinguisher tags, sprinkler inspection notes, and open deficiencies.",
+    relatedServiceConsiderations: [
+      "Alarm testing review",
+      "Emergency lighting inspection",
+      "Extinguisher inspection",
+      "Sprinkler inspection follow-up",
+      "Customer education",
+    ],
+    relatedServiceLenses: [
+      "Inspection",
+      "Fire Alarm and Detection",
+      "Fire Extinguishers",
+      "Emergency Lighting",
+      "Fire Sprinklers",
+    ],
+    relatedService:
+      "Alarm testing review; emergency lighting inspection; extinguisher inspection; sprinkler inspection follow-up; customer education",
+    serviceHistoryNotes:
+      "Office facility notes mention emergency lighting documentation questions and follow-up needs for alarm testing records.",
+    recommendedPrepFocus:
+      "Review equipment documentation, prepare verification questions, and identify clear customer follow-up points.",
+  },
 };
 
 const sampleSites = Object.keys(sampleSiteDetails);
@@ -1306,7 +1452,7 @@ const prepByEngagement: Record<
       "Use this for service visits, open deficiencies, service documentation, and customer follow-up.",
   },
   "Site Survey Prep": {
-    materials: ["Account notes", "Equipment records", "Site survey notes"],
+    materials: ["Facility notes", "Equipment records", "Site survey notes"],
     checklist: [
       "Review known systems and site constraints",
       "Prepare asset and location verification questions",
@@ -1578,7 +1724,7 @@ const ReadinessPacket = ({
     ...guidance.recommendedNextBestActions,
   ].slice(0, 5);
   const clientContextItems = compactItems([
-    `Account: ${sampleSite}.`,
+    `Facility: ${sampleSite}.`,
     `Team: ${role}.`,
     `Engagement: ${roleEngagement}.`,
     ...guidance.deficiencyDocumentationFollowUp,
@@ -1604,7 +1750,7 @@ const ReadinessPacket = ({
   ]);
   const resourcesToReview = compactItems([
     ...guidance.knownSourceFacts,
-    "Account record.",
+    "Facility record.",
     "Equipment and asset list.",
     "Training or service history.",
     "Manufacturer instructions.",
@@ -1627,7 +1773,7 @@ const ReadinessPacket = ({
     ? [guidance.followUpNoteDraft]
     : ["Document unresolved questions, product verification needs, and the internal owner for follow-up."];
   const gptFollowUpPrompt =
-    `Expand this into a 45-minute lesson plan for ${sampleSite}. Include learning objectives, instructor notes, equipment and products to cover, demo steps, questions to ask, safety reminders, attendance documentation, and follow-up items. Use this account record, equipment and assets, continuing education context, product safety context, and relevant resources.`;
+    `Expand this into a 45-minute lesson plan for ${sampleSite}. Include learning objectives, instructor notes, equipment and products to cover, demo steps, questions to ask, safety reminders, attendance documentation, and follow-up items. Use this facility record, equipment and assets, continuing education context, product safety context, and relevant resources.`;
   const previewSnapshot = compactItems(
     role === "Instructor"
       ? [
@@ -1636,7 +1782,7 @@ const ReadinessPacket = ({
           `Audience: ${audience}.`,
         ]
       : [
-          `Account: ${sampleSite}.`,
+          `Facility: ${sampleSite}.`,
           `Engagement: ${roleEngagement}.`,
           `Assets: ${selectedTopics.slice(0, 3).join(", ")}.`,
         ],
@@ -1661,6 +1807,27 @@ const ReadinessPacket = ({
     ),
     [...selectedTopics, ...guidance.installedEquipmentReview, ...productSafetyItems],
   ).slice(0, 5);
+  const recallStatusForRecord = (record: EquipmentAssetRecord) => {
+    const category = record.category.toLowerCase();
+    const name = record.name.toLowerCase();
+    const possibleMatch = automaticSafetyReview.possibleMatches.find((match) => {
+      const context = `${match.equipmentLabel} ${match.searchTerm}`.toLowerCase();
+      return (
+        context.includes(category) ||
+        name.split(" ").some((word) => word.length > 4 && context.includes(word))
+      );
+    });
+
+    return possibleMatch
+      ? "Possible recall match - verify model and date code"
+      : "No matching live recall found";
+  };
+  const beforeYouArriveForRecord = (record: EquipmentAssetRecord) =>
+    compactItems([
+      "Review latest inspection documentation.",
+      `Confirm ${cleanBriefText(record.location).toLowerCase()}.`,
+      "Bring relevant manufacturer documentation.",
+    ]).slice(0, 3);
   const engagementFocus = (() => {
     switch (roleEngagement) {
       case "Inspection":
@@ -1904,40 +2071,84 @@ const ReadinessPacket = ({
 
         <PrepBriefSection title="Equipment Briefing" tone="neutral">
           <div className="grid gap-3">
-            {equipmentRecords.map((record) => (
-              <article
-                key={record.serialNumber}
-                className="rounded-xl border border-brand-gray200 bg-white p-3"
-              >
-                <h4 className="text-base font-extrabold leading-5 text-brand-charcoal">
-                  {record.name}
-                </h4>
-                <dl className="mt-3 grid gap-x-5 gap-y-2 text-sm text-brand-gray700 sm:grid-cols-2">
-                  {[
-                    ["Status", `${cleanBriefText(record.certificationServiceStatus)}; ${cleanBriefText(record.deficiencyStatus)}`],
-                    ["Manufacturer", cleanBriefText(record.manufacturer)],
-                    ["Model", cleanBriefText(record.model)],
-                    ["Location", cleanBriefText(record.location)],
-                    ["Last Inspection or Service", cleanBriefText(record.lastInspectionTestDate)],
-                    ["Documentation Status", cleanBriefText(record.documentationStatus)],
-                    ["Recall and Safety Status", cleanBriefText(record.recallSafetyStatus)],
-                    ["Deficiency Status", cleanBriefText(record.deficiencyStatus)],
-                    ["Certification Status", cleanBriefText(record.certificationServiceStatus)],
-                    ["Role-Specific Note", roleSpecificAssetNote(role, roleEngagement, record)],
-                    ["Description", cleanBriefText(record.description)],
-                    ["SKU", cleanBriefText(record.sku)],
-                    ["Serial Number", cleanBriefText(record.serialNumber)],
-                  ].map(([label, value]) => (
-                    <div key={label} className="grid grid-cols-[8rem_1fr] gap-2 border-t border-brand-gray200/80 pt-1.5 first:border-t-0 first:pt-0 sm:grid-cols-[9.5rem_1fr]">
-                      <dt className="text-xs font-extrabold text-brand-gray500">
-                        {label}
-                      </dt>
-                      <dd className="mt-0.5 text-brand-gray700">{value}</dd>
+            {equipmentRecords.map((record) => {
+              const recallStatus = recallStatusForRecord(record);
+              const hasPossibleRecall = recallStatus.startsWith("Possible");
+              return (
+                <article
+                  key={record.serialNumber}
+                  className="rounded-xl border border-brand-gray200 bg-white p-3"
+                >
+                  <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
+                    <div>
+                      <h4 className="text-base font-extrabold leading-5 text-brand-charcoal">
+                        {record.name}
+                      </h4>
+                      <p className="mt-1 text-sm font-semibold text-brand-gray600">
+                        {cleanBriefText(record.manufacturer)} • {cleanBriefText(record.location)}
+                      </p>
                     </div>
-                  ))}
-                </dl>
-              </article>
-            ))}
+                    <p
+                      className={`rounded-full px-2.5 py-1 text-xs font-extrabold ${
+                        hasPossibleRecall
+                          ? "bg-brand-orange/10 text-brand-orange"
+                          : "bg-brand-greenSoft text-brand-greenDark"
+                      }`}
+                    >
+                      {hasPossibleRecall ? "Needs verification" : "No match found"}
+                    </p>
+                  </div>
+
+                  <p className="mt-3 text-sm font-semibold text-brand-gray700">
+                    Recall status: {recallStatus}
+                  </p>
+
+                  <div className="mt-3">
+                    <p className="text-sm font-extrabold text-brand-charcoal">
+                      Before You Arrive
+                    </p>
+                    <PacketList items={beforeYouArriveForRecord(record)} tone="neutral" />
+                  </div>
+
+                  <div className="mt-3 rounded-lg border border-brand-orange/20 bg-brand-orange/5 p-2.5">
+                    <p className="text-sm font-extrabold text-brand-charcoal">Verify</p>
+                    <p className="mt-1 text-sm leading-5 text-brand-gray700">
+                      {hasPossibleRecall
+                        ? "Confirm exact model/date code before relying on recall status."
+                        : cleanBriefText(record.verificationNeeded)}
+                    </p>
+                  </div>
+
+                  <details className="mt-3 rounded-lg border border-brand-gray200 bg-brand-gray100/60 px-3 py-2 text-sm text-brand-gray700">
+                    <summary className="cursor-pointer font-extrabold text-brand-greenDark">
+                      Show details
+                    </summary>
+                    <dl className="mt-3 grid gap-x-5 gap-y-2 sm:grid-cols-2">
+                      {[
+                        ["Model", cleanBriefText(record.model)],
+                        ["SKU", cleanBriefText(record.sku)],
+                        ["Serial Number", cleanBriefText(record.serialNumber)],
+                        ["Last Inspection or Service", cleanBriefText(record.lastInspectionTestDate)],
+                        ["Documentation Status", cleanBriefText(record.documentationStatus)],
+                        ["Deficiency Status", cleanBriefText(record.deficiencyStatus)],
+                        ["Certification Status", cleanBriefText(record.certificationServiceStatus)],
+                        ["Role-Specific Note", roleSpecificAssetNote(role, roleEngagement, record)],
+                        ["Description", cleanBriefText(record.description)],
+                        ["Record Safety Note", cleanBriefText(record.recallSafetyStatus)],
+                        ["Additional Notes", cleanBriefText(record.notes)],
+                      ].map(([label, value]) => (
+                        <div key={label} className="border-t border-brand-gray200/80 pt-1.5 first:border-t-0 first:pt-0">
+                          <dt className="text-xs font-extrabold text-brand-gray500">
+                            {label}
+                          </dt>
+                          <dd className="mt-0.5">{value}</dd>
+                        </div>
+                      ))}
+                    </dl>
+                  </details>
+                </article>
+              );
+            })}
             {!equipmentRecords.length ? (
               <PacketList items={equipmentRecordSummary} tone="neutral" />
             ) : null}
@@ -2032,7 +2243,6 @@ export default function Home() {
   const [selectedSampleSite, setSelectedSampleSite] = useState(
     "Fire Department Recruit Training Site",
   );
-  const [accountSearch, setAccountSearch] = useState("");
   const [selectedServiceLensId, setSelectedServiceLensId] = useState(serviceLenses[0].id);
   const [briefAction, setBriefAction] = useState<BriefAction>("training_prep");
   const [guidance, setGuidance] = useState<AiGuidance | null>(null);
@@ -2051,15 +2261,35 @@ export default function Home() {
   const prep = prepByEngagement[engagementType];
   const selectedSiteDetails = sampleSiteDetails[selectedSampleSite];
   const selectedClientRecord =
-    clientRecords[selectedSampleSite] ??
-    clientRecords["Fire Department Recruit Training Site"];
+    clientRecords[selectedSampleSite] ?? {
+      equipmentAssets:
+        equipmentAssetsBySite[selectedSampleSite] ?? selectedSiteDetails.knownSystems,
+      serviceTrainingHistory: [selectedSiteDetails.serviceHistoryNotes],
+      openItems: [
+        selectedSiteDetails.documentationDeficiencyContext,
+        selectedSiteDetails.recommendedPrepFocus,
+      ],
+      trainingContext: [
+        selectedSiteDetails.trainingEducationNeed,
+        selectedSiteDetails.primaryAudience,
+      ],
+      resources: [
+        {
+          title: "Facility Profile",
+          type: "Facility Context",
+          description: selectedSiteDetails.shortSummary,
+          action: "Sample context",
+        },
+        {
+          title: "Equipment List",
+          type: "Equipment Context",
+          description: selectedSiteDetails.systems.join(", "),
+          action: "Sample context",
+        },
+      ],
+    };
   const selectedServiceLens =
     serviceLenses.find((lens) => lens.id === selectedServiceLensId) ?? serviceLenses[0];
-  const filteredSiteOptions = visibleSiteOptions.filter((item) => {
-    const query = accountSearch.trim().toLowerCase();
-    if (!query) return true;
-    return `${item.label} ${item.value}`.toLowerCase().includes(query);
-  });
   const applyRoleEngagement = (nextEngagement: RoleEngagement) => {
     setRoleEngagement(nextEngagement);
     setGuidance(null);
@@ -2125,12 +2355,12 @@ export default function Home() {
     setSelectedSampleSite("Municipal Facilities Account");
   };
   const sourceContextUsed = [
-    "Automatic product safety review based on selected account equipment",
+    "Automatic product safety review based on selected facility equipment",
     `Team: ${role}`,
     `Engagement: ${roleEngagement}`,
     `Equipment and Assets: ${selectedTopics.join(", ") || "None selected"}`,
-    "Packet is based on selected engagement, account context, equipment records, documentation needs, and training context.",
-    `Account profile: ${selectedSiteDetails.label}`,
+    "Packet is based on selected engagement, facility context, equipment records, documentation needs, and training context.",
+    `Facility profile: ${selectedSiteDetails.label}`,
     `Preparation focus: ${selectedServiceLens.label}`,
     `Engagement type: ${engagementType}`,
     `Audience: ${audience}`,
@@ -2315,7 +2545,6 @@ export default function Home() {
     setSelectedTopics(instructorDefaultTopics);
     setAudience("Instructor");
     setSelectedSampleSite("Fire Department Recruit Training Site");
-    setAccountSearch("");
     setSelectedServiceLensId(serviceLenses[0].id);
     setBriefAction("training_prep");
     setGuidance(null);
@@ -2346,29 +2575,20 @@ export default function Home() {
             Spend less time searching. More time preparing.
           </h2>
           <p className="mt-2 text-sm leading-6 text-brand-gray700 sm:text-base">
-            Generate an AI-powered field preparation packet that brings together fire protection account context, equipment records, inspection history, documentation, manufacturer information, recalls, and training resources before work starts.
+            Generate an AI-powered field preparation packet that brings together fire protection facility context, equipment records, inspection history, documentation, manufacturer information, recalls, and training resources before work starts.
           </p>
         </div>
       </header>
 
       <div className="mx-auto max-w-3xl px-4 py-3 sm:px-6">
         <section className="rounded-[16px] border border-brand-gray200 bg-white p-3 shadow-sm sm:p-5">
-          <div className="mb-3 h-1 w-14 rounded-md bg-brand-orange" aria-hidden="true" />
           <div className="grid gap-5">
             <div>
               <h2 className="text-lg font-extrabold text-brand-greenDark">
-                1. Find Account
+                1. Choose Example Facility
               </h2>
-              <input
-                type="search"
-                value={accountSearch}
-                onChange={(event) => setAccountSearch(event.target.value)}
-                placeholder="Search accounts, facilities, or sites..."
-                className="mt-3 w-full rounded-xl border border-brand-gray200 bg-white px-3 py-2.5 text-sm font-semibold text-brand-charcoal outline-none transition placeholder:text-brand-gray500 focus:border-brand-green focus:ring-2 focus:ring-brand-greenSoft"
-                aria-label="Search accounts, facilities, or sites"
-              />
               <div className="mt-3 grid gap-2 sm:grid-cols-2">
-                {filteredSiteOptions.map((item) => {
+                {visibleSiteOptions.map((item) => {
                   const selected = selectedSampleSite === item.value;
                   return (
                     <button
@@ -2392,11 +2612,6 @@ export default function Home() {
                   );
                 })}
               </div>
-              {filteredSiteOptions.length === 0 ? (
-                <p className="mt-3 text-sm font-semibold text-brand-gray500">
-                  No matching accounts found.
-                </p>
-              ) : null}
             </div>
 
             <div className="grid gap-5 md:grid-cols-[0.8fr_1.2fr]">
@@ -2549,7 +2764,7 @@ export default function Home() {
                 <div className="h-full w-1/2 animate-pulse rounded-full bg-brand-green" />
               </div>
               <p className="mt-3 text-sm font-extrabold text-brand-charcoal">
-                Building a preparation brief from the selected account, team, and engagement.
+                Building a preparation brief from the selected facility, team, and engagement.
               </p>
             </div>
           ) : null}
