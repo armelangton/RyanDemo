@@ -1418,11 +1418,11 @@ const PacketList = ({
   }[tone];
 
   return (
-    <ul className="space-y-3">
+    <ul className="space-y-2">
       {items.map((item) => (
-        <li key={item} className="flex gap-3">
-          <span className={`mt-2.5 h-2 w-2 shrink-0 rounded-full ${dotClass}`} />
-          <span>{item}</span>
+        <li key={item} className="flex gap-2.5">
+          <span className={`mt-2 h-1.5 w-1.5 shrink-0 rounded-full ${dotClass}`} />
+          <span className="leading-5">{item}</span>
         </li>
       ))}
     </ul>
@@ -1445,6 +1445,23 @@ const compactItems = (items: string[], fallback: string[] = []) =>
       );
     })
     .slice(0, 5);
+
+const cleanBriefText = (value: string) =>
+  value
+    .replace(/^Sample record:\s*/i, "")
+    .replace(/^Sample profile:\s*/i, "")
+    .replace(/\bSample record needs verification\b/gi, "Verify records before the engagement")
+    .replace(/\bSample record\b/gi, "Record")
+    .replace(/\bDemo date unknown\b/gi, "Date to verify")
+    .replace(/\bDemo model unknown\b/gi, "Model to verify")
+    .replace(/\bDemo panel unknown\b/gi, "Panel model to verify")
+    .replace(/\bDemo extinguisher type unknown\b/gi, "Extinguisher type to verify")
+    .replace(/\bDemo hydrant model unknown\b/gi, "Hydrant model to verify")
+    .replace(/\bDemo pump model unknown\b/gi, "Pump model to verify")
+    .replace(/\bDemo suppression model unknown\b/gi, "Suppression model to verify")
+    .replace(/\bDemo training kit\b/gi, "Training kit")
+    .replace(/\s+/g, " ")
+    .trim();
 
 const roleSpecificAssetNote = (
   role: UserRole,
@@ -1483,11 +1500,11 @@ const PrepBriefSection = ({
   }[tone];
 
   return (
-    <section className="border-t border-brand-gray200 py-4">
-      <h3 className={`text-lg font-extrabold leading-tight ${headingClass}`}>
+    <section className="border-t border-brand-gray200/80 py-3">
+      <h3 className={`text-base font-extrabold leading-tight sm:text-lg ${headingClass}`}>
         {title}
       </h3>
-      <div className="mt-3 text-sm leading-6 text-brand-gray700 sm:text-base">{children}</div>
+      <div className="mt-2 text-sm leading-5 text-brand-gray700 sm:text-[15px]">{children}</div>
     </section>
   );
 };
@@ -1648,14 +1665,14 @@ const ReadinessPacket = ({
   ).slice(0, 3);
   const engagementSummaryText =
     role === "Instructor"
-      ? `This packet is for an instructor preparing for ${roleEngagement.toLowerCase()} using the ${sampleSite} sample profile. The focus is on explaining ${selectedTopics.slice(0, 3).join(", ")} in practical language while connecting equipment records, documentation status, and verification needs to the session.`
+      ? `This brief helps the instructor prepare a clear training conversation around ${selectedTopics.slice(0, 3).join(", ")}. Focus on practical explanations, likely audience questions, safe demonstration boundaries, documentation needs, and details that should be verified before teaching.`
       : role === "Inspector"
-        ? `This packet is for an inspector preparing for ${roleEngagement.toLowerCase()} at the ${sampleSite} sample profile. The focus is on equipment records, documentation gaps, field verification, and follow-up items that should be checked before any official conclusion.`
+        ? "This brief helps the inspector enter the engagement with a clear view of equipment, documentation gaps, field checks, and follow-up items. Focus on what can be verified onsite and what needs qualified review before any official conclusion."
         : role === "Service Manager"
-          ? `This packet is for a service manager preparing for ${roleEngagement.toLowerCase()} using the ${sampleSite} sample profile. The focus is on readiness, open items, ownership, service coordination, documentation status, and follow-up.`
+          ? "This brief helps the service manager coordinate readiness, ownership, documentation status, and follow-up. Focus on open items, service priorities, customer communication needs, and who owns the next action."
           : role === "Sales / Account Manager"
-            ? `This packet is for a sales or account manager preparing for ${roleEngagement.toLowerCase()} using the ${sampleSite} sample profile. The focus is on a clear customer-facing summary, open questions, next steps, and safety-focused follow-up without making unverified claims.`
-            : `This packet is for a manager preparing for ${roleEngagement.toLowerCase()} using the ${sampleSite} sample profile. The focus is on readiness, risks, open items, ownership, documentation status, and internal or customer follow-up.`;
+            ? "This brief helps the account lead prepare a customer-facing conversation that stays practical, safety-focused, and grounded in verified information. Focus on open questions, clear next steps, and avoiding unconfirmed claims."
+            : "This brief helps the manager understand readiness, risks, open items, ownership, documentation status, and the next internal or customer follow-up. Focus on what needs attention before the engagement moves forward.";
   const keyResources = resourcesToReview.slice(0, 4);
   const nextStep = followUpItems.slice(0, 1);
   const equipmentRecordSummary = compactItems(
@@ -1856,11 +1873,11 @@ const ReadinessPacket = ({
   const afterItems = engagementFocus.after;
   const whatToSayItems = compactItems([
     role === "Instructor"
-      ? "Today we are using sample equipment records to review how sprinkler systems, alarm/detection devices, and demonstration equipment fit into a fire protection discussion."
+      ? "Today we are using the available equipment information to review how sprinkler systems, alarm/detection devices, and demonstration equipment fit into a fire protection discussion."
       : role === "Inspector"
         ? "I am reviewing sample equipment and documentation context, and I will verify model, service, and documentation details before making any official conclusion."
         : role === "Sales / Account Manager"
-          ? "This conversation should focus on what the sample record shows, what still needs verification, and the next practical step for a safety-focused follow-up."
+          ? "This conversation should focus on what the available information shows, what still needs verification, and the next practical step for a safety-focused follow-up."
           : "This review should clarify readiness, open verification items, documentation status, and who owns the next follow-up step.",
     "The main goal is to understand what each system does, what documentation matters, and what details need to be verified before making site-specific claims.",
   ]).slice(0, 3);
@@ -1872,26 +1889,19 @@ const ReadinessPacket = ({
     "Assign follow-up ownership for open verification items.",
   ]).slice(0, 5);
   const packetText = [
-    "Engagement Packet",
+    "AI Preparation Brief",
     "Engagement Summary",
     engagementSummaryText,
     "",
-    "Equipment / Asset Records",
+    "Equipment Briefing",
     ...equipmentRecords.flatMap((record) => [
       `- ${record.name}`,
-      `  Category: ${record.category}`,
-      `  Manufacturer: ${record.manufacturer}`,
-      `  Model: ${record.model}`,
-      `  SKU / Product Number: ${record.sku}`,
-      `  Serial Number: ${record.serialNumber}`,
-      `  Location: ${record.location}`,
-      `  Last Inspection / Test Date: ${record.lastInspectionTestDate}`,
-      `  Certification / Service Status: ${record.certificationServiceStatus}`,
-      `  Recall / Safety Status: ${record.recallSafetyStatus}`,
-      `  Documentation Status: ${record.documentationStatus}`,
-      `  Deficiency Status: ${record.deficiencyStatus}`,
-      `  Description: ${record.description}`,
-      `  Verification Needed: ${record.verificationNeeded}`,
+      `  Status: ${cleanBriefText(record.certificationServiceStatus)}; ${cleanBriefText(record.deficiencyStatus)}`,
+      `  Location: ${cleanBriefText(record.location)}`,
+      `  Manufacturer / Model: ${cleanBriefText(record.manufacturer)} / ${cleanBriefText(record.model)}`,
+      `  Training or Inspection Notes: ${cleanBriefText(record.description)}`,
+      `  Documentation to Review: ${cleanBriefText(record.documentationStatus)}`,
+      `  Items Requiring Verification: ${cleanBriefText(record.verificationNeeded)}`,
     ]),
     "",
     "Role-Specific Guidance",
@@ -1915,97 +1925,118 @@ const ReadinessPacket = ({
   };
   const shareText = (text: string) => {
     if (typeof navigator !== "undefined" && "share" in navigator) {
-      void navigator.share({ title: "Engagement Packet", text });
+      void navigator.share({ title: "AI Preparation Brief", text });
       return;
     }
     copyText(text);
   };
 
   return (
-    <section className="rounded-[16px] border border-brand-gray200 bg-white p-4 shadow-sm sm:p-5">
-      <div className="border-b border-brand-gray200 pb-4">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+    <section className="rounded-[16px] border border-brand-gray200 bg-white p-3 shadow-sm sm:p-4">
+      <div className="border-b border-brand-gray200/80 pb-3">
+        <div className="flex flex-col gap-2 lg:flex-row lg:items-start lg:justify-between">
           <div>
-            <h2 className="text-2xl font-extrabold leading-tight text-brand-charcoal sm:text-3xl">
-              Engagement Packet
+            <h2 className="text-xl font-extrabold leading-tight text-brand-charcoal sm:text-2xl">
+              AI Preparation Brief
             </h2>
+            <p className="mt-1 text-xs font-semibold text-brand-gray500">
+              A practical briefing for what to review, verify, and discuss before the engagement.
+            </p>
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm font-extrabold text-brand-gray700">
             <button
               type="button"
               onClick={() => copyText(packetText)}
-              className="rounded-xl border border-brand-gray200 bg-white px-3 py-2 text-sm font-extrabold text-brand-charcoal transition hover:bg-brand-gray100"
+              className="transition hover:text-brand-green"
             >
-              Copy Packet
+              Copy
             </button>
+            <span className="text-brand-gray200" aria-hidden="true">|</span>
             <button
               type="button"
               onClick={() => shareText(packetText)}
-              className="rounded-xl border border-brand-gray200 bg-white px-3 py-2 text-sm font-extrabold text-brand-charcoal transition hover:bg-brand-gray100"
+              className="transition hover:text-brand-green"
             >
               Share
             </button>
+            <span className="text-brand-gray200" aria-hidden="true">|</span>
             <button
               type="button"
               onClick={() => window.print()}
-              className="rounded-xl border border-brand-gray200 bg-white px-3 py-2 text-sm font-extrabold text-brand-charcoal transition hover:bg-brand-gray100"
+              className="transition hover:text-brand-green"
             >
-              Print Packet
+              Print
             </button>
+            <span className="text-brand-gray200" aria-hidden="true">|</span>
             <button
               type="button"
               onClick={onStartNew}
-              className="rounded-xl border border-brand-gray200 bg-white px-3 py-2 text-sm font-extrabold text-brand-gray700 transition hover:bg-brand-gray100"
+              className="transition hover:text-brand-green"
             >
-              Start New Packet
+              New Packet
             </button>
           </div>
         </div>
       </div>
 
-      <div className="space-y-1">
+      <div className="space-y-0.5">
         <PrepBriefSection
           title="Engagement Summary"
           tone="green"
         >
-          <p className="leading-7 text-brand-gray700">{engagementSummaryText}</p>
+          <p className="mb-3 rounded-xl border border-brand-gray200 bg-brand-gray100/70 p-3 text-xs font-semibold leading-5 text-brand-gray500">
+            This demonstration uses representative sample information to illustrate how AI can organize preparation materials from connected business systems.
+          </p>
+          <p className="leading-6 text-brand-gray700">{engagementSummaryText}</p>
         </PrepBriefSection>
 
-        <PrepBriefSection title="Equipment / Asset Records" tone="neutral">
-          <div className="grid gap-3">
+        <PrepBriefSection title="Equipment Briefing" tone="neutral">
+          <div className="grid gap-2 sm:grid-cols-2">
             {equipmentRecords.map((record) => (
               <article
                 key={record.serialNumber}
-                className="rounded-xl border border-brand-gray200 bg-white p-3"
+                className="rounded-xl border border-brand-gray200 bg-white p-3 shadow-[0_8px_18px_rgba(23,59,45,0.04)]"
               >
-                <h4 className="text-base font-extrabold text-brand-charcoal">
+                <h4 className="text-sm font-extrabold leading-5 text-brand-charcoal sm:text-base">
                   {record.name}
                 </h4>
-                <dl className="mt-2 grid gap-x-4 gap-y-1 text-sm sm:grid-cols-2">
+                <dl className="mt-2 grid gap-2 text-sm text-brand-gray700">
                   {[
-                    ["Category", record.category],
-                    ["Manufacturer", record.manufacturer],
-                    ["Model", record.model],
-                    ["SKU / Product Number", record.sku],
-                    ["Serial Number", record.serialNumber],
-                    ["Location", record.location],
-                    ["Last Inspection / Test Date", record.lastInspectionTestDate],
-                    ["Certification / Service Status", record.certificationServiceStatus],
-                    ["Recall / Safety Status", record.recallSafetyStatus],
-                    ["Documentation Status", record.documentationStatus],
-                    ["Deficiency Status", record.deficiencyStatus],
-                    ["Description", record.description],
-                    ["Role-specific note", roleSpecificAssetNote(role, roleEngagement, record)],
-                    ["Verification Needed", record.verificationNeeded],
+                    ["Status", `${cleanBriefText(record.certificationServiceStatus)}; ${cleanBriefText(record.deficiencyStatus)}`],
+                    ["Location", cleanBriefText(record.location)],
+                    ["Manufacturer / Model", `${cleanBriefText(record.manufacturer)} / ${cleanBriefText(record.model)}`],
+                    ["Training or Inspection Notes", cleanBriefText(record.description)],
+                    ["Documentation to Review", cleanBriefText(record.documentationStatus)],
+                    ["Items Requiring Verification", cleanBriefText(record.verificationNeeded)],
                   ].map(([label, value]) => (
-                    <div key={label} className="border-t border-brand-gray200 pt-1">
-                      <dt className="text-[11px] font-black uppercase tracking-wide text-brand-gray500">
+                    <div key={label} className="rounded-lg bg-brand-gray100/60 px-2.5 py-2">
+                      <dt className="text-[11px] font-extrabold text-brand-gray500">
                         {label}
                       </dt>
                       <dd className="mt-0.5 text-brand-gray700">{value}</dd>
                     </div>
                   ))}
                 </dl>
+                <details className="mt-2 rounded-lg border border-brand-gray200 px-2.5 py-2 text-sm text-brand-gray700">
+                  <summary className="cursor-pointer font-extrabold text-brand-charcoal">
+                    Additional Details
+                  </summary>
+                  <dl className="mt-2 grid gap-2">
+                    {[
+                      ["Category", cleanBriefText(record.category)],
+                      ["SKU / Product Number", cleanBriefText(record.sku)],
+                      ["Serial Number", cleanBriefText(record.serialNumber)],
+                      ["Last Inspection / Test Date", cleanBriefText(record.lastInspectionTestDate)],
+                      ["Recall / Safety Status", cleanBriefText(record.recallSafetyStatus)],
+                      ["Role-specific Note", roleSpecificAssetNote(role, roleEngagement, record)],
+                    ].map(([label, value]) => (
+                      <div key={label} className="border-t border-brand-gray200/70 pt-1.5 first:border-t-0 first:pt-0">
+                        <dt className="text-[11px] font-extrabold text-brand-gray500">{label}</dt>
+                        <dd className="mt-0.5">{value}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </details>
               </article>
             ))}
             {!equipmentRecords.length ? (
@@ -2019,28 +2050,35 @@ const ReadinessPacket = ({
         </PrepBriefSection>
 
         <PrepBriefSection title="Engagement Checklist" tone="neutral">
-          <div className="grid gap-4 sm:grid-cols-3">
-            <div>
-              <p className="text-sm font-extrabold text-brand-charcoal">Before</p>
+          <div className="grid gap-2 sm:grid-cols-3">
+            <div className="rounded-xl border border-brand-gray200 bg-brand-gray100/60 p-3">
+              <p className="mb-2 text-sm font-extrabold text-brand-charcoal">Before</p>
               <PacketList items={beforeItems} tone="neutral" />
             </div>
-            <div>
-              <p className="text-sm font-extrabold text-brand-charcoal">During</p>
+            <div className="rounded-xl border border-brand-gray200 bg-brand-gray100/60 p-3">
+              <p className="mb-2 text-sm font-extrabold text-brand-charcoal">During</p>
               <PacketList items={duringItems} tone="neutral" />
             </div>
-            <div>
-              <p className="text-sm font-extrabold text-brand-charcoal">After</p>
+            <div className="rounded-xl border border-brand-gray200 bg-brand-gray100/60 p-3">
+              <p className="mb-2 text-sm font-extrabold text-brand-charcoal">After</p>
               <PacketList items={afterItems} tone="neutral" />
             </div>
           </div>
         </PrepBriefSection>
 
-        <PrepBriefSection title="Missing Info / Verification Needed" tone="red">
-          <PacketList items={aiFlaggedItems.slice(0, 5)} tone="red" />
-        </PrepBriefSection>
+        <section className="border-t border-brand-gray200/80 py-3">
+          <div className="rounded-xl border border-brand-orange/30 bg-brand-orange/5 p-3">
+            <h3 className="text-base font-extrabold leading-tight text-brand-charcoal sm:text-lg">
+              Missing Info / Verification Needed
+            </h3>
+            <div className="mt-2 text-sm leading-5 text-brand-gray700 sm:text-[15px]">
+              <PacketList items={aiFlaggedItems.slice(0, 5)} tone="red" />
+            </div>
+          </div>
+        </section>
 
         <PrepBriefSection title="Recommended Next Steps" tone="green">
-          <ol className="list-decimal space-y-3 pl-5">
+          <ol className="list-decimal space-y-2 pl-5 leading-5">
             {recommendedNextSteps.map((item) => (
               <li key={item}>{item}</li>
             ))}
@@ -2309,14 +2347,14 @@ export default function Home() {
       });
       const payload = await response.json();
       if (!response.ok) {
-        throw new Error(payload.error || "Unable to generate the engagement packet right now.");
+        throw new Error(payload.error || "Unable to generate the preparation brief right now.");
       }
       setGuidance(payload.guidance);
     } catch (error) {
       setSummaryError(
         error instanceof Error
           ? error.message
-          : "Unable to generate the engagement packet right now.",
+          : "Unable to generate the preparation brief right now.",
       );
     } finally {
       setSummarizingId("");
@@ -2354,13 +2392,13 @@ export default function Home() {
               <h1 className="text-[22px] font-extrabold leading-tight text-brand-green sm:text-[30px]">
                 Engagement Assistant
               </h1>
-              <p className="mt-1 text-sm leading-6 text-brand-gray700 sm:text-base">
-                Get AI-generated guidance for inspections, training, and service visits.
-              </p>
             </div>
           </div>
-          <p className="mt-3 text-sm leading-6 text-brand-gray700">
-            Select a site, role, and engagement type. The assistant uses sample context to generate a role-specific Engagement Packet.
+          <h2 className="mt-3 text-xl font-extrabold leading-tight text-brand-charcoal sm:text-2xl">
+            Spend less time searching. More time preparing.
+          </h2>
+          <p className="mt-2 text-sm leading-6 text-brand-gray700 sm:text-base">
+            Generate an AI-powered preparation packet that brings together the most relevant information before an inspection, training session, service visit, or customer meeting.
           </p>
         </div>
       </header>
@@ -2368,15 +2406,12 @@ export default function Home() {
       <div className="mx-auto max-w-3xl px-4 py-3 sm:px-6">
         <section className="rounded-[16px] border border-brand-gray200 bg-white p-3 shadow-sm sm:p-5">
           <div className="mb-3 h-1 w-14 rounded-md bg-brand-orange" aria-hidden="true" />
-          <div className="grid gap-4">
+          <div className="grid gap-5">
             <div>
               <h2 className="text-lg font-extrabold text-brand-greenDark">
-                1. Select Client / Site
+                1. Scenario
               </h2>
-              <p className="mt-1 text-xs font-semibold text-brand-gray500">
-                Choose the sample site or account for the engagement.
-              </p>
-              <div className="mt-2 grid gap-2 sm:grid-cols-2">
+              <div className="mt-3 grid gap-2 sm:grid-cols-2">
                 {visibleSiteOptions.map((item) => {
                   const selected = selectedSampleSite === item.value;
                   return (
@@ -2396,7 +2431,14 @@ export default function Home() {
                           : "border-brand-gray200 bg-white text-brand-charcoal hover:border-brand-green hover:bg-brand-greenSoft"
                       }`}
                     >
-                      {item.label}
+                      <span className="flex items-center justify-between gap-2">
+                        <span>{item.label}</span>
+                        {selected ? (
+                          <span className="text-xs font-extrabold" aria-hidden="true">
+                            Selected
+                          </span>
+                        ) : null}
+                      </span>
                     </button>
                   );
                 })}
@@ -2405,11 +2447,8 @@ export default function Home() {
 
             <div className="grid gap-5 md:grid-cols-[0.8fr_1.2fr]">
               <div>
-                <h2 className="text-lg font-extrabold text-brand-greenDark">2. Select Role</h2>
-                <p className="mt-1 text-xs font-semibold text-brand-gray500">
-                  Choose the employee perspective for the packet.
-                </p>
-                <div className="mt-2 grid grid-cols-2 gap-2">
+                <h2 className="text-lg font-extrabold text-brand-greenDark">2. Perspective</h2>
+                <div className="mt-3 grid grid-cols-2 gap-2">
                   {(["Instructor", "Inspector", "Service Manager", "Manager", "Sales / Account Manager"] as UserRole[]).map((item) => {
                     const selected = role === item;
                     return (
@@ -2423,7 +2462,14 @@ export default function Home() {
                             : "border-brand-gray200 bg-white text-brand-charcoal hover:border-brand-green hover:bg-brand-greenSoft"
                         }`}
                       >
-                        {item}
+                        <span className="inline-flex items-center justify-center gap-2">
+                          {selected ? (
+                            <span className="text-xs font-extrabold" aria-hidden="true">
+                              Selected
+                            </span>
+                          ) : null}
+                          <span>{item}</span>
+                        </span>
                       </button>
                     );
                   })}
@@ -2432,12 +2478,9 @@ export default function Home() {
 
               <div>
                 <h2 className="text-lg font-extrabold text-brand-greenDark">
-                  3. Select Engagement Type
+                  3. Engagement
                 </h2>
-                <p className="mt-1 text-xs font-semibold text-brand-gray500">
-                  Choose what the employee is preparing to do.
-                </p>
-                <div className="mt-2 grid gap-2 sm:grid-cols-3 md:grid-cols-1 lg:grid-cols-3">
+                <div className="mt-3 grid gap-2 sm:grid-cols-3 md:grid-cols-1 lg:grid-cols-3">
                   {roleEngagementOptions.map((item) => {
                     const selected = roleEngagement === item;
                     return (
@@ -2454,7 +2497,14 @@ export default function Home() {
                             : "border-brand-gray200 bg-white text-brand-charcoal hover:border-brand-green hover:bg-brand-greenSoft"
                         }`}
                       >
-                        {item}
+                        <span className="flex items-center justify-between gap-2">
+                          <span>{item}</span>
+                          {selected ? (
+                            <span className="text-xs font-extrabold" aria-hidden="true">
+                              Selected
+                            </span>
+                          ) : null}
+                        </span>
                       </button>
                     );
                   })}
@@ -2462,13 +2512,27 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="rounded-xl border border-brand-gray200 bg-brand-gray100 px-3 py-2 text-sm leading-6 text-brand-gray700">
+            <div className="rounded-xl border border-brand-green/30 bg-brand-greenSoft px-3 py-3 text-sm leading-6 text-brand-gray700">
               <p className="font-extrabold text-brand-charcoal">
-                Using sample context for: {selectedSampleSite} · {role} · {roleEngagement}
+                Your preparation packet may include:
               </p>
-              <p className="mt-0.5 text-xs font-semibold text-brand-gray700">
-                This demo uses sample files and records to represent information that could come from connected CRM, equipment, documentation, and training systems.
-              </p>
+              <ul className="mt-2 grid gap-x-4 gap-y-1 sm:grid-cols-2">
+                {[
+                  "Customer and site overview",
+                  "Equipment summary",
+                  "Product information and safety notices",
+                  "Preparation checklist",
+                  "Discussion points",
+                  "Documentation to review",
+                  "Recommended follow-up",
+                  "Information requiring verification",
+                ].map((item) => (
+                  <li key={item} className="flex gap-2">
+                    <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-green" aria-hidden="true" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
 
             <div className="hidden">
@@ -2540,8 +2604,8 @@ export default function Home() {
               className="w-full rounded-xl bg-brand-green px-5 py-4 text-center text-base font-extrabold text-white transition hover:bg-brand-greenDark disabled:cursor-not-allowed disabled:bg-brand-gray500 sm:w-auto [font-family:var(--font-display)]"
             >
               {summarizingId
-                ? "Generating Packet..."
-                : "Generate Engagement Packet"}
+                ? "Generating Brief..."
+                : "Generate AI Preparation Brief"}
             </button>
           </div>
 
@@ -2551,7 +2615,7 @@ export default function Home() {
                 <div className="h-full w-1/2 animate-pulse rounded-full bg-brand-green" />
               </div>
               <p className="mt-3 text-sm font-extrabold text-brand-charcoal">
-                Reviewing sample site, equipment, documentation, and training context.
+                Building a preparation brief from the selected scenario, perspective, and engagement.
               </p>
             </div>
           ) : null}
@@ -2582,6 +2646,9 @@ export default function Home() {
       </div>
 
       <footer className="mx-auto mt-1 max-w-3xl px-5 pb-5 pt-1 text-center text-[11px] leading-4 text-brand-gray500 sm:px-6">
+        <p className="mb-2">
+          This demonstration uses sample information to represent data that could come from connected CRM, documentation, equipment, and training systems.
+        </p>
         © 2026 Amy Melangton. Proof of concept for demonstration purposes only.
       </footer>
     </main>
