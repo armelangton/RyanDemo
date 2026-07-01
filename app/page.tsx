@@ -33,7 +33,8 @@ type UserRole =
   | "Inspector"
   | "Instructor"
   | "Service Technician"
-  | "Sales";
+  | "Sales / Account Manager"
+  | "Service Manager";
 
 type RoleEngagement =
   | "Inspection"
@@ -112,6 +113,45 @@ const roleEngagementOptions: RoleEngagement[] = [
   "Service Visit",
   "Site Survey",
 ];
+
+const briefFocusByRole: Record<UserRole, string[]> = {
+  Inspector: [
+    "Site and inspection context",
+    "Systems to inspect",
+    "Prior findings or deficiencies",
+    "Items to verify onsite",
+    "Customer explanation points",
+  ],
+  Instructor: [
+    "Audience and learning objectives",
+    "Teaching points",
+    "Demonstration ideas",
+    "Reference materials",
+    "Likely questions",
+    "Follow-up resources",
+  ],
+  "Service Technician": [
+    "Work order context",
+    "Prior service history",
+    "Relevant manuals or technical notes",
+    "Troubleshooting considerations",
+    "Safety or verification steps",
+  ],
+  "Sales / Account Manager": [
+    "Customer context",
+    "Recent service activity",
+    "Open issues or deficiencies",
+    "Meeting talking points",
+    "Follow-up opportunities",
+  ],
+  "Service Manager": [
+    "Operational summary",
+    "Job status and schedule risks",
+    "Open work or escalations",
+    "Resource concerns",
+    "Recommended next actions",
+  ],
+};
 
 const inspectorDefaultTopics: Topic[] = [
   "Fire Sprinkler System",
@@ -1601,8 +1641,11 @@ const roleSpecificAssetNote = (
   if (role === "Service Technician") {
     return `Use this ${record.category.toLowerCase()} record to prepare service checks, documentation status, equipment access, and follow-up for ${engagement}.`;
   }
-  if (role === "Sales") {
+  if (role === "Sales / Account Manager") {
     return `Use this ${record.category.toLowerCase()} record for customer-facing context, open questions, next steps, and safety-focused follow-up for ${engagement}.`;
+  }
+  if (role === "Service Manager") {
+    return `Use this ${record.category.toLowerCase()} record to identify operational risk, resource needs, customer priority items, and follow-up ownership for ${engagement}.`;
   }
   return `Use this ${record.category.toLowerCase()} record to summarize readiness, risks, open items, ownership, and follow-up for ${engagement}.`;
 };
@@ -1979,7 +2022,9 @@ const ReadinessPacket = ({
         ? "Use onsite guidance for field verification and documentation."
         : role === "Service Technician"
           ? "Use service visit guidance for equipment access, service checks, documentation, and follow-up."
-          : "Use customer-facing guidance for open questions and next steps.",
+          : role === "Service Manager"
+            ? "Use operational guidance for job status, escalations, resource concerns, and next actions."
+            : "Use customer-facing guidance for account context, open questions, and next steps.",
     ...engagementFocus.guidance,
     ...guidance.audienceSpecificTalkingPoints,
   ]).slice(0, 5);
@@ -1991,8 +2036,10 @@ const ReadinessPacket = ({
       ? "Today we are using the available equipment information to review how sprinkler systems, alarm and detection devices, and demonstration equipment fit into a fire protection discussion."
       : role === "Inspector"
         ? "I am reviewing sample equipment and documentation context, and I will verify model, service, and documentation details before making any official conclusion."
-        : role === "Sales"
+        : role === "Sales / Account Manager"
           ? "This conversation should focus on what the available information shows, what still needs verification, and the next practical step for a safety-focused follow-up."
+          : role === "Service Manager"
+            ? "This operational review should clarify job status, resource needs, customer priority items, and escalation risks before work moves forward."
           : "This review should clarify readiness, open verification items, documentation status, and who owns the next follow-up step.",
     "The main goal is to understand what each system does, what documentation matters, and what details need to be verified before making site-specific claims.",
   ]).slice(0, 3);
@@ -2003,40 +2050,213 @@ const ReadinessPacket = ({
     "Review missing documentation before the engagement.",
     "Assign follow-up ownership for open verification items.",
   ]).slice(0, 5);
+  const roleBriefConfig = (() => {
+    if (role === "Instructor") {
+      return {
+        summaryTitle: "Audience and Learning Objectives",
+        contextTitle: "Audience and Learning Objectives",
+        prepTitle: "Training Flow / Topic Outline",
+        discussionTitle: "Teaching Points and Likely Questions",
+        verifyTitle: "Items to Verify Before Teaching",
+        followTitle: "Follow-up Resources",
+        showEquipment: false,
+        contextItems: compactItems([
+          `Audience: ${audience}.`,
+          `Facility: ${sampleSite}.`,
+          `Training focus: ${roleEngagement}.`,
+          "Objective: prepare clear teaching points, examples, and safe discussion boundaries.",
+          ...(guidance.standardsObjectiveAlignment ?? []),
+        ]).slice(0, 5),
+        prepItems: compactItems([
+          ...(guidance.simpleLessonPlan ?? []),
+          ...guidance.trainingOrEventPrepNotes,
+          ...materialsEquipmentNeeded,
+          "Use equipment only as supporting teaching context.",
+        ]).slice(0, 6),
+        discussionItems: compactItems([
+          "Explain system purpose in plain language.",
+          "Prepare demonstration ideas that match the audience level.",
+          "Anticipate questions about alarms, sprinklers, hydrants, pumps, or extinguishers.",
+          "Clarify what should be escalated to qualified review.",
+        ]).slice(0, 5),
+        verifyItems: compactItems([
+          ...certificationAttendanceReminders,
+          ...missingInformation,
+          "Verify reference materials before teaching.",
+          "Confirm training objectives, audience level, materials, and site-specific details.",
+        ]).slice(0, 5),
+        followItems: compactItems([
+          "Confirm training objectives, audience level, materials, and any site-specific details that need verification before teaching.",
+          "Send unanswered questions to the appropriate internal reviewer.",
+          "Provide approved reference materials after the session.",
+        ]).slice(0, 5),
+      };
+    }
+
+    if (role === "Service Technician") {
+      return {
+        summaryTitle: "Service Readiness Summary",
+        contextTitle: "Work Order and Service Context",
+        prepTitle: "Troubleshooting Notes",
+        discussionTitle: "Customer Communication Notes",
+        verifyTitle: "Safety and Verification Steps",
+        followTitle: "Service Follow-up",
+        showEquipment: true,
+        contextItems: compactItems([
+          `Facility: ${sampleSite}.`,
+          `Reported service context: ${roleEngagement}.`,
+          `Prior service history: ${guidance.providedDemoProfileContext?.[0] || "review available service notes"}.`,
+          `Relevant equipment: ${selectedTopics.join(", ") || "equipment details need review"}.`,
+        ]).slice(0, 5),
+        prepItems: compactItems([
+          "Review prior service history before arrival.",
+          "Check relevant manuals, diagrams, and technical notes.",
+          "Prepare likely parts, tools, and documentation questions.",
+          ...roleGuidanceItems,
+        ]).slice(0, 6),
+        discussionItems: compactItems([
+          "Explain what was checked and what still needs verification.",
+          ...whatToSayItems,
+        ]).slice(0, 4),
+        verifyItems: compactItems([
+          "Verify safe working conditions before troubleshooting.",
+          ...aiFlaggedItems,
+          ...missingInformation,
+        ]).slice(0, 5),
+        followItems: compactItems([
+          "Document repair summary and unresolved issues.",
+          ...recommendedNextSteps,
+        ]).slice(0, 5),
+      };
+    }
+
+    if (role === "Sales / Account Manager") {
+      return {
+        summaryTitle: "Customer Meeting Summary",
+        contextTitle: "Customer and Account Context",
+        prepTitle: "Meeting Preparation",
+        discussionTitle: "Meeting Talking Points",
+        verifyTitle: "Open Questions to Verify",
+        followTitle: "Follow-up Opportunities",
+        showEquipment: false,
+        contextItems: compactItems([
+          `Customer/facility: ${sampleSite}.`,
+          `Recent activity: ${guidance.deficiencyDocumentationFollowUp?.[0] || "review recent inspection and service activity"}.`,
+          `Open issues: ${aiFlaggedItems.slice(0, 2).join("; ")}.`,
+          `Upcoming work: ${recommendedNextSteps[0] || "confirm next step"}.`,
+        ]).slice(0, 5),
+        prepItems: compactItems([
+          "Review recent inspection and service activity.",
+          "Prepare customer-friendly summary of open issues.",
+          "Identify internal follow-up owners before the meeting.",
+          ...roleGuidanceItems,
+        ]).slice(0, 5),
+        discussionItems: compactItems([
+          ...whatToSayItems,
+          ...guidance.audienceSpecificTalkingPoints,
+        ]).slice(0, 5),
+        verifyItems: compactItems([
+          "Verify technical details before customer-facing claims.",
+          ...missingInformation,
+        ]).slice(0, 5),
+        followItems: compactItems([
+          "Capture customer recap and internal handoff notes.",
+          ...recommendedNextSteps,
+        ]).slice(0, 5),
+      };
+    }
+
+    if (role === "Service Manager") {
+      return {
+        summaryTitle: "Operational Readiness Summary",
+        contextTitle: "Schedule and Job Status",
+        prepTitle: "Operational Priorities",
+        discussionTitle: "Customer Priority Items",
+        verifyTitle: "Risks and Blockers",
+        followTitle: "Recommended Next Actions",
+        showEquipment: false,
+        contextItems: compactItems([
+          `Facility: ${sampleSite}.`,
+          `Engagement: ${roleEngagement}.`,
+          `Open work: ${aiFlaggedItems.slice(0, 2).join("; ")}.`,
+          `Customer priority: ${recommendedNextSteps[0] || "confirm priority item"}.`,
+        ]).slice(0, 5),
+        prepItems: compactItems([
+          "Review schedule, job status, and open work.",
+          "Identify resource, parts, or technician support needs.",
+          "Clarify escalation risks before work begins.",
+          ...roleGuidanceItems,
+        ]).slice(0, 5),
+        discussionItems: compactItems([
+          "Confirm customer priority items and communication owner.",
+          ...whatToSayItems,
+        ]).slice(0, 4),
+        verifyItems: compactItems([
+          "Verify job status, resource constraints, and escalation owners.",
+          ...aiFlaggedItems,
+        ]).slice(0, 5),
+        followItems: compactItems([
+          ...recommendedNextSteps,
+          "Assign owners for unresolved operational items.",
+        ]).slice(0, 5),
+      };
+    }
+
+    return {
+      summaryTitle: "Inspection Readiness Summary",
+      contextTitle: "Site and Inspection Context",
+      prepTitle: "Inspection Preparation",
+      discussionTitle: "Customer Explanation Points",
+      verifyTitle: "Items to Verify Onsite",
+      followTitle: "Recommended Follow-up",
+      showEquipment: true,
+      contextItems: compactItems([
+        `Facility: ${sampleSite}.`,
+        `Inspection engagement: ${roleEngagement}.`,
+        `Systems to inspect: ${selectedTopics.join(", ") || "selected systems"}.`,
+        ...guidance.deficiencyDocumentationFollowUp,
+      ]).slice(0, 5),
+      prepItems: compactItems([
+        "Review previous inspection history and open deficiencies.",
+        ...roleGuidanceItems,
+      ]).slice(0, 5),
+      discussionItems: compactItems([
+        ...whatToSayItems,
+        ...guidance.audienceSpecificTalkingPoints,
+      ]).slice(0, 5),
+      verifyItems: compactItems([
+        ...aiFlaggedItems,
+        ...missingInformation,
+      ]).slice(0, 5),
+      followItems: recommendedNextSteps,
+    };
+  })();
   const packetText = [
     "AI Preparation Brief",
-    "Engagement Summary",
-    ...engagementSummaryItems.map((item) => `- ${item}`),
+    roleBriefConfig.summaryTitle,
+    ...roleBriefConfig.contextItems.map((item) => `- ${item}`),
+    ...(roleBriefConfig.showEquipment
+      ? [
+          "",
+          "Equipment Briefing",
+          ...equipmentRecords.map(
+            (record) =>
+              `- ${record.name}: ${cleanBriefText(record.manufacturer)}, ${cleanBriefText(record.location)}, ${recallStatusForRecord(record)}.`,
+          ),
+        ]
+      : []),
     "",
-    "Equipment Briefing",
-    ...equipmentRecords.flatMap((record) => [
-      `- ${record.name}`,
-      `  Manufacturer: ${cleanBriefText(record.manufacturer)}`,
-      `  Model: ${cleanBriefText(record.model)}`,
-      `  Location: ${cleanBriefText(record.location)}`,
-      `  Last Inspection or Service: ${cleanBriefText(record.lastInspectionTestDate)}`,
-      `  Documentation Status: ${cleanBriefText(record.documentationStatus)}`,
-      `  Recall and Safety Status: ${cleanBriefText(record.recallSafetyStatus)}`,
-      `  Deficiency Status: ${cleanBriefText(record.deficiencyStatus)}`,
-      `  Certification Status: ${cleanBriefText(record.certificationServiceStatus)}`,
-      `  Role-Specific Note: ${roleSpecificAssetNote(role, roleEngagement, record)}`,
-      `  Description: ${cleanBriefText(record.description)}`,
-      `  SKU: ${cleanBriefText(record.sku)}`,
-      `  Serial Number: ${cleanBriefText(record.serialNumber)}`,
-    ]),
+    roleBriefConfig.prepTitle,
+    ...roleBriefConfig.prepItems.map((item) => `- ${item}`),
     "",
-    "Preparation Notes",
-    ...roleGuidanceItems.map((item) => `- ${item}`),
-    ...["Before", ...beforeItems, "During", ...duringItems, "After", ...afterItems].map((item) => `- ${item}`),
+    roleBriefConfig.discussionTitle,
+    ...roleBriefConfig.discussionItems.map((item) => `- ${item}`),
     "",
-    "Discussion Points",
-    ...whatToSayItems.map((item) => `- ${item}`),
+    roleBriefConfig.verifyTitle,
+    ...roleBriefConfig.verifyItems.map((item) => `- ${item}`),
     "",
-    "Items to Verify",
-    ...aiFlaggedItems.slice(0, 5).map((item) => `- ${item}`),
-    "",
-    "Recommended Follow-up",
-    ...recommendedNextSteps.map((item, index) => `${index + 1}. ${item}`),
+    roleBriefConfig.followTitle,
+    ...roleBriefConfig.followItems.map((item, index) => `${index + 1}. ${item}`),
   ].join("\n");
   const copyText = (text: string) => {
     if (typeof navigator === "undefined" || !navigator.clipboard) return;
@@ -2063,134 +2283,122 @@ const ReadinessPacket = ({
 
       <div className="space-y-0.5">
         <PrepBriefSection
-          title="Engagement Summary"
+          title={roleBriefConfig.summaryTitle}
           tone="green"
         >
-          <PacketList items={engagementSummaryItems} tone="green" />
+          <PacketList items={roleBriefConfig.contextItems} tone="green" />
         </PrepBriefSection>
 
-        <PrepBriefSection title="Equipment Briefing" tone="neutral">
-          <div className="grid gap-3">
-            {equipmentRecords.map((record) => {
-              const recallStatus = recallStatusForRecord(record);
-              const hasPossibleRecall = recallStatus.startsWith("Possible");
-              return (
-                <article
-                  key={record.serialNumber}
-                  className="rounded-xl border border-brand-gray200 bg-white p-3"
-                >
-                  <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
-                    <div>
-                      <h4 className="text-base font-extrabold leading-5 text-brand-charcoal">
-                        {record.name}
-                      </h4>
-                      <p className="mt-1 text-sm font-semibold text-brand-gray600">
-                        {cleanBriefText(record.manufacturer)} • {cleanBriefText(record.location)}
+        {roleBriefConfig.showEquipment ? (
+          <PrepBriefSection title="Equipment Briefing" tone="neutral">
+            <div className="grid gap-3">
+              {equipmentRecords.map((record) => {
+                const recallStatus = recallStatusForRecord(record);
+                const hasPossibleRecall = recallStatus.startsWith("Possible");
+                return (
+                  <article
+                    key={record.serialNumber}
+                    className="rounded-xl border border-brand-gray200 bg-white p-3"
+                  >
+                    <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
+                      <div>
+                        <h4 className="text-base font-extrabold leading-5 text-brand-charcoal">
+                          {record.name}
+                        </h4>
+                        <p className="mt-1 text-sm font-semibold text-brand-gray600">
+                          {cleanBriefText(record.manufacturer)} • {cleanBriefText(record.location)}
+                        </p>
+                      </div>
+                      <p
+                        className={`rounded-full px-2.5 py-1 text-xs font-extrabold ${
+                          hasPossibleRecall
+                            ? "bg-brand-orange/10 text-brand-orange"
+                            : "bg-brand-greenSoft text-brand-greenDark"
+                        }`}
+                      >
+                        {hasPossibleRecall ? "Needs verification" : "No match found"}
                       </p>
                     </div>
-                    <p
-                      className={`rounded-full px-2.5 py-1 text-xs font-extrabold ${
-                        hasPossibleRecall
-                          ? "bg-brand-orange/10 text-brand-orange"
-                          : "bg-brand-greenSoft text-brand-greenDark"
-                      }`}
-                    >
-                      {hasPossibleRecall ? "Needs verification" : "No match found"}
+
+                    <p className="mt-3 text-sm font-semibold text-brand-gray700">
+                      Recall status: {recallStatus}
                     </p>
-                  </div>
 
-                  <p className="mt-3 text-sm font-semibold text-brand-gray700">
-                    Recall status: {recallStatus}
-                  </p>
+                    <div className="mt-3">
+                      <p className="text-sm font-extrabold text-brand-charcoal">
+                        Before You Arrive
+                      </p>
+                      <PacketList items={beforeYouArriveForRecord(record)} tone="neutral" />
+                    </div>
 
-                  <div className="mt-3">
-                    <p className="text-sm font-extrabold text-brand-charcoal">
-                      Before You Arrive
-                    </p>
-                    <PacketList items={beforeYouArriveForRecord(record)} tone="neutral" />
-                  </div>
+                    <div className="mt-3 rounded-lg border border-brand-orange/20 bg-brand-orange/5 p-2.5">
+                      <p className="text-sm font-extrabold text-brand-charcoal">Verify</p>
+                      <p className="mt-1 text-sm leading-5 text-brand-gray700">
+                        {hasPossibleRecall
+                          ? "Confirm exact model/date code before relying on recall status."
+                          : cleanBriefText(record.verificationNeeded)}
+                      </p>
+                    </div>
 
-                  <div className="mt-3 rounded-lg border border-brand-orange/20 bg-brand-orange/5 p-2.5">
-                    <p className="text-sm font-extrabold text-brand-charcoal">Verify</p>
-                    <p className="mt-1 text-sm leading-5 text-brand-gray700">
-                      {hasPossibleRecall
-                        ? "Confirm exact model/date code before relying on recall status."
-                        : cleanBriefText(record.verificationNeeded)}
-                    </p>
-                  </div>
+                    <details className="mt-3 rounded-lg border border-brand-gray200 bg-brand-gray100/60 px-3 py-2 text-sm text-brand-gray700">
+                      <summary className="cursor-pointer font-extrabold text-brand-greenDark">
+                        Show details
+                      </summary>
+                      <dl className="mt-3 grid gap-x-5 gap-y-2 sm:grid-cols-2">
+                        {[
+                          ["Model", cleanBriefText(record.model)],
+                          ["SKU", cleanBriefText(record.sku)],
+                          ["Serial Number", cleanBriefText(record.serialNumber)],
+                          ["Last Inspection or Service", cleanBriefText(record.lastInspectionTestDate)],
+                          ["Documentation Status", cleanBriefText(record.documentationStatus)],
+                          ["Deficiency Status", cleanBriefText(record.deficiencyStatus)],
+                          ["Certification Status", cleanBriefText(record.certificationServiceStatus)],
+                          ["Role-Specific Note", roleSpecificAssetNote(role, roleEngagement, record)],
+                          ["Description", cleanBriefText(record.description)],
+                          ["Record Safety Note", cleanBriefText(record.recallSafetyStatus)],
+                          ["Additional Notes", cleanBriefText(record.notes)],
+                        ].map(([label, value]) => (
+                          <div key={label} className="border-t border-brand-gray200/80 pt-1.5 first:border-t-0 first:pt-0">
+                            <dt className="text-xs font-extrabold text-brand-gray500">
+                              {label}
+                            </dt>
+                            <dd className="mt-0.5">{value}</dd>
+                          </div>
+                        ))}
+                      </dl>
+                    </details>
+                  </article>
+                );
+              })}
+              {!equipmentRecords.length ? (
+                <PacketList items={equipmentRecordSummary} tone="neutral" />
+              ) : null}
+            </div>
+          </PrepBriefSection>
+        ) : null}
 
-                  <details className="mt-3 rounded-lg border border-brand-gray200 bg-brand-gray100/60 px-3 py-2 text-sm text-brand-gray700">
-                    <summary className="cursor-pointer font-extrabold text-brand-greenDark">
-                      Show details
-                    </summary>
-                    <dl className="mt-3 grid gap-x-5 gap-y-2 sm:grid-cols-2">
-                      {[
-                        ["Model", cleanBriefText(record.model)],
-                        ["SKU", cleanBriefText(record.sku)],
-                        ["Serial Number", cleanBriefText(record.serialNumber)],
-                        ["Last Inspection or Service", cleanBriefText(record.lastInspectionTestDate)],
-                        ["Documentation Status", cleanBriefText(record.documentationStatus)],
-                        ["Deficiency Status", cleanBriefText(record.deficiencyStatus)],
-                        ["Certification Status", cleanBriefText(record.certificationServiceStatus)],
-                        ["Role-Specific Note", roleSpecificAssetNote(role, roleEngagement, record)],
-                        ["Description", cleanBriefText(record.description)],
-                        ["Record Safety Note", cleanBriefText(record.recallSafetyStatus)],
-                        ["Additional Notes", cleanBriefText(record.notes)],
-                      ].map(([label, value]) => (
-                        <div key={label} className="border-t border-brand-gray200/80 pt-1.5 first:border-t-0 first:pt-0">
-                          <dt className="text-xs font-extrabold text-brand-gray500">
-                            {label}
-                          </dt>
-                          <dd className="mt-0.5">{value}</dd>
-                        </div>
-                      ))}
-                    </dl>
-                  </details>
-                </article>
-              );
-            })}
-            {!equipmentRecords.length ? (
-              <PacketList items={equipmentRecordSummary} tone="neutral" />
-            ) : null}
-          </div>
+        <PrepBriefSection title={roleBriefConfig.prepTitle} tone="green">
+          <PacketList items={roleBriefConfig.prepItems} tone="green" />
         </PrepBriefSection>
 
-        <PrepBriefSection title="Preparation Notes" tone="green">
-          <PacketList items={roleGuidanceItems} tone="green" />
-          <div className="mt-3 grid gap-2 sm:grid-cols-3">
-            <div className="rounded-xl border border-brand-gray200 bg-brand-gray100/60 p-3">
-              <p className="mb-2 text-sm font-extrabold text-brand-charcoal">Before</p>
-              <PacketList items={beforeItems} tone="neutral" />
-            </div>
-            <div className="rounded-xl border border-brand-gray200 bg-brand-gray100/60 p-3">
-              <p className="mb-2 text-sm font-extrabold text-brand-charcoal">During</p>
-              <PacketList items={duringItems} tone="neutral" />
-            </div>
-            <div className="rounded-xl border border-brand-gray200 bg-brand-gray100/60 p-3">
-              <p className="mb-2 text-sm font-extrabold text-brand-charcoal">After</p>
-              <PacketList items={afterItems} tone="neutral" />
-            </div>
-          </div>
-        </PrepBriefSection>
-
-        <PrepBriefSection title="Discussion Points" tone="neutral">
-          <PacketList items={whatToSayItems} tone="neutral" />
+        <PrepBriefSection title={roleBriefConfig.discussionTitle} tone="neutral">
+          <PacketList items={roleBriefConfig.discussionItems} tone="neutral" />
         </PrepBriefSection>
 
         <section className="border-t border-brand-gray200/80 py-3">
           <div className="rounded-xl border border-brand-orange/30 bg-brand-orange/5 p-3">
             <h3 className="text-base font-extrabold leading-tight text-brand-charcoal sm:text-lg">
-              Items to Verify
+              {roleBriefConfig.verifyTitle}
             </h3>
             <div className="mt-2 text-sm leading-5 text-brand-gray700 sm:text-[15px]">
-              <PacketList items={aiFlaggedItems.slice(0, 5)} tone="red" />
+              <PacketList items={roleBriefConfig.verifyItems} tone="red" />
             </div>
           </div>
         </section>
 
-        <PrepBriefSection title="Recommended Follow-up" tone="green">
+        <PrepBriefSection title={roleBriefConfig.followTitle} tone="green">
           <ol className="list-decimal space-y-2 pl-5 leading-5">
-            {recommendedNextSteps.map((item) => (
+            {roleBriefConfig.followItems.map((item) => (
               <li key={item}>{item}</li>
             ))}
           </ol>
@@ -2239,7 +2447,7 @@ export default function Home() {
   );
   const [selectedTopics, setSelectedTopics] =
     useState<Topic[]>(instructorDefaultTopics);
-  const [audience, setAudience] = useState<Audience>("Instructor");
+  const [audience, setAudience] = useState<Audience>("Fire Department");
   const [selectedSampleSite, setSelectedSampleSite] = useState(
     "Fire Department Recruit Training Site",
   );
@@ -2322,18 +2530,27 @@ export default function Home() {
     if (nextRole === "Instructor") {
       setRoleEngagement("Customer Training");
       setEngagementType("Training Prep");
-      setAudience("Instructor");
+      setAudience("Fire Department");
       setBriefAction("training_prep");
       setSelectedTopics(instructorDefaultTopics);
       setSelectedSampleSite("Fire Department Recruit Training Site");
       return;
     }
 
-    if (nextRole === "Sales") {
+    if (nextRole === "Sales / Account Manager") {
       setRoleEngagement("Site Survey");
       setEngagementType("Site Survey Prep");
       setAudience("Prospective Customer");
       setBriefAction("customer_talking_points");
+      setSelectedTopics(equipmentAssetsBySite[selectedSampleSite] ?? inspectorDefaultTopics);
+      return;
+    }
+
+    if (nextRole === "Service Manager") {
+      setRoleEngagement("Service Visit");
+      setEngagementType("Service Prep");
+      setAudience("Facility Manager");
+      setBriefAction("follow_up_notes");
       setSelectedTopics(equipmentAssetsBySite[selectedSampleSite] ?? inspectorDefaultTopics);
       return;
     }
@@ -2543,7 +2760,7 @@ export default function Home() {
     setRole("Instructor");
     setRoleEngagement("Customer Training");
     setSelectedTopics(instructorDefaultTopics);
-    setAudience("Instructor");
+    setAudience("Fire Department");
     setSelectedSampleSite("Fire Department Recruit Training Site");
     setSelectedServiceLensId(serviceLenses[0].id);
     setBriefAction("training_prep");
@@ -2575,7 +2792,7 @@ export default function Home() {
             Spend less time searching. More time preparing.
           </h2>
           <p className="mt-2 text-sm leading-6 text-brand-gray700 sm:text-base">
-            Generate an AI-powered field preparation packet that brings together fire protection facility context, equipment records, inspection history, documentation, manufacturer information, recalls, and training resources before work starts.
+            Select the facility, team, and engagement type. The assistant organizes the most relevant preparation details before work starts.
           </p>
         </div>
       </header>
@@ -2618,7 +2835,13 @@ export default function Home() {
               <div>
                 <h2 className="text-lg font-extrabold text-brand-greenDark">2. Select Team</h2>
                 <div className="mt-3 grid grid-cols-2 gap-2">
-                  {(["Inspector", "Service Technician", "Instructor", "Sales"] as UserRole[]).map((item) => {
+                  {([
+                    "Inspector",
+                    "Service Technician",
+                    "Instructor",
+                    "Sales / Account Manager",
+                    "Service Manager",
+                  ] as UserRole[]).map((item) => {
                     const selected = role === item;
                     return (
                       <button
@@ -2666,16 +2889,10 @@ export default function Home() {
 
             <div className="rounded-xl border border-brand-green/30 bg-brand-greenSoft px-3 py-3 text-sm leading-6 text-brand-gray700">
               <p className="font-extrabold text-brand-charcoal">
-                Your packet includes:
+                Your brief will focus on:
               </p>
               <ul className="mt-2 grid gap-x-4 gap-y-1 sm:grid-cols-2">
-                {[
-                  "Site overview",
-                  "Equipment summary",
-                  "Preparation checklist",
-                  "Product guidance",
-                  "Discussion points",
-                ].map((item) => (
+                {briefFocusByRole[role].map((item) => (
                   <li key={item} className="flex gap-2">
                     <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-green" aria-hidden="true" />
                     <span>{item}</span>

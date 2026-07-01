@@ -3,7 +3,7 @@ import knowledgeBase from "../../../data/source-docs/sampleKnowledgeBase.json";
 
 export const dynamic = "force-dynamic";
 
-const systemPrompt = `You are generating an internal Engagement Packet for a fire protection employee.
+const systemPrompt = `You are generating an internal AI Preparation Brief for a fire protection employee.
 
 Use the selected preparation context and optional recall/product safety information to create practical internal guidance. You must use available context in this order:
 - client/site record
@@ -30,18 +30,12 @@ Use the selected preparation context and optional recall/product safety informat
 - additional manual/site/training notes
 
 This is an internal customer engagement preparation workspace. Do not produce a generic recall summary. Help the employee prepare for inspections, customer training, fire department/recruit training, municipality/public safety events, conventions/trade shows, customer meetings, and continuing education prep.
-Use the user-facing packet name "Engagement Packet." Do not use older packet titles in generated text.
+Use the user-facing output name "AI Preparation Brief." Do not use older packet titles in generated text.
 The packet should make the AI value clear by combining client/site context, equipment/assets, service or training history, open discrepancies, missing information, product safety/recall context, checklist questions, and resources to review.
 If product/manufacturer safety context is available, treat it only as verification context. Do not mention manual recall selection or automatic review mechanics in the user-facing output.
 
-The packet should support this simple user-facing structure:
-1. Engagement Summary
-2. Equipment / Asset Records
-3. Role-Specific Guidance
-4. Engagement Checklist with Before, During, and After guidance
-5. Missing Info / Verification Needed
-6. Recommended Next Steps
-7. What to Say
+The brief should answer: "What does this specific employee need to know before this engagement?"
+Do not produce identical emphasis for every role. Adapt the content to the selected role. Include equipment/product information only when it supports that role's work.
 
 Do not create a dense report, lesson library, source-material workflow, recall lookup tool, or generic chatbot output. The value should be visible through concise guidance that combines selected client/site, role, engagement type, equipment/assets, open items, relevant resources, and product/manufacturer verification reminders.
 
@@ -62,10 +56,11 @@ The JSON response must include:
 14. Official Source Reminder
 
 Role-specific output:
-- If role is "Inspector", create onsite preparation guidance. Focus on what to check, verify, discuss, document, and follow up on while onsite.
-- If role is "Instructor", include simple lesson-plan-style preparation inside "What to Prepare." Focus on teaching prep, questions to ask, materials, audience needs, and follow-up. Do not create a separate lesson plan library.
-- If role is "Manager", create readiness guidance, open item risk, ownership, documentation status, internal/customer summary, and follow-up.
-- If role is "Sales / Account Manager", create customer-facing summary, open questions, next steps, related service context, and follow-up notes.
+- If role is "Inspector", focus on site and inspection context, systems to inspect, prior inspection history, open deficiencies, relevant procedures/documentation, items to verify onsite, customer-facing explanation points, and recommended follow-up. Do not over-focus on generic equipment information unless it supports inspection readiness.
+- If role is "Instructor", focus on audience profile, learning objectives, class/topic outline, teaching points, demonstration ideas, reference materials, likely questions, and follow-up resources. Do not assume instructors need customer inspection history or prior deficiencies unless the selected scenario is site-specific training.
+- If role is "Service Technician", focus on work order/service context, reported issue, prior service history, relevant equipment/manuals, likely parts or documentation, troubleshooting considerations, safety or verification steps, and recommended follow-up.
+- If role is "Sales / Account Manager", focus on customer/account summary, recent service or inspection activity, open issues or deficiencies, upcoming work, relationship notes, meeting talking points, suggested questions, and follow-up opportunities. Do not make this overly technical unless the engagement requires it.
+- If role is "Service Manager", focus on operational summary, schedule/job status, open work or escalations, technician/resource concerns, customer priority items, risks/blockers, and recommended next actions. Do not make this a field inspection packet.
 - Mention attendance or documentation only if it appears in the selected sample context.
 - Do not invent official standard numbers, certification requirements, or credit rules unless source text is provided.
 
@@ -441,9 +436,10 @@ const audienceGuidance = (audience: string) => {
           "Prepare a prospective-customer follow-up note with verification items and next steps.",
       };
     case "Instructor / Trainer":
+    case "Instructor":
       return {
         talkingPoint:
-          "For Instructor / Trainer audiences, focus on teaching points, examples, likely questions, materials to bring, and discussion prompts.",
+          "For Instructor audiences, focus on teaching points, examples, likely questions, materials to bring, and discussion prompts.",
         trainingNote:
           "Prepare discussion prompts, practical examples, and standards or manuals that should be verified before teaching.",
         nextAction:
@@ -573,6 +569,92 @@ const fallbackPacket = ({
   const systemsText = equipmentSystems.length
     ? equipmentSystems.join(", ")
     : "site equipment/systems not selected";
+  const roleFocus = (() => {
+    switch (role) {
+      case "Inspector":
+        return {
+          flags: [
+            "Prior deficiencies should be reviewed",
+            "Inspection documentation should be checked",
+            "Onsite verification needed",
+          ],
+          brief:
+            "Focus on inspection scope, systems to inspect, prior findings, open deficiencies, documentation, customer explanation points, and follow-up.",
+          actions: [
+            "Review prior inspection history and open deficiencies.",
+            "Prepare onsite verification items.",
+            "Confirm documentation needed for the inspection report.",
+          ],
+        };
+      case "Instructor":
+        return {
+          flags: [
+            "Audience level should be confirmed",
+            "Teaching materials should be reviewed",
+            "Likely questions should be prepared",
+          ],
+          brief:
+            "Focus on audience needs, learning objectives, topic outline, teaching points, demonstrations, reference materials, likely questions, and follow-up resources.",
+          actions: [
+            "Confirm audience and learning objectives.",
+            "Prepare teaching points and demonstration ideas.",
+            "Review reference materials before the session.",
+          ],
+        };
+      case "Service Technician":
+        return {
+          flags: [
+            "Reported issue should be confirmed",
+            "Prior service history should be reviewed",
+            "Manuals or technical notes may be needed",
+          ],
+          brief:
+            "Focus on work order context, reported issue, prior service history, relevant equipment/manuals, troubleshooting notes, safety steps, and follow-up.",
+          actions: [
+            "Review work order and prior service notes.",
+            "Prepare troubleshooting questions and documentation.",
+            "Confirm safety and verification steps before work.",
+          ],
+        };
+      case "Sales / Account Manager":
+        return {
+          flags: [
+            "Recent customer activity should be reviewed",
+            "Open issues need a clear owner",
+            "Meeting talking points should be prepared",
+          ],
+          brief:
+            "Focus on customer/account summary, recent service or inspection activity, open issues, upcoming work, relationship notes, meeting talking points, and follow-up opportunities.",
+          actions: [
+            "Review recent customer activity and open issues.",
+            "Prepare meeting talking points and suggested questions.",
+            "Capture follow-up opportunities and internal handoffs.",
+          ],
+        };
+      case "Service Manager":
+        return {
+          flags: [
+            "Schedule or job status should be confirmed",
+            "Resource concerns may need review",
+            "Escalations need clear ownership",
+          ],
+          brief:
+            "Focus on operational summary, schedule and job status, open work or escalations, technician/resource concerns, customer priorities, risks, and next actions.",
+          actions: [
+            "Confirm schedule, job status, and open work.",
+            "Identify technician/resource concerns and blockers.",
+            "Assign owners for escalations and next actions.",
+          ],
+        };
+      default:
+        return {
+          flags: ["Human review required"],
+          brief:
+            "Focus on the selected role, engagement, facility context, open items, and preparation needs.",
+          actions: ["Review the selected context with the appropriate internal owner."],
+        };
+    }
+  })();
 
   return {
     sourceContextUsed: sourceContextUsed.length
@@ -622,8 +704,7 @@ const fallbackPacket = ({
     role,
     selectedTopics,
     keyAttentionFlags: [
-      "Model verification needed",
-      "Site applicability unknown",
+      ...roleFocus.flags,
       "Manufacturer instructions should be checked",
       "Human review required",
       upcomingReminder !== "No reminder selected"
@@ -633,7 +714,7 @@ const fallbackPacket = ({
         ? "Training or education opportunity"
         : "Missing training context",
     ],
-    internalFieldBrief: `For ${role || "employee"} ${roleEngagement || engagementType}, prepare for ${sampleSite} using equipment/assets ${selectedTopics.join(", ") || "not specified"}. Use the sample site context, equipment records, service reminders, training needs, and documentation status. ${hasRecall ? `Product/manufacturer context: "${title}" lists manufacturer/company as ${manufacturer}, product context as ${product}, hazard as ${hazard}, and remedy as ${remedy}.` : "Product and manufacturer details need verification before use."}`,
+    internalFieldBrief: `For ${role || "employee"} ${roleEngagement || engagementType}, prepare for ${sampleSite}. ${roleFocus.brief} ${hasRecall ? `Product/manufacturer context: "${title}" lists manufacturer/company as ${manufacturer}, product context as ${product}, hazard as ${hazard}, and remedy as ${remedy}.` : "Product and manufacturer details need verification before use."}`,
     standardsObjectiveAlignment:
       role === "Instructor"
         ? [
@@ -752,6 +833,7 @@ const fallbackPacket = ({
       ],
     },
     recommendedNextBestActions: [
+      ...roleFocus.actions,
       audienceContext.nextAction,
       hasRecall
         ? "Verify exact product model and affected date range."
