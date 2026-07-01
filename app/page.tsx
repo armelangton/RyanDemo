@@ -2643,7 +2643,7 @@ const ReadinessPacket = ({
           AI Engagement Readiness Packet
         </h2>
         <p className="mt-1 text-xs font-semibold leading-5 text-brand-gray600 sm:text-sm">
-          What to review, verify, and discuss before walking into the engagement.
+          Relevant context, verification items, talking points, and next steps bundled into one easy-to-read report.
         </p>
       </div>
 
@@ -3216,10 +3216,10 @@ export default function Home() {
             </div>
           </div>
           <h2 className="mt-2 text-lg font-extrabold leading-tight text-brand-charcoal sm:mt-3 sm:text-2xl">
-            Spend less time searching. More time preparing.
+            Turn scattered details into a clear AI-generated packet.
           </h2>
           <p className="mt-1 text-[13px] leading-5 text-brand-gray700 sm:mt-2 sm:text-base sm:leading-6">
-            Select the team, environment, and engagement type. The assistant organizes the most relevant preparation details before work starts.
+            Relevant context, verification items, talking points, and next steps are bundled into one easy-to-read report.
           </p>
         </div>
       </header>
