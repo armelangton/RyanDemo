@@ -120,76 +120,46 @@ const roleEngagementOptions: RoleEngagement[] = [
   "Customer Meeting",
 ];
 
-const briefFocusByRole: Record<UserRole, string[]> = {
+const setupFocusByRole: Record<UserRole, string[]> = {
   Inspector: [
-    "Site and inspection context",
-    "Systems to inspect",
-    "Prior findings or deficiencies",
-    "Items to verify onsite",
-    "Customer explanation points",
+    "site and inspection context",
+    "systems to inspect",
+    "prior findings or deficiencies",
+    "items to verify onsite",
   ],
   Instructor: [
-    "Audience and learning objectives",
-    "Teaching points",
-    "Demonstration ideas",
-    "Reference materials",
-    "Likely questions",
-    "Follow-up resources",
+    "audience and learning objectives",
+    "teaching points",
+    "demonstration ideas",
+    "likely questions",
   ],
   "Service Technician": [
-    "Work order context",
-    "Prior service history",
-    "Relevant manuals or technical notes",
-    "Troubleshooting considerations",
-    "Safety or verification steps",
+    "reported issue or service need",
+    "prior service history",
+    "troubleshooting approach",
+    "safety or verification steps",
   ],
-  "Sales": [
-    "Customer context",
-    "Recent service activity",
-    "Open issues or deficiencies",
-    "Meeting talking points",
-    "Follow-up opportunities",
+  Sales: [
+    "customer discussion points",
+    "recent service activity",
+    "open questions",
+    "follow-up opportunities",
   ],
   "Service Manager": [
-    "Operational summary",
-    "Job status and schedule risks",
-    "Open work or escalations",
-    "Resource concerns",
-    "Recommended next actions",
+    "operational priorities",
+    "open work or escalations",
+    "resource concerns",
+    "recommended next actions",
   ],
 };
 
-const briefFocusByEngagement: Record<RoleEngagement, string[]> = {
-  Inspection: [
-    "Inspection scope",
-    "Systems and records to verify",
-    "Deficiency follow-up",
-  ],
-  "Service Visit": [
-    "Reported issue or service need",
-    "Prior service history",
-    "Troubleshooting and safety checks",
-  ],
-  "Customer Training": [
-    "Audience readiness",
-    "Training flow",
-    "Teaching and discussion points",
-  ],
-  "Site Survey": [
-    "Facility conditions",
-    "Asset details to capture",
-    "Open field questions",
-  ],
-  "Documentation Review": [
-    "Records to review",
-    "Documentation gaps",
-    "Follow-up ownership",
-  ],
-  "Customer Meeting": [
-    "Customer priorities",
-    "Recent activity",
-    "Meeting talking points",
-  ],
+const setupFocusByEngagement: Record<RoleEngagement, string[]> = {
+  Inspection: ["inspection scope", "documentation status", "customer explanation points"],
+  "Service Visit": ["service history", "likely parts or documentation", "repair follow-up"],
+  "Customer Training": ["training flow", "reference materials", "follow-up resources"],
+  "Site Survey": ["asset details to capture", "facility conditions", "open field questions"],
+  "Documentation Review": ["records to review", "documentation gaps", "follow-up ownership"],
+  "Customer Meeting": ["meeting talking points", "customer priorities", "next steps"],
 };
 
 const inspectorDefaultTopics: Topic[] = [
@@ -2919,15 +2889,13 @@ export default function Home() {
     `Audience: ${audience}`,
     "Demo source notes: service environment brief, source hierarchy, documentation/deficiency follow-up logic, and training/event prep frameworks",
   ];
-  const briefFocusItems =
-    role === "Instructor" && roleEngagement === "Customer Training"
-      ? briefFocusByRole.Instructor
-      : Array.from(
-          new Set([
-            ...briefFocusByRole[role],
-            ...briefFocusByEngagement[roleEngagement],
-          ]),
-        ).slice(0, 6);
+  const setupFocusItems = Array.from(
+    new Set([
+      ...setupFocusByRole[role],
+      ...setupFocusByEngagement[roleEngagement],
+      ...selectedClientRecord.openItems.slice(0, 1).map((item) => item.toLowerCase()),
+    ]),
+  ).slice(0, 6);
 
   useEffect(() => {
     let ignore = false;
@@ -3144,42 +3112,16 @@ export default function Home() {
 
       <div className="mx-auto max-w-3xl px-4 py-3 sm:px-6">
         <section className="rounded-[16px] border border-brand-gray200 bg-white p-3 shadow-sm sm:p-5">
-          <div className="grid gap-5">
-            <div>
-              <h2 className="text-lg font-extrabold text-brand-greenDark">
-                1. Choose Example Facility
-              </h2>
-              <div className="mt-3 grid gap-2 sm:grid-cols-2">
-                {visibleSiteOptions.map((item) => {
-                  const selected = selectedSampleSite === item.value;
-                  return (
-                    <button
-                      key={item.value}
-                      type="button"
-                      onClick={() => {
-                        setSelectedSampleSite(item.value);
-                        setSelectedTopics(
-                          equipmentAssetsBySite[item.value] ?? instructorDefaultTopics,
-                        );
-                        setGuidance(null);
-                      }}
-                      className={`min-h-10 rounded-xl border px-3 py-2.5 text-left text-sm font-extrabold leading-5 transition [font-family:var(--font-display)] ${
-                        selected
-                          ? "border-brand-green bg-brand-green text-white"
-                          : "border-brand-gray200 bg-white text-brand-charcoal hover:border-brand-green hover:bg-brand-greenSoft"
-                      }`}
-                    >
-                      {item.label}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div className="grid gap-5 md:grid-cols-[0.8fr_1.2fr]">
+          <div>
+            <h2 className="text-lg font-extrabold text-brand-greenDark">
+              Prepare an Engagement Packet
+            </h2>
+            <div className="mt-4 grid gap-5">
               <div>
-                <h2 className="text-lg font-extrabold text-brand-greenDark">2. Select Team</h2>
-                <div className="mt-3 grid grid-cols-2 gap-2">
+                <h3 className="text-sm font-extrabold text-brand-greenDark">
+                  Select role
+                </h3>
+                <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3">
                   {([
                     "Inspector",
                     "Service Technician",
@@ -3207,10 +3149,41 @@ export default function Home() {
               </div>
 
               <div>
-                <h2 className="text-lg font-extrabold text-brand-greenDark">
-                  3. Select Engagement
-                </h2>
-                <div className="mt-3 grid gap-2 sm:grid-cols-3 md:grid-cols-1 lg:grid-cols-3">
+                <h3 className="text-sm font-extrabold text-brand-greenDark">
+                  Select location
+                </h3>
+                <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                  {visibleSiteOptions.map((item) => {
+                    const selected = selectedSampleSite === item.value;
+                    return (
+                      <button
+                        key={item.value}
+                        type="button"
+                        onClick={() => {
+                          setSelectedSampleSite(item.value);
+                          setSelectedTopics(
+                            equipmentAssetsBySite[item.value] ?? instructorDefaultTopics,
+                          );
+                          setGuidance(null);
+                        }}
+                        className={`min-h-10 rounded-xl border px-3 py-2.5 text-left text-sm font-extrabold leading-5 transition [font-family:var(--font-display)] ${
+                          selected
+                            ? "border-brand-green bg-brand-green text-white"
+                            : "border-brand-gray200 bg-white text-brand-charcoal hover:border-brand-green hover:bg-brand-greenSoft"
+                        }`}
+                      >
+                        {item.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div>
+                <h3 className="text-sm font-extrabold text-brand-greenDark">
+                  Select engagement
+                </h3>
+                <div className="mt-2 grid gap-2 sm:grid-cols-3">
                   {roleEngagementOptions.map((item) => {
                     const selected = roleEngagement === item;
                     return (
@@ -3232,12 +3205,12 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="rounded-xl border border-brand-green/30 bg-brand-greenSoft px-3 py-3 text-sm leading-6 text-brand-gray700">
+            <div className="mt-4 rounded-xl border border-brand-green/25 bg-brand-greenSoft/70 px-3 py-3 text-sm leading-6 text-brand-gray700">
               <p className="font-extrabold text-brand-charcoal">
                 Your brief will focus on:
               </p>
               <ul className="mt-2 grid gap-x-4 gap-y-1 sm:grid-cols-2">
-                {briefFocusItems.map((item) => (
+                {setupFocusItems.map((item) => (
                   <li key={item} className="flex gap-2">
                     <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-green" aria-hidden="true" />
                     <span>{item}</span>
