@@ -1962,6 +1962,27 @@ const ReadinessPacket = ({
       ...roleItems.filter(isMeaningfulEquipmentDetail),
     ]).slice(0, 2);
   };
+  const equipmentReasonForRecord = (
+    record: EquipmentAssetRecord,
+    hasPossibleRecall: boolean,
+  ) => {
+    if (role === "Instructor") {
+      return `${record.name} gives the session a concrete example, but product-specific claims need source verification.`;
+    }
+    if (role === "Service Technician") {
+      return `${record.name} may shape the service approach, access needs, and documentation to check before work starts.`;
+    }
+    if (role === "Sales") {
+      return `${record.name} is useful customer context only if open questions and technical details are verified first.`;
+    }
+    if (role === "Service Manager") {
+      return `${record.name} may affect open work, resource planning, and customer priority decisions.`;
+    }
+    if (hasPossibleRecall) {
+      return `${record.name} needs model and date-code verification before recall context is discussed.`;
+    }
+    return `${record.name} matters because inspection notes, documentation status, or field condition may affect follow-up.`;
+  };
   const equipmentDetailsForRecord = (
     record: EquipmentAssetRecord,
     recallStatus: string,
@@ -2001,80 +2022,77 @@ const ReadinessPacket = ({
       case "Inspection":
         return {
           guidance: [
-            "Review inspection and test dates, service status, and documentation gaps.",
-            "Verify certification, deficiency, and safety status before conclusions.",
-            "Confirm model, serial, and location details while onsite.",
+            "Use prior deficiencies and records to decide what needs attention first.",
+            "Treat documentation gaps as items to verify, not conclusions to state.",
           ],
           before: [
-            "Review equipment records and open documentation gaps.",
-            "Check last inspection and test dates and service status.",
-            "Prepare model, serial, and location verification questions.",
+            "Scan prior deficiencies and due inspection records.",
+            "Flag systems with missing or unclear documentation.",
+            "Bring questions for model, location, and status gaps.",
           ],
           during: [
-            "Verify labels, locations, service status, and visible condition.",
-            "Document deficiencies and unresolved record questions.",
-            "Avoid official conclusions until details are confirmed.",
+            "Verify labels, locations, and visible condition.",
+            "Separate confirmed findings from unresolved record questions.",
+            "Explain next steps without making unsupported compliance claims.",
           ],
           after: [
-            "Update documentation gaps and follow-up owners.",
-            "Route safety and manufacturer questions for qualified review.",
-            "Confirm the next service or customer communication step.",
+            "Record unresolved items and assign follow-up owners.",
+            "Route manufacturer or safety questions for qualified review.",
+            "Send only verified findings into customer follow-up.",
           ],
           next: [
+            "Resolve missing inspection or test documentation.",
             "Confirm exact model, serial number, and service status.",
-            "Review missing inspection or test documentation.",
-            "Capture unresolved deficiencies and assign follow-up ownership.",
+            "Assign ownership for unresolved deficiencies.",
           ],
         };
       case "Service Visit":
         return {
           guidance: [
-            "Start with open deficiencies and affected equipment.",
-            "Clarify service scope, access needs, and customer communication.",
-            "Identify the owner for each follow-up action.",
+            "Start with the reported issue and the equipment most likely involved.",
+            "Clarify access, safety, and customer communication before work starts.",
           ],
           before: [
-            "Review deficiency status for affected equipment.",
-            "Check service notes, quote status, and documentation gaps.",
-            "Prepare customer-friendly explanation of unresolved items.",
+            "Check the reported issue against prior service notes.",
+            "Identify affected equipment, access needs, and likely documentation.",
+            "Prepare a plain-language status update for the customer.",
           ],
           during: [
-            "Confirm affected equipment and current condition.",
-            "Separate verified facts from items still under review.",
-            "Capture customer questions and ownership for next steps.",
+            "Confirm the issue is still present before troubleshooting.",
+            "Document what was checked, repaired, or left unresolved.",
+            "Keep customer updates factual and limited to verified work.",
           ],
           after: [
-            "Send follow-up items to the responsible internal owner.",
-            "Update documentation with verified deficiency status.",
-            "Confirm next customer communication before action.",
+            "Update service notes with verified findings.",
+            "Route open parts, documentation, or quote needs.",
+            "Confirm the next customer communication owner.",
           ],
           next: [
-            "Confirm which deficiencies remain open.",
-            "Assign an owner for service or documentation follow-up.",
-            "Prepare a customer-facing explanation after internal review.",
+            "Confirm whether the reported issue remains open.",
+            "Check service history before recommending next steps.",
+            "Assign owner for parts, documentation, or customer follow-up.",
           ],
         };
       case "Site Survey":
         return {
           guidance: [
-            "Prioritize complete asset details and field notes.",
-            "Capture manufacturer, model, SKU, serial, location, and condition.",
-            "Photograph labels or asset tags when details are missing.",
+            "Use the visit to close gaps in asset details and field conditions.",
+            "Capture enough verified information to support future service or planning.",
           ],
           before: [
-            "Prepare the asset capture list and open questions.",
-            "Review which systems need manufacturer and model confirmation.",
-            "Plan photos or notes for missing equipment details.",
+            "Identify systems with missing manufacturer or model details.",
+            "Prepare location and access questions.",
+            "Plan label photos or notes where allowed.",
           ],
           during: [
-            "Capture manufacturer, model, SKU, serial, and location.",
-            "Note visible condition, access issues, and documentation gaps.",
-            "Photograph labels where allowed by site procedures.",
+            "Capture manufacturer, model, location, and condition.",
+            "Note access issues and documentation gaps.",
+            "Photograph labels where site procedures allow.",
           ],
           after: [
-            "Update asset records with verified details.",
-            "Flag incomplete records for follow-up.",
-            "Route product or manufacturer questions for review.",
+            "Update records with verified field details.",
+            "Flag incomplete assets for follow-up.",
+            "Route manufacturer questions for review.",
           ],
           next: [
             "Capture missing model, SKU, serial, and location details.",
@@ -2085,24 +2103,23 @@ const ReadinessPacket = ({
       case "Customer Training":
         return {
           guidance: [
-            "Turn equipment records into plain-language teaching points.",
-            "Prepare likely questions and demonstration boundaries.",
-            "Verify site-specific details before making customer claims.",
+            "Turn facility systems into clear teaching examples.",
+            "Set boundaries around product, recall, and site-specific claims.",
           ],
           before: [
             "Confirm audience level and training purpose.",
-            "Prepare equipment examples, talking points, and questions.",
-            "Review documentation and product safety context before teaching.",
+            "Choose examples that match the systems being discussed.",
+            "Check product or manufacturer context before teaching.",
           ],
           during: [
-            "Explain what each system does in practical terms.",
-            "Use verified examples and avoid unconfirmed site-specific claims.",
-            "Capture attendance, questions, and follow-up items.",
+            "Explain system purpose in plain language.",
+            "Use verified examples and avoid unconfirmed site claims.",
+            "Capture questions that need technical follow-up.",
           ],
           after: [
-            "Document attendance and unresolved questions.",
-            "Send verification items to the appropriate internal reviewer.",
-            "Prepare any customer follow-up summary.",
+            "Document attendance or completion needs.",
+            "Send unanswered technical questions to the right reviewer.",
+            "Share approved follow-up materials only.",
           ],
           next: [
             "Confirm training objectives, materials, and attendance needs.",
@@ -2113,24 +2130,23 @@ const ReadinessPacket = ({
       case "Documentation Review":
         return {
           guidance: [
-            "Focus on records, documentation gaps, and follow-up ownership.",
-            "Separate verified records from items still needing review.",
-            "Identify open deficiencies and customer communication needs.",
+            "Use the review to separate verified records from open questions.",
+            "Tie missing documentation to ownership and next action.",
           ],
           before: [
             "Gather inspection reports, service notes, and deficiency records.",
-            "Identify missing records and inconsistent documentation.",
-            "Prepare questions for unresolved ownership or status gaps.",
+            "Mark missing or inconsistent documentation.",
+            "List ownership questions before the review.",
           ],
           during: [
             "Compare available records against open items.",
-            "Confirm owners for missing or incomplete documentation.",
-            "Avoid customer-facing conclusions until records are verified.",
+            "Confirm owners for missing documentation.",
+            "Avoid compliance implications until records are verified.",
           ],
           after: [
-            "Assign owners for missing records and unresolved items.",
-            "Update documentation status after qualified review.",
-            "Prepare a concise follow-up summary for stakeholders.",
+            "Assign owners for missing records.",
+            "Update status only after qualified review.",
+            "Send a concise follow-up summary.",
           ],
           next: [
             "Review missing records and open documentation gaps.",
@@ -2141,19 +2157,18 @@ const ReadinessPacket = ({
       case "Customer Meeting":
         return {
           guidance: [
-            "Focus on customer priorities, recent activity, and next steps.",
-            "Prepare clear talking points for open issues and decisions.",
-            "Route technical or safety claims through qualified review first.",
+            "Use recent activity and open items to shape the conversation.",
+            "Keep technical or safety claims tied to verified information.",
           ],
           before: [
-            "Review recent inspection, service, and documentation activity.",
-            "Prepare customer-friendly summary of open items.",
-            "Confirm which questions need internal verification first.",
+            "Review recent service, inspection, and documentation activity.",
+            "Choose the few open items worth discussing.",
+            "Decide which questions need internal verification first.",
           ],
           during: [
             "Discuss priorities, open questions, and practical next steps.",
-            "Separate verified facts from items needing follow-up.",
-            "Capture customer questions and decision points.",
+            "Separate verified facts from follow-up items.",
+            "Capture decisions and customer questions.",
           ],
           after: [
             "Send meeting recap and internal handoff notes.",
@@ -2258,18 +2273,6 @@ const ReadinessPacket = ({
         };
     }
   })();
-  const whatToSayItems = compactItems([
-    role === "Instructor"
-      ? "Today we are using the available equipment information to review how sprinkler systems, alarm and detection devices, and demonstration equipment fit into a fire protection discussion."
-      : role === "Inspector"
-        ? "I am reviewing sample equipment and documentation context, and I will verify model, service, and documentation details before making any official conclusion."
-        : role === "Sales"
-          ? "This conversation should focus on what the available information shows, what still needs verification, and the next practical step for a safety-focused follow-up."
-          : role === "Service Manager"
-            ? "This operational review should clarify job status, resource needs, customer priority items, and escalation risks before work moves forward."
-          : "This review should clarify readiness, open verification items, documentation status, and who owns the next follow-up step.",
-    "The main goal is to understand what each system does, what documentation matters, and what details need to be verified before making site-specific claims.",
-  ]).slice(0, 3);
   const recommendedNextSteps = compactItems([
     ...engagementFocus.next,
     ...guidance.recommendedNextBestActions,
@@ -2280,60 +2283,62 @@ const ReadinessPacket = ({
   const readinessSummaryItems = (() => {
     const roleLead =
       role === "Instructor"
-        ? "Prepare a clear session plan, verified examples, and safe discussion boundaries."
+        ? "This brief should help turn facility systems into teachable examples without overstating unverified details."
         : role === "Inspector"
-          ? "Prepare to verify field conditions, documentation gaps, and customer follow-up needs."
+          ? "The main value is knowing which records, systems, and deficiencies deserve attention first."
           : role === "Service Technician"
-            ? "Prepare for service troubleshooting with prior history, access needs, and safety checks in mind."
+            ? "The work hinges on understanding the reported issue, prior service context, and safe troubleshooting boundaries."
             : role === "Service Manager"
-              ? "Prepare to clarify job status, resource concerns, customer priorities, and escalation risks."
-              : "Prepare for a customer conversation with recent activity, open questions, and next steps ready.";
+              ? "The operational risk is unclear ownership of open work, resources, or customer priorities."
+              : "The meeting should center on verified customer history, open questions, and clear next steps.";
     return compactItems([
       roleLead,
-      engagementFocus.guidance[0],
-      engagementFocus.guidance[1],
       role === "Instructor"
-        ? "Verify product, manufacturer, and site-specific details before teaching."
-        : "Confirm what is verified, what is still open, and who owns follow-up.",
-    ]).slice(0, 4);
+        ? "Product, manufacturer, and recall context should be treated as source material to verify before instruction."
+        : "Anything involving code, compliance, safety, recall, or manufacturer guidance should stay in verification until confirmed.",
+      role === "Sales"
+        ? "A useful outcome is a customer-ready conversation with internal follow-up ownership."
+        : role === "Service Manager"
+          ? "A useful outcome is a clear owner for each blocker or escalation."
+          : "A useful outcome is knowing what to check, explain, and route for follow-up.",
+    ]).slice(0, 3);
   })();
   const preparationPriorityItems = (() => {
     const rolePriorities =
       role === "Instructor"
         ? [
-            "Review manufacturer documentation before teaching.",
-            "Prepare demonstration examples and likely questions.",
-            "Confirm audience level, materials, and follow-up resources.",
+            "Match examples to the audience level and equipment being discussed.",
+            "Bring approved references, photos, or demo materials.",
+            "Plan likely questions and the safest answer boundaries.",
           ]
         : role === "Inspector"
           ? [
-              "Review previous deficiencies and open documentation gaps.",
-              "Prepare customer explanation points for unresolved items.",
-              "Confirm what needs field verification before leaving.",
+              "Check prior deficiencies and documentation gaps before arrival.",
+              "Identify systems that need field verification.",
+              "Plan how to explain unresolved items in plain language.",
             ]
           : role === "Service Technician"
             ? [
-                "Review prior service history and reported issue.",
+                "Compare the reported issue with prior service history.",
                 "Check relevant manuals, parts, and access needs.",
-                "Prepare a troubleshooting approach and safety checks.",
+                "Plan the troubleshooting sequence and safety checks.",
               ]
             : role === "Service Manager"
               ? [
-                  "Review open work, schedule status, and resource concerns.",
+                  "Check open work, schedule status, and resource constraints.",
                   "Identify customer priority items and escalation risks.",
-                  "Assign owners for operational follow-up.",
+                  "Decide who owns each operational follow-up.",
                 ]
               : [
                   "Review customer history and recent activity.",
-                  "Prepare concise discussion points and open questions.",
+                  "Choose the most useful discussion points.",
                   "Identify follow-up opportunities and internal owners.",
                 ];
 
     return compactItems([
       ...rolePriorities,
       engagementFocus.next[0],
-      engagementFocus.next[1],
-    ]).slice(0, 6);
+    ]).slice(0, 4);
   })();
   const roleBriefConfig = (() => {
     if (role === "Instructor") {
@@ -2359,16 +2364,16 @@ const ReadinessPacket = ({
           "Use equipment only as supporting teaching context.",
         ]).slice(0, 6),
         discussionItems: compactItems([
-          "Explain system purpose in plain language.",
-          "Prepare demonstration ideas that match the audience level.",
-          "Anticipate questions about alarms, sprinklers, hydrants, pumps, or extinguishers.",
-          "Clarify what should be escalated to qualified review.",
+          "Explain what the system is intended to do in everyday language.",
+          "Use examples that match the audience's actual responsibilities.",
+          "When a question becomes site-specific, move it to follow-up instead of guessing.",
+          "Point attendees to approved references, not memory or assumptions.",
         ]).slice(0, 5),
         verifyItems: compactItems([
-          ...certificationAttendanceReminders,
-          ...missingInformation,
-          "Verify reference materials before teaching.",
-          "Confirm training objectives, audience level, materials, and site-specific details.",
+          "Confirm training objective and audience level before setting the lesson depth.",
+          "Verify manufacturer or recall context before using it as an example.",
+          "Confirm attendance, certificate, or completion documentation requirements.",
+          "Check reference materials against approved company or manufacturer sources.",
         ]).slice(0, 5),
         followItems: compactItems([
           "Confirm training objectives, audience level, materials, and any site-specific details that need verification before teaching.",
@@ -2400,13 +2405,15 @@ const ReadinessPacket = ({
           ...roleGuidanceItems,
         ]).slice(0, 6),
         discussionItems: compactItems([
-          "Explain what was checked and what still needs verification.",
-          ...whatToSayItems,
+          "Explain the reported issue in terms of what has been checked and what is still unknown.",
+          "Tell the customer when a finding requires parts, documentation, or internal review.",
+          "Avoid committing to a fix until access, condition, and service history are verified.",
         ]).slice(0, 4),
         verifyItems: compactItems([
-          "Verify safe working conditions before troubleshooting.",
-          ...aiFlaggedItems,
-          ...missingInformation,
+          "Confirm the reported issue is still active before troubleshooting.",
+          "Verify safe access and affected equipment before starting work.",
+          "Check prior service history before recommending parts or repair steps.",
+          "Confirm documentation status before closing or escalating the service item.",
         ]).slice(0, 5),
         followItems: compactItems([
           "Document repair summary and unresolved issues.",
@@ -2437,12 +2444,16 @@ const ReadinessPacket = ({
           ...roleGuidanceItems,
         ]).slice(0, 5),
         discussionItems: compactItems([
-          ...whatToSayItems,
-          ...guidance.audienceSpecificTalkingPoints,
+          "Lead with recent activity and what it means for the customer.",
+          "Separate confirmed facts from items Ryan still needs to verify.",
+          "Ask what outcome the customer needs from the meeting.",
+          "Close with ownership and timing for follow-up.",
         ]).slice(0, 5),
         verifyItems: compactItems([
-          "Verify technical details before customer-facing claims.",
-          ...missingInformation,
+          "Verify technical details before making customer-facing claims.",
+          "Confirm which open issues are still active.",
+          "Check whether product or manufacturer guidance is relevant before discussing it.",
+          "Confirm internal owner before promising follow-up.",
         ]).slice(0, 5),
         followItems: compactItems([
           "Capture customer recap and internal handoff notes.",
@@ -2473,12 +2484,15 @@ const ReadinessPacket = ({
           ...roleGuidanceItems,
         ]).slice(0, 5),
         discussionItems: compactItems([
-          "Confirm customer priority items and communication owner.",
-          ...whatToSayItems,
+          "Clarify what the customer needs to know now versus after review.",
+          "Keep escalation language tied to verified job status.",
+          "Name the internal owner for each blocker or priority item.",
         ]).slice(0, 4),
         verifyItems: compactItems([
-          "Verify job status, resource constraints, and escalation owners.",
-          ...aiFlaggedItems,
+          "Verify job status before escalating or updating the customer.",
+          "Confirm technician, parts, or schedule constraints.",
+          "Check which open items have an assigned owner.",
+          "Confirm customer priority before changing work direction.",
         ]).slice(0, 5),
         followItems: compactItems([
           ...recommendedNextSteps,
@@ -2506,18 +2520,22 @@ const ReadinessPacket = ({
         ...roleGuidanceItems,
       ]).slice(0, 5),
       discussionItems: compactItems([
-        ...whatToSayItems,
-        ...guidance.audienceSpecificTalkingPoints,
+        "Explain what was observed and what still needs verification.",
+        "Describe deficiencies in plain language without making unsupported conclusions.",
+        "Tell the customer which documentation or site details affect next steps.",
+        "Route code, compliance, safety, and manufacturer questions through qualified review.",
       ]).slice(0, 5),
       verifyItems: compactItems([
-        ...aiFlaggedItems,
-        ...missingInformation,
+        "Confirm exact equipment model, serial number, and location before finalizing findings.",
+        "Verify documentation status before discussing compliance implications.",
+        "Check whether prior deficiencies remain open.",
+        "Confirm manufacturer or recall context before customer discussion.",
       ]).slice(0, 5),
       followItems: recommendedNextSteps,
     };
   })();
   const packetText = [
-    "AI Preparation Brief",
+    "AI Engagement Readiness Packet",
     "Summary",
     ...readinessSummaryItems.map((item) => `- ${item}`),
     "",
@@ -2541,7 +2559,7 @@ const ReadinessPacket = ({
           "Equipment Briefing",
           ...equipmentRecords.map(
             (record) =>
-              `- ${record.name}: ${cleanBriefText(record.manufacturer)}, ${cleanBriefText(record.location)}, ${recallStatusForRecord(record)}.`,
+              `- ${record.name}: ${equipmentReasonForRecord(record, recallStatusForRecord(record).startsWith("Possible"))}`,
           ),
         ]
       : []),
@@ -2558,7 +2576,7 @@ const ReadinessPacket = ({
   };
   const shareText = (text: string) => {
     if (typeof navigator !== "undefined" && "share" in navigator) {
-      void navigator.share({ title: "AI Preparation Brief", text });
+      void navigator.share({ title: "AI Engagement Readiness Packet", text });
       return;
     }
     copyText(text);
@@ -2568,7 +2586,7 @@ const ReadinessPacket = ({
     <section className="rounded-[16px] border border-brand-gray200 bg-white p-3 shadow-sm sm:p-4">
       <div className="border-b border-brand-gray200/80 pb-3">
         <h2 className="text-xl font-extrabold leading-tight text-brand-charcoal sm:text-2xl">
-          AI Preparation Brief
+          AI Engagement Readiness Packet
         </h2>
         <p className="mt-1 text-sm font-semibold leading-5 text-brand-gray600">
           What to review, verify, and discuss before walking into the engagement.
@@ -2623,6 +2641,7 @@ const ReadinessPacket = ({
                 const statusLabel = equipmentStatusForRecord(record, hasPossibleRecall);
                 const attentionItems = equipmentAttentionForRecord(record, hasPossibleRecall);
                 const detailItems = equipmentDetailsForRecord(record, recallStatus, hasPossibleRecall);
+                const engagementReason = equipmentReasonForRecord(record, hasPossibleRecall);
                 return (
                   <article
                     key={record.serialNumber}
@@ -2649,6 +2668,10 @@ const ReadinessPacket = ({
                         {statusLabel}
                       </p>
                     </div>
+
+                    <p className="mt-2 text-sm leading-5 text-brand-gray700">
+                      {engagementReason}
+                    </p>
 
                     {attentionItems.length ? (
                       <ul className="mt-2 space-y-1 text-sm leading-5 text-brand-gray700">
