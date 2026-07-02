@@ -3233,9 +3233,9 @@ export default function Home() {
               </h1>
 
               <p className="mt-1 max-w-3xl text-[13px] leading-5 text-brand-gray700 sm:text-[15px] sm:leading-6">
-                This proof of concept shows how AI can organize scattered
-                service, training, equipment, and site context into a practical
-                prep packet for fire protection teams.
+                Bring service, training, equipment, site, and customer context
+                together so teams can understand what to review, prioritize,
+                verify, and discuss before, during, and after the engagement.
               </p>
             </div>
           </div>
