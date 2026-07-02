@@ -3354,22 +3354,18 @@ export default function Home() {
     <main className="min-h-screen bg-brand-gray100 text-brand-charcoal">
       <div className="mx-auto max-w-4xl px-4 pb-2 pt-2 sm:px-6 sm:pb-3 sm:pt-3">
         <header className="pb-1.5 sm:pb-2">
-          <div className="flex w-fit items-center gap-2 sm:gap-2.5">
-            <Image
-              src="/ryan-logo-transparent.png"
-              alt="Ryan Fire Protection, Inc."
-              width={1280}
-              height={551}
-              priority
-              className="h-auto w-24 shrink-0 sm:w-40"
-            />
-            <div>
-              <h1 className="text-[20px] font-extrabold leading-tight text-brand-green sm:text-[28px]">
-                Engagement Assistant
-              </h1>
-            </div>
-          </div>
-          <h2 className="mt-1.5 max-w-2xl text-lg font-extrabold leading-tight text-brand-charcoal sm:mt-2 sm:text-2xl">
+          <Image
+            src="/ryan-logo-transparent.png"
+            alt="Ryan Fire Protection, Inc."
+            width={1280}
+            height={551}
+            priority
+            className="h-auto w-24 sm:w-32"
+          />
+          <h1 className="mt-1 text-[19px] font-extrabold leading-tight text-brand-green sm:mt-1.5 sm:text-[24px]">
+            Engagement Assistant
+          </h1>
+          <h2 className="mt-0.5 max-w-2xl text-lg font-extrabold leading-tight text-brand-charcoal sm:mt-1 sm:text-2xl">
             Turn scattered details into a clear AI-generated packet.
           </h2>
           <p className="mt-1 max-w-2xl text-[13px] leading-5 text-brand-gray700 sm:text-base sm:leading-6">
