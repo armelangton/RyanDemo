@@ -1828,6 +1828,132 @@ const MarkdownPacket = ({ markdown }: { markdown: string }) => {
   );
 };
 
+type PacketSection = {
+  title: string;
+  items: string[];
+  paragraphs: string[];
+};
+
+const parsePacketSections = (markdown: string) => {
+  const sections: PacketSection[] = [];
+  let currentSection: PacketSection | null = null;
+
+  markdown.split(/\r?\n/).forEach((rawLine) => {
+    const line = rawLine.trim();
+    if (!line) return;
+
+    const headingMatch = line.match(/^(#{1,3})\s+(.+)$/);
+    const numberedHeadingMatch = line.match(/^\d+\.\s+(.+)$/);
+    if (headingMatch || numberedHeadingMatch) {
+      currentSection = {
+        title: headingMatch?.[2] ?? numberedHeadingMatch?.[1] ?? line,
+        items: [],
+        paragraphs: [],
+      };
+      sections.push(currentSection);
+      return;
+    }
+
+    if (!currentSection) {
+      currentSection = { title: "Summary", items: [], paragraphs: [] };
+      sections.push(currentSection);
+    }
+
+    const bulletMatch = line.match(/^[-*•]\s+(.+)$/);
+    if (bulletMatch) {
+      currentSection.items.push(bulletMatch[1]);
+      return;
+    }
+
+    currentSection.paragraphs.push(line);
+  });
+
+  return sections;
+};
+
+const sectionItems = (section?: PacketSection) =>
+  section ? [...section.paragraphs, ...section.items] : [];
+
+const StyledPacketSections = ({ markdown }: { markdown: string }) => {
+  const sections = parsePacketSections(markdown);
+  const sectionByTitle = new Map(sections.map((section) => [section.title, section]));
+  const summary = sectionByTitle.get("Summary");
+  const priorities = sectionByTitle.get("Preparation Priorities");
+  const beforeDuringAfter = sections.filter((section) =>
+    /^(Before|During|After)\b/.test(section.title),
+  );
+  const verification = sectionByTitle.get("Items Requiring Verification");
+  const followUp = sectionByTitle.get("Follow-up Resources");
+  const questionSection = sections.find(
+    (section) =>
+      !["Summary", "Preparation Priorities", "Items Requiring Verification", "Follow-up Resources"].includes(
+        section.title,
+      ) && !/^(Before|During|After)\b/.test(section.title),
+  );
+
+  if (!sections.length || (!summary && !priorities && beforeDuringAfter.length === 0)) {
+    return <MarkdownPacket markdown={markdown} />;
+  }
+
+  return (
+    <div className="space-y-0.5">
+      {summary ? (
+        <PrepBriefSection title="Summary" tone="green">
+          <PacketList items={sectionItems(summary)} tone="green" />
+        </PrepBriefSection>
+      ) : null}
+
+      {priorities ? (
+        <PrepBriefSection title="Preparation Priorities" tone="green">
+          <PacketList items={sectionItems(priorities)} tone="green" />
+        </PrepBriefSection>
+      ) : null}
+
+      {beforeDuringAfter.length ? (
+        <section className="border-t border-brand-gray200/80 py-2 sm:py-3">
+          <div className="grid gap-2 sm:gap-3 lg:grid-cols-3">
+            {beforeDuringAfter.map((section) => (
+              <article key={section.title} className="rounded-xl border border-brand-gray200 bg-white p-2.5 sm:p-3">
+                <h3 className="text-[15px] font-extrabold leading-tight text-brand-charcoal sm:text-base">
+                  {section.title}
+                </h3>
+                <div className="mt-1.5 text-[13px] leading-5 text-brand-gray700 sm:mt-2 sm:text-sm">
+                  <PacketList items={sectionItems(section)} tone="neutral" />
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      ) : null}
+
+      {verification ? (
+        <section className="border-t border-brand-gray200/80 py-2 sm:py-3">
+          <div className="rounded-xl border border-brand-orange/30 bg-brand-orange/5 p-2.5 sm:p-3">
+            <h3 className="text-[15px] font-extrabold leading-tight text-brand-charcoal sm:text-lg">
+              Items Requiring Verification
+            </h3>
+            <div className="mt-1.5 text-[13px] leading-5 text-brand-gray700 sm:mt-2 sm:text-[15px]">
+              <PacketList items={sectionItems(verification)} tone="red" />
+            </div>
+          </div>
+        </section>
+      ) : null}
+
+      {questionSection ? (
+        <PrepBriefSection title={questionSection.title} tone="neutral">
+          <PacketList items={sectionItems(questionSection)} tone="neutral" />
+        </PrepBriefSection>
+      ) : null}
+
+      {followUp ? (
+        <PrepBriefSection title="Follow-up Resources" tone="green">
+          <PacketList items={sectionItems(followUp)} tone="green" />
+        </PrepBriefSection>
+      ) : null}
+    </div>
+  );
+};
+
 const selectorHeadingClass =
   "text-[15px] font-extrabold leading-5 text-brand-greenDark [font-family:var(--font-display)] sm:text-base";
 const selectorOptionClass =
@@ -1881,7 +2007,7 @@ const ReadinessPacket = ({
         </div>
 
         <div className="space-y-2">
-          <MarkdownPacket markdown={packetMarkdown} />
+          <StyledPacketSections markdown={packetMarkdown} />
 
           <p className="border-t border-brand-gray200/80 pt-2 text-[11px] font-semibold leading-4 text-brand-gray500 sm:pt-3 sm:text-xs sm:leading-5">
             This AI-generated packet is preparation support only. Verify official documentation, manufacturer guidance, NFPA standards, applicable codes, company procedures, local AHJ requirements, and qualified professional review before action.
