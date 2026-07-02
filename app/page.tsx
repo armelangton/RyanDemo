@@ -1830,6 +1830,8 @@ const MarkdownPacket = ({ markdown }: { markdown: string }) => {
 
 const selectorHeadingClass =
   "text-lg font-extrabold leading-6 text-brand-greenDark [font-family:var(--font-display)] sm:text-xl";
+const selectorOptionClass =
+  "flex min-h-10 items-center justify-center rounded-xl border px-2 py-2 text-center text-[13px] font-extrabold leading-4 transition [font-family:var(--font-display)] sm:min-h-14 sm:px-2.5 sm:py-2 sm:text-[13px] sm:leading-4";
 
 const ReadinessPacket = ({
   guidance,
@@ -3351,8 +3353,8 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-brand-gray100 text-brand-charcoal">
       <header className="bg-white">
-        <div className="mx-auto max-w-4xl px-4 py-2 sm:px-6 sm:py-3">
-          <div className="flex items-center justify-center gap-2 sm:gap-2.5">
+        <div className="mx-auto max-w-4xl px-4 pb-1.5 pt-2 sm:px-6 sm:pb-2 sm:pt-3">
+          <div className="flex w-fit items-center gap-2 sm:gap-2.5">
             <Image
               src="/ryan-logo.png"
               alt="Ryan Fire Protection, Inc."
@@ -3367,16 +3369,16 @@ export default function Home() {
               </h1>
             </div>
           </div>
-          <h2 className="mx-auto mt-1.5 max-w-2xl text-center text-lg font-extrabold leading-tight text-brand-charcoal sm:mt-2 sm:text-2xl">
+          <h2 className="mt-1.5 max-w-2xl text-lg font-extrabold leading-tight text-brand-charcoal sm:mt-2 sm:text-2xl">
             Turn scattered details into a clear AI-generated packet.
           </h2>
-          <p className="mx-auto mt-1 max-w-2xl text-center text-[13px] leading-5 text-brand-gray700 sm:text-base sm:leading-6">
+          <p className="mt-1 max-w-2xl text-[13px] leading-5 text-brand-gray700 sm:text-base sm:leading-6">
             Select the team, site type, and task. The assistant organizes the most relevant preparation details before work starts.
           </p>
         </div>
       </header>
 
-      <div className="mx-auto max-w-4xl px-4 py-1.5 sm:px-6 sm:py-2.5">
+      <div className="mx-auto max-w-4xl px-4 pb-2 pt-1 sm:px-6 sm:pb-3 sm:pt-1.5">
         <section className="rounded-[16px] border border-brand-gray200 bg-white p-3 shadow-sm sm:p-5">
           <div>
             <div className="grid gap-5 sm:gap-6">
@@ -3399,7 +3401,7 @@ export default function Home() {
                         key={item}
                         type="button"
                         onClick={() => applyRole(item)}
-                        className={`min-h-10 rounded-xl border px-2 py-2 text-center text-[13px] font-extrabold transition [font-family:var(--font-display)] sm:min-h-11 sm:px-3 sm:py-2.5 sm:text-sm ${
+                        className={`${selectorOptionClass} ${
                           selected
                             ? "border-brand-green bg-brand-green text-white"
                             : "border-brand-gray200 bg-white text-brand-charcoal hover:border-brand-green hover:bg-brand-greenSoft"
@@ -3414,7 +3416,7 @@ export default function Home() {
 
               <div>
                 <h3 className={selectorHeadingClass}>
-                  Select Site Type
+                  Select Site
                 </h3>
                 <div className="mt-2.5 grid grid-cols-1 gap-1.5 sm:mt-3 sm:grid-cols-2 sm:gap-2 md:grid-cols-4">
                   {visibleSiteOptions.map((item) => {
@@ -3432,7 +3434,7 @@ export default function Home() {
                           setGuidance(null);
                           setPacketMarkdown("");
                         }}
-                        className={`min-h-10 rounded-xl border px-2 py-2 text-left text-[13px] font-extrabold leading-4 transition [font-family:var(--font-display)] sm:min-h-14 sm:px-2.5 sm:py-2 sm:text-[13px] sm:leading-4 ${
+                        className={`${selectorOptionClass} ${
                           selected
                             ? "border-brand-green bg-brand-green text-white"
                             : "border-brand-gray200 bg-white text-brand-charcoal hover:border-brand-green hover:bg-brand-greenSoft"
@@ -3457,7 +3459,7 @@ export default function Home() {
                         key={item}
                         type="button"
                         onClick={() => applyRoleEngagement(item)}
-                        className={`min-h-10 rounded-xl border px-2 py-2 text-left text-[13px] font-extrabold leading-4 transition [font-family:var(--font-display)] sm:min-h-14 sm:px-2.5 sm:py-2 sm:text-[13px] sm:leading-4 ${
+                        className={`${selectorOptionClass} ${
                           selected
                             ? "border-brand-green bg-brand-green text-white"
                             : "border-brand-gray200 bg-white text-brand-charcoal hover:border-brand-green hover:bg-brand-greenSoft"
