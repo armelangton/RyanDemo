@@ -3352,11 +3352,11 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-brand-gray100 text-brand-charcoal">
-      <header className="bg-white">
-        <div className="mx-auto max-w-4xl px-4 pb-1.5 pt-2 sm:px-6 sm:pb-2 sm:pt-3">
+      <div className="mx-auto max-w-4xl px-4 pb-2 pt-2 sm:px-6 sm:pb-3 sm:pt-3">
+        <header className="pb-1.5 sm:pb-2">
           <div className="flex w-fit items-center gap-2 sm:gap-2.5">
             <Image
-              src="/ryan-logo.png"
+              src="/ryan-logo-transparent.png"
               alt="Ryan Fire Protection, Inc."
               width={1280}
               height={551}
@@ -3375,10 +3375,8 @@ export default function Home() {
           <p className="mt-1 max-w-2xl text-[13px] leading-5 text-brand-gray700 sm:text-base sm:leading-6">
             Select the team, site type, and task. The assistant organizes the most relevant preparation details before work starts.
           </p>
-        </div>
-      </header>
+        </header>
 
-      <div className="mx-auto max-w-4xl px-4 pb-2 pt-1 sm:px-6 sm:pb-3 sm:pt-1.5">
         <section className="rounded-[16px] border border-brand-gray200 bg-white p-3 shadow-sm sm:p-5">
           <div>
             <div className="grid gap-5 sm:gap-6">
