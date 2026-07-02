@@ -1,121 +1,52 @@
 # Engagement Assistant
 
-An internal employee preparation workspace inspired by Ryan Fire Protection service workflows. The app helps inspectors, instructors, service managers, field employees, sales engineers, project managers, convention representatives, and other customer-facing employees prepare for inspections, customer training, customer meetings, fire department events, public safety engagements, conventions/trade shows, and continuing education prep.
+An internal employee preparation demo inspired by Ryan Fire Protection service workflows. The app helps fire protection employees prepare for inspections, service visits, customer training, site surveys, project coordination, documentation review, and customer conversations.
 
 This is not official Ryan Fire Protection software. It is a concept prototype created for demonstration purposes and is not affiliated with or endorsed by Ryan Fire Protection, Inc.
 
 ## Purpose
 
-Fire protection employees often need to prepare using information from multiple sources: site context, installed equipment, service reminders, documentation needs, product safety notices, manufacturer documentation to verify, training resources, customer-friendly explanations, related service considerations, and follow-up items. This app demonstrates how AI-assisted guidance and public recall data could help employees quickly organize that information, explain technical issues in plain language, and prepare for more informed customer engagements.
+Fire protection employees often prepare from scattered information: site context, installed equipment, service history, documentation gaps, public product safety notices, manufacturer details to verify, training resources, customer-facing talking points, and follow-up items.
 
-The project is intentionally framed as an AI implementation concept rather than a software engineering showcase. It uses a practical public-data workflow to show how an internal employee could combine recall information, service context, audience needs, and responsible review boundaries before taking action.
+This demo shows how an assistant-style interface can organize that information into a practical readiness packet before work starts.
 
 ## What This App Does
 
-The app lets a Ryan Fire Protection-style internal user choose a site, role, engagement, and services. The selected site profile includes installed equipment, known systems, service reminders, training needs, and documentation needs. The app automatically checks public CPSC recall data for possible product safety context from that installed equipment. It then generates an Engagement Packet around the selected work context.
+The app lets a user select:
 
-The packet is designed to help employees understand what to verify, what to discuss, what questions may come up, what related service considerations may matter, what customer-friendly explanations may be useful, and what information still needs official or internal review.
+- Team
+- Site
+- Task
 
-## Who It Is For
+It then generates an **AI Engagement Readiness Packet** locally from structured sample context in the app. The packet highlights what to review, prioritize, verify, and discuss before, during, and after the engagement.
 
-This proof of concept is intended for internal fire protection employees such as:
+The app also performs public CPSC recall checks from selected equipment context. Recall and product safety information is treated as verification context only, not as a final determination.
 
-- Inspectors preparing for field visits
-- Field technicians preparing for site conversations
-- Service managers reviewing safety-related customer questions
-- Trainers preparing customer or fire department education
-- Sales engineers and project managers preparing customer discussions
-- Account or customer-facing employees preparing for meetings
-- Employees supporting municipality or public safety events
-- Convention or trade show representatives preparing discussion points
-- Continuing education presenters preparing discussion material
+## Local Packet Generation
 
-It is not a customer portal, CRM, LMS, inspection authority, or compliance decision system.
+The current demo does not call any paid AI API. Packet content is generated locally from structured sample data, selected options, public recall results, and reusable preparation logic in the app.
+
+This keeps the live demo stable and reviewable without requiring API keys or external AI billing.
 
 ## Product Safety / Recall Context
 
-The primary feature is the **Engagement Packet**. Product safety context is supporting information inside the packet, not the center of the setup workflow.
+The public recall route remains part of the demo:
 
-The app performs an automatic product safety review by creating CPSC search terms from installed equipment in the selected site profile, including manufacturer, product name, category, and model when known. Possible recall matches are labeled cautiously and require verification against official CPSC notices, manufacturer instructions, exact model/date ranges, and site records.
+```text
+/api/recalls?q=...
+```
 
-The manual product safety search remains available as an optional override for checking an additional product, manufacturer, model, hazard, or keyword not already included in the selected site profile.
+It searches public CPSC recall data and returns possible matches for review. Possible matches must be verified against official CPSC notices, manufacturer guidance, exact model/date ranges, site records, applicable codes, NFPA standards, company procedures, AHJ requirements, and qualified professional review.
 
-The CPSC recall search does not require an account or API key.
+The app does not decide whether a recall applies to a customer site.
 
-Users can search by:
+## Responsible Use
 
-- Product
-- Manufacturer
-- Model number
-- Keyword
-- Hazard
-- Remedy
-- Description
+The packet supports preparation only. It does not provide code compliance, safety approval, inspection authority, engineering judgment, manufacturer direction, legal advice, or recall applicability determinations.
 
-## Engagement Packet
+Employees should verify all important details against official documentation, manufacturer instructions, applicable standards, company procedures, local AHJ requirements, and qualified internal review before action.
 
-The app uses `/api/summarize` to generate an **Engagement Packet**. The request includes site, role, engagement, selected services, site profile, installed equipment/products, instructor/event prep resources, service reminders, documentation/deficiency context, automatic product safety review results, optional manual product safety context, additional notes, and requested preparation action.
-
-Available brief actions:
-
-- Generate Inspection Prep
-- Generate Training Prep
-- Generate Event Prep
-- Generate Customer Talking Points
-- Generate Follow-Up Notes
-
-Supported engagement types:
-
-- Inspection
-- Customer Training
-- Fire Department / Recruit Training
-- Municipality / Public Safety Event
-- Convention / Trade Show
-- Customer Meeting
-- Continuing Education Prep
-
-Inspector packets include onsite guidance sections such as:
-
-- Onsite Priorities
-- Systems / Equipment to Review
-- Items to Verify
-- Product Safety / Recall Check
-- Customer Talking Points
-- Related Service Considerations
-- Documentation / Follow-Up
-- Official Source Reminder
-
-Instructor packets include session guidance sections such as:
-
-- Session Priorities
-- Lesson Flow
-- Materials / Equipment Needed
-- Standards / Objective Alignment
-- Safety Points to Emphasize
-- Attendance / Certification Reminders
-- Related Service Considerations
-- Documentation / Follow-Up
-- Official Source Reminder
-
-## Prototype Prep Resources
-
-The app also includes demonstration preparation resources that support the selected engagement type. These are sample/demo materials, not official Ryan Fire Protection documents or live manufacturer documentation.
-
-Examples include:
-
-- Materials or resources to bring
-- Equipment/prep checklist
-- Suggested discussion items
-- Demonstration or training notes
-- Likely attendee questions
-- Follow-up reminders
-- Related service considerations
-
-These resources are intended to show how AI could organize customer engagement preparation in one workspace while keeping final decisions with qualified employees and official sources.
-
-If `OPENAI_API_KEY` is configured, the app uses OpenAI. If no key is configured, it displays a local demo fallback so the app still works visually during review.
-
-## Source Pack
+## Source Data
 
 Demo source documents live in:
 
@@ -123,35 +54,7 @@ Demo source documents live in:
 data/source-docs/
 ```
 
-The source pack gives the prototype a more realistic fire protection service context without using private company data. It includes:
-
-- Ryan-style service environment notes
-- Ryan Service Lens guidance
-- sample site profiles
-- engagement prep frameworks
-- demo source notes/manual-style excerpts
-- responsible AI and source hierarchy guidance
-- `sampleKnowledgeBase.json` for structured demo selectors
-
-The app uses the structured knowledge base to power the Ryan Service Lens selector and source-aware AI context.
-
-## Why Public Recall Data Was Selected
-
-Public CPSC recall data was chosen because it is realistic, useful, and available without assuming access to internal systems. A fire protection employee may occasionally need to review product safety notices, but the real implementation question is broader: can AI reduce research time, clarify technical information, and help employees prepare more consistently while still requiring human review?
-
-This prototype demonstrates that workflow using public data plus a small demo source pack.
-
-## How AI Enhances Review
-
-AI is used to organize and translate context, not to make final determinations. The assistant separates official recall facts, demo profile context, AI interpretation, missing information, and human review reminders. It helps an employee prepare questions, talking points, checklists, follow-up notes, and related service considerations before an engagement.
-
-It does not decide whether a recall applies to a customer site. That still requires exact model information, manufacturer documentation, service history, official notices, applicable standards, company procedures, and qualified internal review.
-
-## Responsible AI
-
-AI-generated guidance should be reviewed against official CPSC notices, manufacturer instructions, applicable codes, NFPA standards, company procedures, and qualified internal review before action is taken. The app is intended to support preparation and review, not replace professional judgment, manufacturer guidance, regulatory requirements, inspection judgment, engineering judgment, or official documentation.
-
-The packet does not provide code compliance, safety approval, or recall applicability determinations.
+The source pack provides representative fire protection service context without using private company data.
 
 ## Tech Stack
 
@@ -159,31 +62,8 @@ The packet does not provide code compliance, safety approval, or recall applicab
 - React
 - TypeScript
 - Tailwind CSS
-- CPSC Recalls API
-- OpenAI Responses API
-
-## Future Enhancement Ideas
-
-- Add richer internal document retrieval after data governance review
-- Connect approved service record fields through a secure integration
-- Add manager-reviewed customer communication templates
-- Improve model/date-range extraction from official recall notices
-- Add exportable internal prep packet PDFs
-- Add role-specific source filters for inspectors, trainers, and service leaders
-
-## Environment Variables
-
-Create a `.env.local` file only if you want live OpenAI summaries:
-
-```bash
-OPENAI_API_KEY=your_api_key_here
-```
-
-Optional:
-
-```bash
-OPENAI_MODEL=gpt-4.1-mini
-```
+- CPSC recall/public recall data route
+- Vercel Analytics
 
 ## Run Locally
 
@@ -205,39 +85,14 @@ Open:
 http://localhost:3000
 ```
 
-## Deploy to Vercel Free Tier
+## Deploy to Vercel
 
 1. Push the project to GitHub.
-2. Create a free Vercel account.
-3. Import the GitHub repository into Vercel.
-4. Use the default Next.js settings.
-5. Add `OPENAI_API_KEY` in Vercel Project Settings if live AI summaries are needed.
-6. Deploy.
+2. Import the repository into Vercel.
+3. Use the default Next.js settings.
+4. Deploy.
 
-The CPSC recall lookup can work without additional secrets.
-
-## Custom GPT Action
-
-The app includes:
-
-```text
-/public/openapi.json
-```
-
-When deployed, the OpenAPI file will be available at:
-
-```text
-https://your-domain.vercel.app/openapi.json
-```
-
-To connect it to a Custom GPT Action:
-
-1. Deploy the app to a public URL.
-2. Open the GPT builder.
-3. Add a new Action.
-4. Import the schema from `/openapi.json`.
-5. Update the server URL if needed.
-6. Use the `/api/recalls?q=...` operation to search public CPSC recall data.
+No AI API key is required for the current demo.
 
 ## Health Check
 
@@ -247,4 +102,4 @@ The app includes:
 /api/health
 ```
 
-This returns a small JSON status object showing whether AI summaries are using OpenAI or fallback demo mode.
+This returns a small JSON status object for the local demo and recall route.

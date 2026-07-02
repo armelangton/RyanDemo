@@ -2680,7 +2680,7 @@ export default function Home() {
     }
 
     if (nextRole === "Design & Engineering") {
-      setRoleEngagement("Plan Review");
+      setRoleEngagement("Site Survey");
       setEngagementType("Site Survey Prep");
       setAudience("Facility Manager");
       setBriefAction("customer_talking_points");
@@ -3418,7 +3418,7 @@ export default function Home() {
               className="w-full rounded-xl bg-brand-green px-5 py-3 text-center text-[15px] font-extrabold text-white transition hover:bg-brand-greenDark disabled:cursor-not-allowed disabled:bg-brand-gray500 sm:w-auto sm:py-4 sm:text-base [font-family:var(--font-display)]"
             >
               {summarizingId
-                ? "Generating Brief..."
+                ? "Generating Packet..."
                 : "Generate Packet"}
             </button>
           </div>

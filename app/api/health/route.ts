@@ -7,6 +7,6 @@ export async function GET() {
     ok: true,
     service: "fire-protection-field-assistant",
     cpscRecallApi: "configured",
-    aiSummaries: process.env.OPENAI_API_KEY ? "openai-configured" : "fallback-demo",
+    packetGeneration: "local-demo",
   });
 }

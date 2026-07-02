@@ -7,9 +7,9 @@ Add these files as demo knowledge/data inside the app repo, for example:
 
 /data/source-docs/
 
-Then update the app so selected site profile, selected Ryan service lens, engagement type, audience, selected recall, and optional source notes are sent to /api/summarize.
+Use the source pack as structured demo knowledge in the local packet generation flow.
 
-The AI should use the source documents to generate an Engagement Packet.
+The assistant should use the source documents to generate an Engagement Packet locally.
 
 ## Best GPT use
 Upload these files as GPT knowledge files if creating a Custom GPT version of the assistant.
