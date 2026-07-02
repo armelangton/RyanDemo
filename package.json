@@ -1,5 +1,5 @@
 {
-  "name": "fire-equipment-recall-intelligence",
+  "name": "fire-protection-field-assistant",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -11,6 +11,7 @@
   "dependencies": {
     "@vercel/analytics": "^2.0.1",
     "next": "16.2.9",
+    "openai": "^6.45.0",
     "react": "19.0.0",
     "react-dom": "19.0.0"
   },

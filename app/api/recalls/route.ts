@@ -133,7 +133,7 @@ async function fetchCpsc(field: string, query: string): Promise<CpscRecall[]> {
   const response = await fetch(cpscUrl(field, query), {
     headers: {
       Accept: "application/json",
-      "User-Agent": "fire-equipment-recall-intelligence-demo/0.1",
+      "User-Agent": "fire-protection-field-assistant-demo/0.1",
     },
     cache: "no-store",
   });
@@ -188,7 +188,12 @@ export async function GET(request: Request) {
     );
 
     if (!recalls.length && resultSets.every((result) => result.status === "rejected")) {
-      throw new Error("All CPSC recall lookups failed.");
+      return NextResponse.json({
+        results: [],
+        unavailable: true,
+        message:
+          "Public recall data could not be checked right now. Verify official sources before action.",
+      });
     }
 
     const deduped = new Map<string, RecallResult>();
