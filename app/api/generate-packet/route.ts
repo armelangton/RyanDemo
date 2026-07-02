@@ -22,15 +22,33 @@ Every selected option must visibly affect the output. If Team changes, the packe
 
 Do not produce a generic packet that only repeats the selected labels.
 
-Use this section structure:
-1. Engagement Summary
+The website supplies this title and subtitle:
+AI Engagement Readiness Packet
+What to review, verify, and discuss before walking into the engagement.
+
+Return Markdown using these approved sections only:
+1. Summary
 2. Preparation Priorities
-3. Equipment / Asset Records
-4. Team-Specific Guidance
-5. Engagement Checklist
-6. Missing Info / Verification Needed
-7. Recommended Next Steps
-8. What to Say
+3. Before the [task word]
+4. During the [task word]
+5. After the [task word]
+6. Items Requiring Verification
+7. Talking/Teaching/Field/Review/Coordination Questions
+8. Follow-up Resources
+
+Choose the Before/During/After and question section labels from the Task:
+- Inspection: Before the Inspection, During the Inspection, After the Inspection, Talking Points and Likely Questions
+- System Testing: Before Testing, During Testing, After Testing, Testing Questions and Follow-Up Items
+- Service Follow-Up: Before the Follow-Up, During the Follow-Up, After the Follow-Up, Service Questions and Follow-Up Items
+- Training Session: Before the Session, During the Session, After the Session, Teaching Points and Likely Questions
+- Customer Meeting: Before the Meeting, During the Meeting, After the Meeting, Talking Points and Likely Questions
+- Site Survey: Before the Survey, During the Survey, After the Survey, Field Questions and Follow-Up Items
+- Plan Review: Before the Review, During the Review, After the Review, Review Questions and Follow-Up Items
+- Project Coordination: Before Coordination, During Coordination, After Coordination, Coordination Questions and Follow-Up Items
+
+Do not add any other section names. Do not create separate sections for raw equipment tables, perspective-only wrappers, checklist wrappers, missing-info labels, next-step-only labels, customer script labels, cross-team context, draft notes, or standalone equipment detail tables.
+
+Equipment, manufacturer, product safety, recall, documentation, and asset details should be summarized inside Items Requiring Verification, the task-specific questions section, or Follow-up Resources when relevant.
 
 Keep the packet practical, concise, scannable, and field-ready.
 Use 3-5 bullets per section unless more detail is necessary.
