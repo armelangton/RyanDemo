@@ -2823,113 +2823,379 @@ export default function Home() {
     };
   }, [selectedSiteDetails]);
 
-  const generateSummary = async (
-    recall: RecallResult | null = null,
+    const generateSummary = async (
+    _recall: RecallResult | null = null,
     action = briefAction,
   ) => {
     setGuidance(null);
     setPacketMarkdown("");
     setSummaryError("");
-    setSummarizingId(recall?.id ?? "engagement-packet");
+    setSummarizingId("engagement-packet");
     setBriefAction(action);
 
-    const generateLocalFallback = async () => {
-      const fallbackResponse = await fetch("/api/summarize", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          recall,
-          role,
-          roleEngagement,
-          selectedTopics,
-          equipmentAssetRecords: selectedTopics
-            .map((topic) => equipmentRecordLibrary[topic])
-            .filter(Boolean),
-          engagementType,
-          audience,
-          sampleSite: selectedSampleSite,
-          siteProfile: selectedSiteDetails,
-          serviceLens: selectedServiceLens,
-          equipmentSystems: selectedSiteDetails.systems,
-          upcomingReminder: selectedSiteDetails.reminder,
-          trainingNeed: selectedSiteDetails.trainingNeed,
-          documentationNeed: selectedSiteDetails.documentationNeed,
-          relatedServiceConsideration: selectedSiteDetails.relatedService,
-          prepResources: prep,
-          additionalNotes,
-          automaticSafetyReview,
-          installedEquipment: selectedSiteDetails.installedEquipment,
-          sourceContext: {
-            sourceContextUsed,
-            clientRecord: selectedClientRecord,
-            equipmentAssetRecords: selectedTopics
-              .map((topic) => equipmentRecordLibrary[topic])
-              .filter(Boolean),
-            materialsResourcesIncluded: selectedClientRecord.resources.map(
-              (resource) => `${resource.title}: ${resource.description}`,
-            ),
-            responsibleAiLabels: knowledgeBase.responsibleAiLabels,
-            sourceHierarchy: [
-              "Official product and manufacturer notices",
-              "Manufacturer instructions and product documentation",
-              "Applicable codes and NFPA standards",
-              "Company procedures and qualified internal review",
-              "Verified user-provided site/customer information",
-              "AI interpretation or preparation guidance",
-            ],
-            demoSourceNotes: [
-              "Protect: identify immediate safety or customer impact.",
-              "Prevent: identify inspection, maintenance, training, testing, or documentation steps that reduce risk.",
-              "Preserve: support system reliability, customer confidence, facility continuity, and follow-up planning.",
-              "Related service considerations must be framed as safety, education, maintenance, documentation, prevention, modernization, customer confidence, or risk reduction.",
-            ],
-          },
-          briefAction: action,
-        }),
-      });
-      const fallbackPayload = await fallbackResponse.json();
-      if (!fallbackResponse.ok) {
-        throw new Error(
-          fallbackPayload.error || "Unable to generate the preparation brief right now.",
-        );
+    const taskLabels = (() => {
+      switch (roleEngagement) {
+        case "Inspection":
+          return {
+            before: "Before the Inspection",
+            during: "During the Inspection",
+            after: "After the Inspection",
+            questions: "Talking Points and Likely Questions",
+          };
+        case "System Testing":
+          return {
+            before: "Before Testing",
+            during: "During Testing",
+            after: "After Testing",
+            questions: "Testing Questions and Follow-Up Items",
+          };
+        case "Service Follow-Up":
+          return {
+            before: "Before the Follow-Up",
+            during: "During the Follow-Up",
+            after: "After the Follow-Up",
+            questions: "Service Questions and Follow-Up Items",
+          };
+        case "Training Session":
+          return {
+            before: "Before the Session",
+            during: "During the Session",
+            after: "After the Session",
+            questions: "Teaching Points and Likely Questions",
+          };
+        case "Customer Meeting":
+          return {
+            before: "Before the Meeting",
+            during: "During the Meeting",
+            after: "After the Meeting",
+            questions: "Talking Points and Likely Questions",
+          };
+        case "Site Survey":
+          return {
+            before: "Before the Survey",
+            during: "During the Survey",
+            after: "After the Survey",
+            questions: "Field Questions and Follow-Up Items",
+          };
+        case "Plan Review":
+          return {
+            before: "Before the Review",
+            during: "During the Review",
+            after: "After the Review",
+            questions: "Review Questions and Follow-Up Items",
+          };
+        case "Project Coordination":
+          return {
+            before: "Before Coordination",
+            during: "During Coordination",
+            after: "After Coordination",
+            questions: "Coordination Questions and Follow-Up Items",
+          };
+        default:
+          return {
+            before: "Before",
+            during: "During",
+            after: "After",
+            questions: "Talking Points and Likely Questions",
+          };
       }
-      setGuidance(fallbackPayload.guidance);
-    };
+    })();
 
-    try {
-      const response = await fetch("/api/generate-packet", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          team: role,
-          environment: selectedSampleSite,
-          engagementType: roleEngagement,
-        }),
-      });
-      const payload = await response.json();
-      if (!response.ok) {
-        throw new Error(payload.error || "Unable to generate the packet right now.");
+    const beforeItems = (() => {
+      switch (roleEngagement) {
+        case "Inspection":
+          return [
+            "Review prior deficiencies, inspection records, and documentation gaps.",
+            "Identify systems that need field verification.",
+            "Prepare questions for model, location, access, and service-status gaps.",
+          ];
+        case "System Testing":
+          return [
+            "Confirm test scope, required access, and witness or notification needs.",
+            "Review prior test records and known system issues.",
+            "Prepare documentation for results, exceptions, and unresolved items.",
+          ];
+        case "Service Follow-Up":
+          return [
+            "Compare the reported issue with prior service notes.",
+            "Identify affected equipment, access needs, and likely documentation.",
+            "Prepare a plain-language status update for the customer.",
+          ];
+        case "Training Session":
+          return [
+            "Confirm audience level, session purpose, and learning objectives.",
+            "Select examples that match the site type and systems being discussed.",
+            "Verify manufacturer, product, or recall context before using it in instruction.",
+          ];
+        case "Customer Meeting":
+          return [
+            "Review recent inspection, service, and documentation activity.",
+            "Choose the few open items worth discussing.",
+            "Decide which technical details need internal verification before the meeting.",
+          ];
+        case "Site Survey":
+          return [
+            "List field conditions, asset details, and assumptions that need confirmation.",
+            "Prepare access, location, and documentation questions.",
+            "Plan label photos or notes where site procedures allow.",
+          ];
+        case "Plan Review":
+          return [
+            "Gather drawings, specs, reports, service notes, and deficiency records.",
+            "Mark missing or inconsistent documentation.",
+            "List ownership questions before the review.",
+          ];
+        case "Project Coordination":
+          return [
+            "Review scope, schedule, materials, access, and trade coordination needs.",
+            "Identify punch list, handoff, or testing-readiness items.",
+            "Prepare owner and timing questions for unresolved project risks.",
+          ];
+        default:
+          return [
+            "Review available records and documentation gaps.",
+            "Identify questions that need verification.",
+            "Confirm what needs qualified review before action.",
+          ];
       }
-      setPacketMarkdown(payload.packetMarkdown);
-    } catch (error) {
-      const aiError =
-        error instanceof Error
-          ? error.message
-          : "Unable to generate the packet right now.";
+    })();
 
-      try {
-        await generateLocalFallback();
-        setSummaryError(`${aiError} Showing the local fallback packet for review.`);
-      } catch (fallbackError) {
-        setSummaryError(
-          fallbackError instanceof Error
-            ? fallbackError.message
-            : "Unable to generate the preparation brief right now.",
-        );
+    const duringItems = (() => {
+      switch (roleEngagement) {
+        case "Inspection":
+          return [
+            "Verify labels, locations, visible condition, and documentation status.",
+            "Separate confirmed findings from unresolved record questions.",
+            "Explain next steps without making unsupported compliance claims.",
+          ];
+        case "System Testing":
+          return [
+            "Follow approved testing procedures and site safety requirements.",
+            "Record results, exceptions, and affected equipment clearly.",
+            "Separate observed test results from follow-up interpretation.",
+          ];
+        case "Service Follow-Up":
+          return [
+            "Confirm the issue is still present before troubleshooting.",
+            "Document what was checked, repaired, or left unresolved.",
+            "Keep customer updates factual and limited to verified work.",
+          ];
+        case "Training Session":
+          return [
+            "Explain system purpose in plain language.",
+            "Use verified examples and avoid unconfirmed site-specific claims.",
+            "Capture questions that need technical follow-up.",
+          ];
+        case "Customer Meeting":
+          return [
+            "Discuss priorities, open questions, and practical next steps.",
+            "Separate verified facts from follow-up items.",
+            "Capture decisions and customer questions.",
+          ];
+        case "Site Survey":
+          return [
+            "Capture manufacturer, model, location, condition, and access constraints.",
+            "Note assumptions, missing details, and documentation gaps.",
+            "Photograph labels where site procedures allow.",
+          ];
+        case "Plan Review":
+          return [
+            "Compare available records against open items.",
+            "Confirm owners for missing documentation.",
+            "Avoid compliance implications until records are verified.",
+          ];
+        case "Project Coordination":
+          return [
+            "Confirm field conditions, schedule blockers, and trade coordination needs.",
+            "Document unresolved scope, material, or access issues.",
+            "Keep customer updates tied to verified job status.",
+          ];
+        default:
+          return [
+            "Capture confirmed facts separately from open questions.",
+            "Keep explanations tied to verified information.",
+            "Document anything that needs follow-up.",
+          ];
       }
-    } finally {
-      setSummarizingId("");
-    }
+    })();
+
+    const afterItems = (() => {
+      switch (roleEngagement) {
+        case "Inspection":
+          return [
+            "Record unresolved items and assign follow-up owners.",
+            "Route manufacturer or safety questions for qualified review.",
+            "Send only verified findings into customer follow-up.",
+          ];
+        case "System Testing":
+          return [
+            "Document results and unresolved test issues.",
+            "Route failures, impairments, or unclear results for review.",
+            "Confirm follow-up owner and customer communication timing.",
+          ];
+        case "Service Follow-Up":
+          return [
+            "Update service notes with verified findings.",
+            "Route open parts, documentation, or quote needs.",
+            "Confirm the next customer communication owner.",
+          ];
+        case "Training Session":
+          return [
+            "Document attendance or completion needs.",
+            "Send unanswered technical questions to the right reviewer.",
+            "Share approved follow-up materials only.",
+          ];
+        case "Customer Meeting":
+          return [
+            "Send meeting recap and internal handoff notes.",
+            "Assign owners for customer questions and open issues.",
+            "Confirm timing for the next communication.",
+          ];
+        case "Site Survey":
+          return [
+            "Update records with verified field details.",
+            "Flag incomplete assets or assumptions for follow-up.",
+            "Route manufacturer, design, or documentation questions for review.",
+          ];
+        case "Plan Review":
+          return [
+            "Assign owners for missing records.",
+            "Update status only after qualified review.",
+            "Send a concise follow-up summary.",
+          ];
+        case "Project Coordination":
+          return [
+            "Update project notes with owners and timing.",
+            "Route open coordination issues to the right internal owner.",
+            "Confirm handoff, punch list, or testing follow-up.",
+          ];
+        default:
+          return [
+            "Update notes with confirmed details.",
+            "Assign follow-up owners.",
+            "Route unresolved technical questions for review.",
+          ];
+      }
+    })();
+
+    const questionItems = (() => {
+      switch (roleEngagement) {
+        case "Training Session":
+          return [
+            "What does this audience need to understand before leaving the session?",
+            "Which examples are approved and verified for instruction?",
+            "Which questions should be captured for technical follow-up instead of answered live?",
+          ];
+        case "Site Survey":
+          return [
+            "Which field conditions or assumptions need to be captured?",
+            "Which assets are missing model, serial, location, or access details?",
+            "What follow-up is needed before design, service, or project work can move forward?",
+          ];
+        case "Project Coordination":
+          return [
+            "Who owns each open schedule, material, access, or handoff item?",
+            "Which trades or site contacts need coordination before the next step?",
+            "What could block installation, testing, punch list, or closeout?",
+          ];
+        case "Plan Review":
+          return [
+            "Which records, drawings, or specs are missing or inconsistent?",
+            "Who owns each documentation gap?",
+            "Which assumptions require qualified review before action?",
+          ];
+        case "System Testing":
+          return [
+            "What test scope, access, documentation, or witness requirement needs confirmation?",
+            "Which prior test results or known issues should be reviewed first?",
+            "Who owns follow-up if a test item fails or remains incomplete?",
+          ];
+        case "Service Follow-Up":
+          return [
+            "Is the reported issue still active?",
+            "What has already been checked, repaired, or documented?",
+            "What parts, access, records, or internal review are needed next?",
+          ];
+        case "Customer Meeting":
+          return [
+            "What does the customer need to decide or understand?",
+            "Which open items are verified enough to discuss?",
+            "Who owns follow-up after the meeting?",
+          ];
+        default:
+          return [
+            "What needs to be verified onsite?",
+            "Which documentation gaps could affect next steps?",
+            "Who owns follow-up for unresolved findings?",
+          ];
+      }
+    })();
+
+    const roleLead =
+      role === "Training"
+        ? "Prepare clear teaching points, safe discussion boundaries, and likely audience questions."
+        : role === "Inspection"
+          ? "Focus on records, field conditions, deficiencies, and items that need verification onsite."
+          : role === "Service"
+            ? "Focus on the reported issue, prior service context, access needs, and safe troubleshooting boundaries."
+            : role === "Sales"
+              ? "Prepare a customer-ready conversation with verified context, open questions, and follow-up ownership."
+              : role === "Design & Engineering"
+                ? "Capture field conditions, assumptions, access constraints, and design questions that need follow-up."
+                : "Clarify project readiness, coordination needs, schedule risks, materials, and handoff items.";
+
+    const environmentItems = environmentFocusMap[selectedSampleSite] ?? [];
+    const taskItems = engagementTypeFocusMap[roleEngagement] ?? [];
+    const equipmentItems = selectedTopics.length
+      ? selectedTopics
+      : selectedSiteDetails.systems.slice(0, 4);
+
+    const packet = [
+      "## Summary",
+      `- The ${role} team is preparing for ${roleEngagement} in a ${selectedSampleSite} setting.`,
+      `- ${roleLead}`,
+      selectedSiteDetails.shortSummary
+        ? `- Site context: ${selectedSiteDetails.shortSummary}`
+        : "",
+      environmentItems[0]
+        ? `- Site type considerations: ${environmentItems.join("; ")}.`
+        : "",
+      "",
+      "## Preparation Priorities",
+      `- Focus on ${taskItems.join(" and ") || roleEngagement.toLowerCase()} before work starts.`,
+      `- Review relevant systems: ${equipmentItems.slice(0, 4).join(", ")}.`,
+      `- Check open context: ${selectedClientRecord.openItems.slice(0, 2).join("; ")}.`,
+      "- Keep technical, safety, manufacturer, and code-related details in verification until confirmed.",
+      "",
+      `## ${taskLabels.before}`,
+      ...beforeItems.map((item) => `- ${item}`),
+      "",
+      `## ${taskLabels.during}`,
+      ...duringItems.map((item) => `- ${item}`),
+      "",
+      `## ${taskLabels.after}`,
+      ...afterItems.map((item) => `- ${item}`),
+      "",
+      "## Items Requiring Verification",
+      "- Verify official documentation, manufacturer guidance, applicable codes, NFPA standards, company procedures, local AHJ requirements, and qualified professional review before action.",
+      "- Confirm exact equipment model, manufacturer, serial number, location, and service status before making product-specific claims.",
+      "- Treat product safety or recall context as a verification prompt, not a confirmed site finding.",
+      "- Confirm open deficiencies, documentation gaps, and follow-up owners before customer communication.",
+      "",
+      `## ${taskLabels.questions}`,
+      ...questionItems.map((item) => `- ${item}`),
+      "",
+      "## Follow-up Resources",
+      "- Review the site record, service history, inspection notes, and documentation gaps before relying on the packet.",
+      `- Use the selected systems as context: ${equipmentItems.slice(0, 4).join(", ")}.`,
+      "- Send unresolved technical, manufacturer, code, or compliance questions to qualified internal review.",
+      "- Capture follow-up owners, timing, and customer communication notes after the work is complete.",
+    ]
+      .filter(Boolean)
+      .join("\n");
+
+    setPacketMarkdown(packet);
+    setSummarizingId("");
   };
 
   const startNewPacket = () => {
