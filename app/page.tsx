@@ -3351,33 +3351,33 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-brand-gray100 text-brand-charcoal">
       <header className="bg-white">
-        <div className="mx-auto max-w-3xl px-4 py-2 sm:px-6 sm:py-4">
-          <div className="flex items-center gap-2 sm:gap-3">
+        <div className="mx-auto max-w-4xl px-4 py-2 sm:px-6 sm:py-3">
+          <div className="flex items-center justify-center gap-2 sm:gap-2.5">
             <Image
               src="/ryan-logo.png"
               alt="Ryan Fire Protection, Inc."
               width={1280}
               height={551}
               priority
-              className="h-auto w-24 shrink-0 sm:w-44"
+              className="h-auto w-24 shrink-0 sm:w-40"
             />
             <div>
-              <h1 className="text-[20px] font-extrabold leading-tight text-brand-green sm:text-[30px]">
+              <h1 className="text-[20px] font-extrabold leading-tight text-brand-green sm:text-[28px]">
                 Engagement Assistant
               </h1>
             </div>
           </div>
-          <h2 className="mt-2 text-lg font-extrabold leading-tight text-brand-charcoal sm:mt-3 sm:text-2xl">
+          <h2 className="mx-auto mt-1.5 max-w-2xl text-center text-lg font-extrabold leading-tight text-brand-charcoal sm:mt-2 sm:text-2xl">
             Turn scattered details into a clear AI-generated packet.
           </h2>
-          <p className="mt-1 text-[13px] leading-5 text-brand-gray700 sm:mt-2 sm:text-base sm:leading-6">
-            Relevant context, verification items, talking points, and next steps are bundled into one easy-to-read report.
+          <p className="mx-auto mt-1 max-w-2xl text-center text-[13px] leading-5 text-brand-gray700 sm:text-base sm:leading-6">
+            Select the team, site type, and task. The assistant organizes the most relevant preparation details before work starts.
           </p>
         </div>
       </header>
 
-      <div className="mx-auto max-w-3xl px-4 py-2 sm:px-6 sm:py-3">
-        <section className="rounded-[16px] border border-brand-gray200 bg-white p-2.5 shadow-sm sm:p-5">
+      <div className="mx-auto max-w-4xl px-4 py-1.5 sm:px-6 sm:py-2.5">
+        <section className="rounded-[16px] border border-brand-gray200 bg-white p-3 shadow-sm sm:p-5">
           <div>
             <div className="grid gap-5 sm:gap-6">
               <div>
@@ -3414,7 +3414,7 @@ export default function Home() {
 
               <div>
                 <h3 className={selectorHeadingClass}>
-                  Select Site
+                  Select Site Type
                 </h3>
                 <div className="mt-2.5 grid grid-cols-1 gap-1.5 sm:mt-3 sm:grid-cols-2 sm:gap-2 md:grid-cols-4">
                   {visibleSiteOptions.map((item) => {
@@ -3565,7 +3565,7 @@ export default function Home() {
                 <div className="h-full w-1/2 animate-pulse rounded-full bg-brand-green" />
               </div>
               <p className="mt-2 text-sm font-extrabold text-brand-charcoal sm:mt-3">
-                Building a preparation brief from the selected facility, team, and engagement.
+                Building a preparation packet from the selected team, site type, and task.
               </p>
             </div>
           ) : null}
