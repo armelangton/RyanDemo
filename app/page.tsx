@@ -3216,7 +3216,7 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-brand-gray100 text-brand-charcoal">
       <div className="mx-auto max-w-4xl px-4 pb-2 pt-1.5 sm:px-6 sm:pb-3 sm:pt-2.5">
-                <header className="mb-3 rounded-[16px] border border-brand-gray200 bg-white px-5 py-4 shadow-sm sm:mb-4">
+        <header className="mb-3 rounded-[16px] border border-brand-gray200 bg-white px-5 py-4 shadow-sm sm:mb-4">
           <div className="flex items-center gap-4">
             <Image
               src="/ryan-logo-transparent.png"
@@ -3227,9 +3227,17 @@ export default function Home() {
               className="h-auto w-28 shrink-0 sm:w-32"
             />
 
-            <h1 className="text-2xl font-extrabold leading-tight text-brand-charcoal sm:text-3xl">
-              Engagement Assistant
-            </h1>
+            <div>
+              <h1 className="text-2xl font-extrabold leading-tight text-brand-charcoal sm:text-3xl">
+                Engagement Assistant
+              </h1>
+
+              <p className="mt-1 max-w-3xl text-[13px] leading-5 text-brand-gray700 sm:text-[15px] sm:leading-6">
+                This proof of concept shows how AI can organize scattered
+                service, training, equipment, and site context into a practical
+                prep packet for fire protection teams.
+              </p>
+            </div>
           </div>
         </header>
 
