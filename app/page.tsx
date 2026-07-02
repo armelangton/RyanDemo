@@ -3216,24 +3216,21 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-brand-gray100 text-brand-charcoal">
       <div className="mx-auto max-w-4xl px-4 pb-2 pt-1.5 sm:px-6 sm:pb-3 sm:pt-2.5">
-        <header className="pb-1 sm:pb-1.5">
-          <Image
-            src="/ryan-logo-transparent.png"
-            alt="Ryan Fire Protection, Inc."
-            width={1280}
-            height={551}
-            priority
-            className="h-auto w-20 sm:w-28"
-          />
-          <h1 className="mt-0.5 text-[17px] font-extrabold leading-tight text-brand-green sm:mt-1 sm:text-[21px]">
-            Engagement Assistant
-          </h1>
-          <h2 className="mt-0.5 max-w-2xl text-[17px] font-extrabold leading-tight text-brand-charcoal sm:text-[22px]">
-            Turn scattered details into a clear AI-generated packet.
-          </h2>
-          <p className="mt-0.5 max-w-2xl text-[13px] leading-5 text-brand-gray700 sm:mt-1 sm:text-[15px] sm:leading-6">
-            Select the team, site type, and task. The assistant organizes the most relevant preparation details before work starts.
-          </p>
+                <header className="mb-3 rounded-[16px] border border-brand-gray200 bg-white px-5 py-4 shadow-sm sm:mb-4">
+          <div className="flex items-center gap-4">
+            <Image
+              src="/ryan-logo-transparent.png"
+              alt="Ryan Fire Protection, Inc."
+              width={1280}
+              height={551}
+              priority
+              className="h-auto w-28 shrink-0 sm:w-32"
+            />
+
+            <h1 className="text-2xl font-extrabold leading-tight text-brand-charcoal sm:text-3xl">
+              Engagement Assistant
+            </h1>
+          </div>
         </header>
 
         <section className="rounded-[16px] border border-brand-gray200 bg-white p-3 shadow-sm sm:p-4">
@@ -3273,7 +3270,7 @@ export default function Home() {
 
               <div>
                 <h3 className={selectorHeadingClass}>
-                  Select Site Type
+                  Select Site
                 </h3>
                 <div className="mt-2 grid grid-cols-1 gap-1.5 sm:mt-2.5 sm:grid-cols-2 sm:gap-2 md:grid-cols-4">
                   {visibleSiteOptions.map((item) => {
